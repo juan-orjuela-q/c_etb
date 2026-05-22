@@ -1,0 +1,1226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Simulador M2 — Llamadas y Contactos | Conexión Social</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet" />
+  <style>
+    /* ── Reset & Variables ─────────────────────────────────────────── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    :root {
+      --cs-blue:    #4b97fb;
+      --cs-blue-dk: #2d7de0;
+      --cs-yellow:  #ffc524;
+      --cs-dark:    #1A1A1A;
+      --cs-gray:    #6B7280;
+      --cs-lgray:   #F3F4F6;
+      --and-green:  #00C853;
+      --and-red:    #FF1744;
+      --phone-w:    320px;
+      --phone-h:    580px;
+      --screen-r:   34px;
+    }
+
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: transparent;
+      /*background: linear-gradient(145deg, #E8EFF8 0%, #EDE8F8 60%, #E8F2F8 100%);*/
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 12px 12px 20px;
+      color: var(--cs-dark);
+    }
+
+    /* ── Header ────────────────────────────────────────────────────── */
+    .sim-header {
+      width: 100%;
+      max-width: 420px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .brand-dot {
+      width: 28px; height: 28px;
+      background: var(--cs-blue);
+      border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
+    }
+    .brand-name { font-size: 12px; font-weight: 700; color: var(--cs-blue); line-height: 1.2; }
+    .brand-sub  { font-size: 10px; color: var(--cs-gray); }
+    .module-tag {
+      background: var(--cs-blue);
+      color: white;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 99px;
+    }
+
+    /* ── Progress ──────────────────────────────────────────────────── */
+    .progress-wrap {
+      width: 100%; max-width: 420px;
+      margin-bottom: 14px;
+    }
+    .progress-meta {
+      display: flex; justify-content: space-between;
+      font-size: 11px; color: var(--cs-gray);
+      margin-bottom: 5px;
+    }
+    .progress-bar {
+      height: 7px; background: #D1D5DB;
+      border-radius: 99px; overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%; background: var(--cs-blue);
+      border-radius: 99px;
+      transition: width .5s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* ── Don Julio speech bubble ─────────────────────────────────── */
+    .dj-bubble-row {
+      width: 100%; max-width: 420px;
+      display: flex; align-items: flex-start;
+      gap: 12px; margin-bottom: 14px;
+    }
+    .dj-avatar {
+      width: 62px; height: 62px; border-radius: 50%;
+      object-fit: cover; flex-shrink: 0;
+      border: 3px solid var(--cs-blue);
+      box-shadow: 0 2px 10px rgba(75,151,251,.35);
+    }
+    .dj-speech {
+      flex: 1; background: white; border-radius: 14px;
+      padding: 10px 14px; position: relative;
+      box-shadow: 0 2px 10px rgba(0,0,0,.08);
+      border: 1.5px solid #e5e7eb;
+    }
+    .dj-speech::before {
+      content: '';
+      position: absolute; left: -10px; top: 18px;
+      border: 5px solid transparent;
+      border-right-color: #e5e7eb;
+    }
+    .dj-speech::after {
+      content: '';
+      position: absolute; left: -7px; top: 19.5px;
+      border: 3.5px solid transparent;
+      border-right-color: white;
+    }
+    @keyframes djSlideIn {
+      from { opacity: 0; transform: translateX(-12px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    .dj-speech.animate { animation: djSlideIn .35s ease forwards; }
+    .instr-step {
+      font-size: 14px; font-weight: 700;
+      color: var(--cs-blue); text-transform: uppercase;
+      letter-spacing: .8px; margin-bottom: 5px;
+    }
+    .instr-text { font-size: 17px; line-height: 1.5; }
+    .instr-text strong { color: var(--cs-blue-dk); }
+
+    /* ── Phone wrapper & frame ─────────────────────────────────────── */
+    .phone-outer {
+      position: relative;
+      margin-bottom: 14px;
+    }
+    .phone-frame {
+      width: var(--phone-w);
+      height: var(--phone-h);
+      background: #111;
+      border-radius: 44px;
+      padding: 11px;
+      box-shadow:
+        0 24px 64px rgba(0,0,0,.35),
+        0 0 0 1px rgba(255,255,255,.08),
+        inset 0 0 0 1px rgba(255,255,255,.04);
+      position: relative;
+    }
+    /* notch */
+    .phone-frame::before {
+      content: '';
+      position: absolute;
+      top: 11px; left: 50%;
+      transform: translateX(-50%);
+      width: 76px; height: 20px;
+      background: #111;
+      border-radius: 0 0 18px 18px;
+      z-index: 20;
+    }
+    /* side buttons */
+    .phone-frame::after { display: none; }
+
+    .phone-screen {
+      width: 100%; height: 100%;
+      background: white;
+      border-radius: var(--screen-r);
+      overflow: hidden;
+      display: flex; flex-direction: column;
+      position: relative;
+    }
+
+    /* status bar */
+    .sbar {
+      height: 26px;
+      display: flex; align-items: center;
+      justify-content: space-between;
+      padding: 4px 18px 0;
+      flex-shrink: 0; z-index: 10;
+      position: relative;
+    }
+    .sbar-time { font-size: 11px; font-weight: 700; }
+    .sbar-icons { display: flex; gap: 3px; align-items: center; font-size: 11px; }
+
+    /* screen content */
+    .scr { flex: 1; overflow: hidden; position: relative; }
+
+    /* nav bar */
+    .nav-bar {
+      height: 38px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: space-around;
+      padding: 0 40px;
+      background: #f7f7f7;
+      border-top: 1px solid #EBEBEB;
+    }
+    .nav-btn {
+      width: 22px; height: 22px;
+      display: flex; align-items: center; justify-content: center;
+      color: #555; font-size: 13px;
+      cursor: pointer; border-radius: 4px;
+    }
+    .nav-btn:active { background: #E5E7EB; }
+
+    /* ── SCREEN 1 — Welcome ────────────────────────────────────────── */
+    .s-welcome {
+      height: 100%;
+      background: linear-gradient(170deg, var(--cs-blue) 0%, var(--cs-blue-dk) 100%);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 24px 20px; text-align: center; color: white;
+    }
+    .s-welcome .big-icon { margin-bottom: 14px; }
+    .s-welcome .big-icon img { width: 86px; height: 86px; }
+    .s-welcome h2 { font-size: 21px; font-weight: 700; margin-bottom: 10px; }
+    .s-welcome p  { font-size: 15px; opacity: .92; line-height: 1.6; margin-bottom: 26px; }
+    .s-welcome .chips { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; margin-bottom: 24px; }
+    .s-welcome .chip {
+      background: rgba(255,255,255,.18);
+      border-radius: 99px; padding: 4px 11px; font-size: 11px;
+    }
+    .btn-start {
+      background: #ffc524; color: #0e2d5c;
+      font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 700;
+      border: none; border-radius: 99px; padding: 14px 32px;
+      cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,.22);
+      transition: transform .12s;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .btn-start .material-symbols-rounded { font-size: 22px; color: #0e2d5c; }
+    .btn-start:active { transform: scale(.95); }
+
+    /* ── SCREEN 2 — Home screen ────────────────────────────────────── */
+    .s-home {
+      height: 100%;
+      background: linear-gradient(160deg, #1a237e 0%, #1565C0 100%);
+      padding: 6px 8px 0;
+      display: flex; flex-direction: column;
+    }
+    .home-clock { text-align: center; color: white; font-size: 34px; font-weight: 300; margin: 4px 0 2px; }
+    .home-date  { text-align: center; color: rgba(255,255,255,.75); font-size: 11px; margin-bottom: 14px; }
+    .apps-grid  { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 0 6px; }
+    .app-item   {
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      cursor: pointer; padding: 4px; border-radius: 12px;
+      transition: background .15s;
+    }
+    .app-item:active { background: rgba(255,255,255,.15); transform: scale(.92); }
+    .app-icon-box {
+      width: 50px; height: 50px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.25);
+      overflow: hidden;
+    }
+    .app-svg { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .app-label { font-size: 9px; color: white; text-align: center; line-height: 1.2; }
+    .app-item.is-target .app-icon-box {
+      border-radius: 50%;
+      box-shadow: 0 0 0 3px var(--cs-yellow), 0 4px 14px rgba(0,0,0,.3);
+      animation: glow-target 1.8s infinite;
+    }
+    @keyframes glow-target {
+      0%,100% { box-shadow: 0 0 0 3px var(--cs-yellow), 0 4px 14px rgba(0,0,0,.3); }
+      50%      { box-shadow: 0 0 0 5px rgba(245,200,0,.5), 0 4px 20px rgba(0,0,0,.35); }
+    }
+
+    /* ── SCREEN 3 — Dialer ─────────────────────────────────────────── */
+    .s-dialer { height: 100%; display: flex; flex-direction: column; background: white; }
+    .dialer-tabs {
+      display: flex; border-bottom: 1px solid #EBEBEB;
+      padding: 0 10px; flex-shrink: 0;
+    }
+    .dtab {
+      flex: 1; text-align: center; padding: 9px 4px;
+      font-size: 11px; color: var(--cs-gray);
+      border-bottom: 2px solid transparent;
+    }
+    .dtab.on { color: var(--cs-blue); border-bottom-color: var(--cs-blue); font-weight: 700; }
+    .dialer-display {
+      padding: 12px 20px 6px; text-align: center; min-height: 58px;
+      flex-shrink: 0;
+    }
+    .dialer-num {
+      font-size: 28px; font-weight: 300; color: var(--cs-dark);
+      letter-spacing: 3px; min-height: 38px;
+    }
+    .dialer-num.ph { font-size: 13px; color: #BBB; font-weight: 400; padding-top: 8px; letter-spacing: 0; }
+    .keypad {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 1px; padding: 4px 14px; flex: 1;
+    }
+    .key {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 8px; border-radius: 50%;
+      cursor: pointer; user-select: none;
+      transition: background .1s;
+    }
+    .key:active, .key.pressed { background: #E5E7EB; }
+    .key.lit { background: rgba(91,141,184,.15); box-shadow: 0 0 0 2px var(--cs-blue); }
+    .kn { font-size: 22px; font-weight: 400; color: var(--cs-dark); }
+    .ka { font-size: 8px; color: var(--cs-gray); letter-spacing: .8px; }
+    .dialer-actions {
+      display: flex; justify-content: center; align-items: center;
+      padding: 6px 14px 10px; gap: 36px; flex-shrink: 0;
+    }
+    .btn-call {
+      width: 58px; height: 58px;
+      border-radius: 50%; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 24px; transition: transform .12s;
+      box-shadow: 0 4px 14px rgba(0,0,0,.22);
+    }
+    .btn-call:active { transform: scale(.93); }
+    .btn-call .material-symbols-rounded { font-size: 28px; color: white; }
+    .btn-call.green { background: var(--and-green); box-shadow: 0 4px 14px rgba(0,200,83,.4); }
+    .btn-call.red   { background: var(--and-red);   box-shadow: 0 4px 14px rgba(255,23,68,.4); }
+    .btn-call.green.pulse { animation: pulse-g 1.6s infinite; }
+    .btn-call.red.pulse   { animation: pulse-r 1.6s infinite; }
+    @keyframes pulse-g {
+      0%,100% { box-shadow: 0 4px 14px rgba(0,200,83,.4); }
+      50%      { box-shadow: 0 4px 22px rgba(0,200,83,.7), 0 0 0 8px rgba(0,200,83,.14); }
+    }
+    @keyframes pulse-r {
+      0%,100% { box-shadow: 0 4px 14px rgba(255,23,68,.4); }
+      50%      { box-shadow: 0 4px 22px rgba(255,23,68,.7), 0 0 0 8px rgba(255,23,68,.14); }
+    }
+    .btn-del { font-size: 20px; color: #999; cursor: pointer; padding: 8px; }
+    .btn-del:active { color: var(--cs-dark); }
+
+    /* ── SCREEN 4 — Active call ────────────────────────────────────── */
+    .s-call {
+      height: 100%;
+      background: linear-gradient(170deg, #263238 0%, #37474F 100%);
+      display: flex; flex-direction: column;
+      align-items: center; color: white;
+      padding: 18px 18px 14px;
+    }
+    .call-status { font-size: 12px; color: rgba(255,255,255,.65); margin-bottom: 12px; }
+    .call-avatar {
+      width: 76px; height: 76px; border-radius: 50%;
+      background: var(--cs-blue);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 34px; margin-bottom: 10px;
+    }
+    .call-name   { font-size: 21px; font-weight: 700; margin-bottom: 3px; }
+    .call-sub    { font-size: 12px; color: rgba(255,255,255,.55); margin-bottom: 6px; }
+    .call-timer  { font-size: 18px; color: rgba(255,255,255,.8); margin-bottom: 16px; font-variant-numeric: tabular-nums; }
+    .call-ctrls  {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 10px; margin-bottom: 18px; width: 100%;
+    }
+    .ctrl {
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+    }
+    .ctrl-ico {
+      width: 46px; height: 46px; border-radius: 50%;
+      background: rgba(255,255,255,.14);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+    }
+    .ctrl-lbl { font-size: 9px; color: rgba(255,255,255,.65); }
+    .hangup-row { margin-top: auto; }
+
+    /* ── SCREEN 5 — Incoming call ──────────────────────────────────── */
+    .s-incoming {
+      height: 100%;
+      background: linear-gradient(160deg, #1B4332 0%, #2D6A4F 100%);
+      display: flex; flex-direction: column;
+      align-items: center; color: white;
+      padding: 22px 18px 20px;
+    }
+    .incoming-lbl { font-size: 14px; color: rgba(255,255,255,.65); margin-bottom: 14px; }
+    .incoming-av {
+      width: 78px; height: 78px; border-radius: 50%;
+      background: rgba(255,255,255,.2);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 34px; margin-bottom: 10px;
+      animation: ring 2s infinite;
+    }
+    @keyframes ring {
+      0%,100% { box-shadow: 0 0 0 0 rgba(255,255,255,.3); }
+      50%      { box-shadow: 0 0 0 18px rgba(255,255,255,0); }
+    }
+    .incoming-name { font-size: 23px; font-weight: 700; margin-bottom: 3px; }
+    .incoming-sub  { font-size: 14px; color: rgba(255,255,255,.55); margin-bottom: 10px; }
+    .incoming-hint {
+      font-size: 13px; color: rgba(255,255,255,.6);
+      background: rgba(255,255,255,.1); border-radius: 8px;
+      padding: 7px 12px; margin-bottom: auto; margin-top: 6px;
+      text-align: center; line-height: 1.5;
+    }
+    .call-btns {
+      display: flex; justify-content: space-around;
+      align-items: center; width: 100%; padding-top: 16px;
+    }
+    .call-btn-wrap { display: flex; flex-direction: column; align-items: center; gap: 7px; }
+    .call-btn-lbl { font-size: 14px; color: rgba(255,255,255,.8); }
+
+    /* ── SCREEN 6 — Recents ────────────────────────────────────────── */
+    .s-recents { height: 100%; display: flex; flex-direction: column; background: white; }
+    .recents-hdr {
+      padding: 11px 16px 8px; border-bottom: 1px solid #F3F4F6;
+      flex-shrink: 0;
+    }
+    .recents-title { font-size: 17px; font-weight: 700; }
+    .rec-item {
+      display: flex; align-items: center;
+      padding: 11px 14px; border-bottom: 1px solid #F3F4F6;
+      cursor: pointer; transition: background .15s;
+    }
+    .rec-item:active { background: #F9FAFB; }
+    .rec-item.target { background: rgba(245,200,0,.07); }
+    .rec-av {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: #E5E7EB;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px; margin-right: 11px; flex-shrink: 0;
+    }
+    .rec-av.unk { background: #FEF3C7; }
+    .rec-info   { flex: 1; }
+    .rec-name   { font-size: 13px; font-weight: 600; }
+    .rec-det    { font-size: 10px; color: var(--cs-gray); margin-top: 1px; }
+    .btn-save-rec {
+      background: var(--cs-blue); color: white;
+      border: none; border-radius: 99px;
+      padding: 5px 12px; font-family: 'DM Sans', sans-serif;
+      font-size: 11px; font-weight: 700; cursor: pointer;
+      transition: transform .1s;
+    }
+    .btn-save-rec:active { transform: scale(.95); }
+    .btn-call-sm {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: var(--and-green); border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
+    }
+    .btn-call-sm .material-symbols-rounded { font-size: 18px; color: white; }
+
+    /* ── SCREEN 7 — Contact form ───────────────────────────────────── */
+    .s-form { height: 100%; display: flex; flex-direction: column; background: white; }
+    .form-hdr {
+      padding: 11px 14px; border-bottom: 1px solid #E5E7EB;
+      display: flex; align-items: center; gap: 10px; flex-shrink: 0;
+    }
+    .form-back { font-size: 19px; color: var(--cs-blue); cursor: pointer; }
+    .form-hdr-title { font-size: 15px; font-weight: 700; }
+    .form-av-area {
+      display: flex; flex-direction: column; align-items: center;
+      padding: 16px 0 10px;
+    }
+    .form-av {
+      width: 68px; height: 68px; border-radius: 50%;
+      background: var(--cs-blue);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 30px; color: white; margin-bottom: 6px;
+      font-weight: 700; transition: all .2s;
+    }
+    .form-av-lbl { font-size: 10px; color: var(--cs-blue); }
+    .form-fields { padding: 0 20px; }
+    .form-field  { margin-bottom: 14px; }
+    .form-lbl    { font-size: 10px; font-weight: 700; color: var(--cs-blue); letter-spacing: .5px; margin-bottom: 3px; }
+    .form-inp {
+      width: 100%; border: none; border-bottom: 2px solid var(--cs-blue);
+      padding: 7px 0; font-family: 'DM Sans', sans-serif;
+      font-size: 15px; color: var(--cs-dark);
+      outline: none; background: transparent;
+    }
+    .form-inp::placeholder { color: #D1D5DB; }
+    .form-phone-val { font-size: 13px; color: var(--cs-gray); padding: 8px 0; border-bottom: 1px solid #E5E7EB; }
+    .btn-form-save {
+      margin: 16px 20px 0; width: calc(100% - 40px);
+      background: var(--cs-blue); color: white;
+      font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 700;
+      border: none; border-radius: 12px; padding: 13px;
+      cursor: pointer; opacity: .35;
+      transition: opacity .2s, transform .12s;
+    }
+    .btn-form-save.on { opacity: 1; }
+    .btn-form-save.on:active { transform: scale(.97); }
+
+    /* ── SCREEN 8 — Achievement ────────────────────────────────────── */
+    .s-achieve {
+      height: 100%;
+      background: linear-gradient(170deg, var(--cs-blue) 0%, var(--cs-blue-dk) 100%);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 22px 20px; text-align: center; color: white;
+    }
+    .achv-icon { font-size: 60px; margin-bottom: 14px; animation: pop .6s ease; }
+    @keyframes pop {
+      0%   { transform: scale(0); opacity: 0; }
+      60%  { transform: scale(1.18); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    .achv-title { font-size: 26px; font-weight: 700; margin-bottom: 10px; }
+    .achv-sub   { font-size: 16px; opacity: .85; line-height: 1.65; margin-bottom: 24px; }
+    .achv-chips { display: flex; gap: 7px; flex-wrap: wrap; justify-content: center; margin-bottom: 24px; }
+    .achv-chip  { background: rgba(255,255,255,.18); border-radius: 99px; padding: 5px 13px; font-size: 11px; }
+    .achv-btns  { display: flex; flex-direction: column; gap: 10px; width: 100%; }
+    .btn-cont {
+      background: var(--cs-yellow); color: var(--cs-dark);
+      font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 700;
+      border: none; border-radius: 99px; padding: 13px;
+      cursor: pointer; box-shadow: 0 4px 16px rgba(0,0,0,.2);
+      transition: transform .12s;
+    }
+    .btn-cont:active { transform: scale(.96); }
+    .btn-rep {
+      background: rgba(255,255,255,.18); color: white;
+      font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600;
+      border: 2px solid rgba(255,255,255,.4); border-radius: 99px; padding: 11px;
+      cursor: pointer; transition: transform .12s;
+    }
+    .btn-rep:active { transform: scale(.96); }
+
+    /* ── Hand pointer ──────────────────────────────────────────────── */
+    .hand {
+      position: absolute; font-size: 30px;
+      pointer-events: none; z-index: 200;
+      display: none; transform-origin: 40% 10%;
+      filter: drop-shadow(0 3px 5px rgba(0,0,0,.35));
+    }
+    .hand.on { display: block; animation: tap 1.4s infinite ease-in-out; }
+    @keyframes tap {
+      0%,100% { transform: scale(1) rotate(-10deg); }
+      40%      { transform: scale(.82) rotate(-10deg) translateY(5px); }
+      65%      { transform: scale(.82) rotate(-10deg) translateY(5px); }
+    }
+
+    /* ── Feedback bar ──────────────────────────────────────────────── */
+    .fb-bar {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 248px;
+      border-radius: 18px; padding: 20px 22px;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 10px;
+      text-align: center;
+      opacity: 0; pointer-events: none;
+      transition: opacity .3s;
+      z-index: 300;
+      box-shadow: 0 8px 32px rgba(0,0,0,.28);
+    }
+    .fb-bar.show { opacity: 1; }
+    .fb-bar.ok   { background: #D1FAE5; border: 2px solid #34d399; }
+    .fb-bar.err  { background: #FEE2E2; border: 2px solid #f87171; }
+    .fb-ico  { font-size: 34px; }
+    .fb-msg  { font-size: 16px; line-height: 1.5; font-weight: 600; color: #111827; }
+    .fb-prog { width: 100%; height: 4px; background: rgba(0,0,0,.12); border-radius: 99px; overflow: hidden; }
+    .fb-prog-fill { height: 100%; border-radius: 99px; width: 100%; }
+    .fb-bar.ok .fb-prog-fill { background: #059669; }
+    .fb-bar.err .fb-prog-fill { background: #dc2626; }
+    @keyframes fbCountdown { from { width: 100%; } to { width: 0%; } }
+
+    /* ── Shake ─────────────────────────────────────────────────────── */
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20%     { transform: translateX(-7px); }
+      40%     { transform: translateX(7px); }
+      60%     { transform: translateX(-5px); }
+      80%     { transform: translateX(4px); }
+    }
+    .shake { animation: shake .4s ease; }
+
+    /* ── Responsive ────────────────────────────────────────────────── */
+    @media (max-width: 360px) {
+      :root { --phone-w: 292px; --phone-h: 540px; }
+      .apps-grid { gap: 7px; }
+      .app-icon-box { width: 44px; height: 44px; font-size: 21px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Don Julio -->
+  <div class="dj-bubble-row">
+    <img class="dj-avatar" src="img/don_julio.png" alt="Don Julio">
+    <div class="dj-speech">
+      <div class="instr-step" id="instr-step">PASO 1 DE 8</div>
+      <div class="instr-text" id="instr-text">¡Bienvenido! Lee las instrucciones y toca <strong>Empezar</strong>.</div>
+    </div>
+  </div>
+
+  <!-- Phone -->
+  <div class="phone-outer">
+    <div class="phone-frame">
+      <div class="phone-screen">
+        <div class="sbar" id="sbar">
+          <span class="sbar-time">9:41</span>
+          <div class="sbar-icons">
+            <span>▲▲</span><span>🔋</span>
+          </div>
+        </div>
+        <div class="scr" id="scr"></div>
+        <div class="nav-bar" id="nav-bar">
+          <div class="nav-btn">◀</div>
+          <div class="nav-btn">⬤</div>
+          <div class="nav-btn">▣</div>
+        </div>
+      </div>
+    </div>
+    <!-- Animated hand -->
+    <div class="hand" id="hand">👆</div>
+    <!-- Feedback -->
+    <div class="fb-bar" id="fb-bar">
+      <span class="fb-ico" id="fb-ico"></span>
+      <span class="fb-msg" id="fb-msg"></span>
+      <div class="fb-prog"><div class="fb-prog-fill" id="fb-prog-fill"></div></div>
+    </div>
+  </div>
+
+<script>
+/* ════════════════════════════════════════════════════════════════════
+   STATE
+   ════════════════════════════════════════════════════════════════════ */
+let step = 1;
+let timerID = null;
+let timerSec = 0;
+let dialDigits = [];
+const FULL_NUM = '3105550001';
+let incomingPhase = 'ringing'; // 'ringing' | 'active'
+let nameOk = false;
+let autoTypeTimer = null;
+
+/* Step metadata */
+const STEPS = [
+  { label: 'PASO 1 DE 8', pct: 12,
+    instr: '¡Bienvenido al simulador! Lee las instrucciones y toca <strong>Empezar</strong> para comenzar.',
+    dj: 'Vamos paso a paso. Yo también aprendí así, sin afán. ¡Tú puedes!' },
+
+  { label: 'PASO 2 DE 8', pct: 25,
+    instr: 'Busca el ícono del <strong>teléfono</strong> en la pantalla y tócalo para abrir la app de llamadas.',
+    dj: '¿Ves el auricular que brilla con el borde amarillo? Ese es el que necesitamos.' },
+
+  { label: 'PASO 3 DE 8', pct: 37,
+    instr: 'Marca el número <strong>310 555 0001</strong> en el teclado.',
+    dj: 'Mira la mano: te muestra qué tocar. Solo toca el 3, 1 y 0, el resto aparece solo.' },
+
+  { label: 'PASO 4 DE 8', pct: 50,
+    instr: 'El número ya está marcado: <strong>310 555 0001</strong>. Ahora toca el <strong>botón verde</strong> para llamar.',
+    dj: '¡El botón verde siempre es para llamar! Tócalo y verás cómo conecta.' },
+
+  { label: 'PASO 5 DE 8', pct: 62,
+    instr: 'La llamada está activa. Cuando quieras terminar, toca el <strong>botón rojo</strong> para colgar.',
+    dj: 'Y el botón rojo siempre es para terminar la llamada. Son los dos que más importan.' },
+
+  { label: 'PASO 6 DE 8', pct: 75,
+    instr: 'María te está llamando. Toca el <strong>botón verde</strong> para contestar. Luego el rojo para colgar.',
+    dj: 'Cuando alguien llame, el verde contesta y el rojo rechaza. ¡Verde = sí, rojo = no!' },
+
+  { label: 'PASO 7 DE 8', pct: 87,
+    instr: 'En <em>Recientes</em> tienes un número desconocido. Toca <strong>Guardar</strong> para convertirlo en contacto.',
+    dj: 'Después de hablar con alguien, siempre puedo guardar su número aquí, en Recientes.' },
+
+  { label: 'PASO 8 DE 8', pct: 100,
+    instr: '¡Completaste el simulador! Ahora ya sabes cómo hacer llamadas y guardar contactos.',
+    dj: '¡Felicitaciones! Si yo pude aprenderlo, usted también puede. ¡Está listo!' },
+];
+
+/* ════════════════════════════════════════════════════════════════════
+   NAVIGATION
+   ════════════════════════════════════════════════════════════════════ */
+function go(n) {
+  clearAuto();
+  clearTimer();
+  step = n;
+  const s = STEPS[n - 1];
+
+  /* header */
+  document.getElementById('instr-step').textContent = s.label;
+  document.getElementById('instr-text').innerHTML   = s.instr;
+
+  clearFb();
+  hideHand();
+  const _sp = document.querySelector('.dj-speech');
+  if (_sp) { _sp.classList.remove('animate'); void _sp.offsetWidth; _sp.classList.add('animate'); }
+
+  const scr = document.getElementById('scr');
+  const nav = document.getElementById('nav-bar');
+  const sbar = document.getElementById('sbar');
+  nav.style.display = 'flex';
+
+  /* dark status bar for call/incoming screens */
+  const dark = (n === 5 || n === 6);
+  sbar.style.background = dark ? 'rgba(0,0,0,.2)' : 'transparent';
+  sbar.style.color = dark ? 'white' : '';
+  sbar.querySelectorAll('*').forEach(el => el.style.color = dark ? 'rgba(255,255,255,.9)' : '');
+
+  switch (n) {
+    case 1: drawWelcome(scr);   break;
+    case 2: drawHome(scr);      break;
+    case 3: drawDialer(scr);    break;
+    case 4: drawDialerFull(scr);break;
+    case 5: drawCalling(scr);   break;
+    case 6: drawIncoming(scr);  break;
+    case 7: drawRecents(scr);   break;
+    case 8: drawAchieve(scr); nav.style.display = 'none'; break;
+  }
+}
+
+function next() { if (step < 8) go(step + 1); }
+function restart() { dialDigits = []; nameOk = false; incomingPhase = 'ringing'; go(1); }
+
+/* ════════════════════════════════════════════════════════════════════
+   SCREEN 1 — WELCOME
+   ════════════════════════════════════════════════════════════════════ */
+function drawWelcome(el) {
+  el.innerHTML = `
+    <div class="s-welcome">
+      <div class="big-icon"><img src="img/ico_Phone.svg" alt="Teléfono"></div>
+      <h2>Simulador de Llamadas</h2>
+      <p>Practica cómo hacer llamadas,<br>contestar y guardar contactos.<br>¡Sin gastar ni un minuto real!</p>
+      <button class="btn-start" onclick="next()">Empezar <span class="material-symbols-rounded">arrow_forward</span></button>
+    </div>`;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   SCREEN 2 — HOME SCREEN
+   ════════════════════════════════════════════════════════════════════ */
+const APPS = [
+  { id:'calc',  ico:'<img src="img/ico_Calculator.svg" class="app-svg" alt="Calculadora">', lbl:'Calculadora', bg:'transparent' },
+  { id:'msg',   ico:'<img src="img/ico_Messages.svg"   class="app-svg" alt="Mensajes">',    lbl:'Mensajes',    bg:'transparent' },
+  { id:'cam',   ico:'<img src="img/ico_Camera.svg"     class="app-svg" alt="Cámara">',      lbl:'Cámara',      bg:'transparent' },
+  { id:'cnt',   ico:'<img src="img/ico_Contacts.svg"   class="app-svg" alt="Contactos">',   lbl:'Contactos',   bg:'transparent' },
+  { id:'phone', ico:'<img src="img/ico_Phone.svg"      class="app-svg" alt="Teléfono">',    lbl:'Teléfono',    bg:'transparent', target: true },
+  { id:'clk',   ico:'<img src="img/ico_Clock.svg"      class="app-svg" alt="Reloj">',       lbl:'Reloj',       bg:'transparent' },
+  { id:'chr',   ico:'<img src="img/ico_Chrome.svg"     class="app-svg" alt="Navegador">',   lbl:'Navegador',   bg:'transparent' },
+  { id:'cfg',   ico:'<img src="img/ico_Settings.svg"   class="app-svg" alt="Ajustes">',     lbl:'Ajustes',     bg:'transparent' },
+];
+
+function drawHome(el) {
+  const grid = APPS.map(a => `
+    <div class="app-item${a.target ? ' is-target' : ''}" id="app-${a.id}"
+         onclick="tapApp('${a.id}')">
+      <div class="app-icon-box" style="background:${a.bg}">${a.ico}</div>
+      <div class="app-label">${a.lbl}</div>
+    </div>`).join('');
+
+  el.innerHTML = `
+    <div class="s-home">
+      <div class="home-clock">9:41</div>
+      <div class="home-date">Viernes, 22 de mayo</div>
+      <div class="apps-grid">${grid}</div>
+    </div>`;
+
+  setTimeout(() => placeHand('app-phone'), 500);
+}
+
+function tapApp(id) {
+  if (id === 'phone') {
+    ok('¡Correcto! Abriste la app de llamadas.');
+    setTimeout(next, 1300);
+  } else {
+    err('Ese no es el teléfono. Busca el auricular azul que tiene el borde amarillo.');
+    shake('app-' + id);
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   SCREEN 3 — DIALER (guided typing)
+   ════════════════════════════════════════════════════════════════════ */
+const KEYS = [
+  {n:'1',a:''},{n:'2',a:'ABC'},{n:'3',a:'DEF'},
+  {n:'4',a:'GHI'},{n:'5',a:'JKL'},{n:'6',a:'MNO'},
+  {n:'7',a:'PQRS'},{n:'8',a:'TUV'},{n:'9',a:'WXYZ'},
+  {n:'*',a:''},{n:'0',a:'+'},{n:'#',a:''},
+];
+
+function buildKeys() {
+  return KEYS.map(k =>
+    `<div class="key" id="key-${k.n}" onclick="tapKey('${k.n}')">
+      <span class="kn">${k.n}</span>
+      <span class="ka">${k.a}</span>
+    </div>`
+  ).join('');
+}
+
+function drawDialer(el) {
+  dialDigits = [];
+  el.innerHTML = `
+    <div class="s-dialer">
+      <div class="dialer-tabs">
+        <div class="dtab">Recientes</div>
+        <div class="dtab on">Teclado</div>
+        <div class="dtab">Contactos</div>
+      </div>
+      <div class="dialer-display">
+        <div class="dialer-num ph" id="dial-disp">Toca los números</div>
+      </div>
+      <div class="keypad">${buildKeys()}</div>
+      <div class="dialer-actions">
+        <div style="width:42px"></div>
+        <button class="btn-call green" id="dial-call" onclick="tapDialGreen()"
+                disabled style="opacity:.3;cursor:default"><span class="material-symbols-rounded">call</span></button>
+        <div class="btn-del" onclick="delDig()">⌫</div>
+      </div>
+    </div>`;
+
+  /* guide: light up first digit after 600 ms */
+  setTimeout(() => lightDigit(0), 600);
+}
+
+let guideIdx = 0;
+function lightDigit(i) {
+  guideIdx = i;
+  const digit = FULL_NUM[i];
+  /* remove all lit */
+  document.querySelectorAll('.key.lit').forEach(k => k.classList.remove('lit'));
+  const keyEl = document.getElementById('key-' + digit);
+  if (!keyEl) return;
+  keyEl.classList.add('lit');
+  placeHand('key-' + digit);
+}
+
+function tapKey(d) {
+  /* accept only the guided digit for first 3 */
+  if (guideIdx < 3) {
+    const expected = FULL_NUM[guideIdx];
+    if (d !== expected) {
+      err(`Toca el número ${expected} (el que tiene el borde azul).`);
+      shake('key-' + d);
+      return;
+    }
+    dialDigits.push(d);
+    flashKey(d);
+    updateDialDisp();
+    clearFb();
+    guideIdx++;
+    if (guideIdx < 3) {
+      lightDigit(guideIdx);
+    } else {
+      /* auto-fill rest */
+      hideHand();
+      document.querySelectorAll('.key.lit').forEach(k => k.classList.remove('lit'));
+      autoFillRest();
+    }
+  } else {
+    /* auto-fill already done — ignore extra taps */
+  }
+}
+
+function autoFillRest() {
+  const rest = FULL_NUM.slice(3).split('');
+  let i = 0;
+  autoTypeTimer = setInterval(() => {
+    if (i >= rest.length) {
+      clearInterval(autoTypeTimer);
+      setTimeout(next, 500);
+      return;
+    }
+    const d = rest[i];
+    dialDigits.push(d);
+    flashKey(d);
+    updateDialDisp();
+    i++;
+  }, 280);
+}
+
+function flashKey(d) {
+  const k = document.getElementById('key-' + d);
+  if (!k) return;
+  k.classList.add('pressed');
+  setTimeout(() => k.classList.remove('pressed'), 200);
+}
+
+function updateDialDisp() {
+  const el = document.getElementById('dial-disp');
+  if (!el) return;
+  const raw = dialDigits.join('');
+  if (!raw) { el.classList.add('ph'); el.textContent = 'Toca los números'; return; }
+  el.classList.remove('ph');
+  let f = raw;
+  if (raw.length > 3 && raw.length <= 6) f = raw.slice(0,3) + ' ' + raw.slice(3);
+  else if (raw.length > 6)               f = raw.slice(0,3) + ' ' + raw.slice(3,6) + ' ' + raw.slice(6);
+  el.textContent = f;
+}
+
+function tapDialGreen() {
+  ok('¡Perfecto! Ahora toca el botón verde para hacer la llamada.');
+  setTimeout(next, 1300);
+}
+
+function delDig() {
+  if (!dialDigits.length) return;
+  dialDigits.pop();
+  updateDialDisp();
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   SCREEN 4 — DIALER READY (green button)
+   ════════════════════════════════════════════════════════════════════ */
+function drawDialerFull(el) {
+  el.innerHTML = `
+    <div class="s-dialer">
+      <div class="dialer-tabs">
+        <div class="dtab">Recientes</div>
+        <div class="dtab on">Teclado</div>
+        <div class="dtab">Contactos</div>
+      </div>
+      <div class="dialer-display">
+        <div class="dialer-num" id="dial-disp2">310 555 0001</div>
+      </div>
+      <div class="keypad">${buildKeys()}</div>
+      <div class="dialer-actions">
+        <div style="width:42px"></div>
+        <button class="btn-call green pulse" id="dial-call2" onclick="tapGreenCall()"><span class="material-symbols-rounded">call</span></button>
+        <div class="btn-del" onclick="void(0)">⌫</div>
+      </div>
+    </div>`;
+  setTimeout(() => placeHand('dial-call2'), 400);
+}
+
+function tapGreenCall() {
+  ok('¡Llamando! La línea está conectando...');
+  setTimeout(next, 1300);
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   SCREEN 5 — ACTIVE CALL
+   ════════════════════════════════════════════════════════════════════ */
+function drawCalling(el) {
+  timerSec = 0;
+  el.innerHTML = `
+    <div class="s-call">
+      <div class="call-status">Llamada activa</div>
+      <div class="call-avatar">👨‍💼</div>
+      <div class="call-name">Proveedor Juan</div>
+      <div class="call-sub">310 555 0001</div>
+      <div class="call-timer" id="ctimer">0:00</div>
+      <div class="call-ctrls">
+        <div class="ctrl"><div class="ctrl-ico">🔇</div><div class="ctrl-lbl">Silencio</div></div>
+        <div class="ctrl"><div class="ctrl-ico">🔢</div><div class="ctrl-lbl">Teclado</div></div>
+        <div class="ctrl"><div class="ctrl-ico">🔊</div><div class="ctrl-lbl">Altavoz</div></div>
+      </div>
+      <div class="hangup-row">
+        <button class="btn-call red pulse" id="hangup-btn" onclick="tapHangup()"><span class="material-symbols-rounded">call_end</span></button>
+      </div>
+    </div>`;
+
+  timerID = setInterval(() => {
+    timerSec++;
+    const m = Math.floor(timerSec / 60);
+    const s = timerSec % 60;
+    const t = document.getElementById('ctimer');
+    if (t) t.textContent = m + ':' + String(s).padStart(2, '0');
+  }, 1000);
+
+  setTimeout(() => placeHand('hangup-btn'), 600);
+}
+
+function tapHangup() {
+  clearTimer();
+  ok('¡Llamada terminada! Tocaste el botón rojo para colgar.');
+  setTimeout(next, 1400);
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   SCREEN 6 — INCOMING CALL
+   ════════════════════════════════════════════════════════════════════ */
+function drawIncoming(el) {
+  incomingPhase = 'ringing';
+  el.innerHTML = `
+    <div class="s-incoming">
+      <div class="incoming-lbl">Llamada entrante</div>
+      <div class="incoming-av">👩</div>
+      <div class="incoming-name">María</div>
+      <div class="incoming-sub">Contacto guardado · ahora</div>
+      <div class="incoming-hint">
+        Verde = contestar &nbsp;·&nbsp; Rojo = rechazar
+      </div>
+      <div class="call-btns">
+        <div class="call-btn-wrap">
+          <button class="btn-call red" id="btn-reject" onclick="tapReject()"><span class="material-symbols-rounded">call_end</span></button>
+          <span class="call-btn-lbl">Rechazar</span>
+        </div>
+        <div class="call-btn-wrap">
+          <button class="btn-call green" id="btn-answer" onclick="tapAnswer()"><span class="material-symbols-rounded">call</span></button>
+          <span class="call-btn-lbl">Contestar</span>
+        </div>
+      </div>
+    </div>`;
+  setTimeout(() => placeHand('btn-answer'), 500);
+}
+
+function tapReject() {
+  err('Ese botón rechaza la llamada. Prueba el verde para contestar a María.');
+}
+
+function tapAnswer() {
+  incomingPhase = 'active';
+  hideHand();
+  clearFb();
+  timerSec = 0;
+
+  /* Switch to active call UI */
+  const scr = document.getElementById('scr');
+  scr.innerHTML = `
+    <div class="s-call">
+      <div class="call-status">En llamada</div>
+      <div class="call-avatar">👩</div>
+      <div class="call-name">María</div>
+      <div class="call-sub">Contacto guardado</div>
+      <div class="call-timer" id="ctimer2">0:00</div>
+      <div class="call-ctrls">
+        <div class="ctrl"><div class="ctrl-ico">🔇</div><div class="ctrl-lbl">Silencio</div></div>
+        <div class="ctrl"><div class="ctrl-ico">🔢</div><div class="ctrl-lbl">Teclado</div></div>
+        <div class="ctrl"><div class="ctrl-ico">🔊</div><div class="ctrl-lbl">Altavoz</div></div>
+      </div>
+      <div class="hangup-row">
+        <button class="btn-call red pulse" id="hangup-maria" onclick="tapHangupMaria()"><span class="material-symbols-rounded">call_end</span></button>
+      </div>
+    </div>`;
+
+  ok('¡Contestaste a María! Ahora toca el rojo para colgar cuando quieras.');
+
+  timerID = setInterval(() => {
+    timerSec++;
+    const m = Math.floor(timerSec / 60);
+    const s = timerSec % 60;
+    const t = document.getElementById('ctimer2');
+    if (t) t.textContent = m + ':' + String(s).padStart(2, '0');
+  }, 1000);
+
+  setTimeout(() => placeHand('hangup-maria'), 1600);
+}
+
+function tapHangupMaria() {
+  clearTimer();
+  ok('¡Perfecto! Contestaste y colgaste correctamente.');
+  setTimeout(next, 1400);
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   SCREEN 7 — RECENTS → CONTACT FORM
+   ════════════════════════════════════════════════════════════════════ */
+function drawRecents(el) {
+  el.innerHTML = `
+    <div class="s-recents">
+      <div class="recents-hdr"><div class="recents-title">Recientes</div></div>
+
+      <div class="rec-item">
+        <div class="rec-av">👩</div>
+        <div class="rec-info">
+          <div class="rec-name">María</div>
+          <div class="rec-det">📞 Hoy · 3 min</div>
+        </div>
+        <div class="btn-call-sm"><span class="material-symbols-rounded">call</span></div>
+      </div>
+
+      <div class="rec-item target" id="rec-unknown">
+        <div class="rec-av unk">❓</div>
+        <div class="rec-info">
+          <div class="rec-name" style="color:#374151">310 555 0001</div>
+          <div class="rec-det">📞 Hoy · saliente</div>
+        </div>
+        <button class="btn-save-rec" onclick="tapSaveRec()">Guardar</button>
+      </div>
+
+      <div class="rec-item">
+        <div class="rec-av" style="background:#DBEAFE">👦</div>
+        <div class="rec-info">
+          <div class="rec-name">Hijo Santiago</div>
+          <div class="rec-det">📞 Ayer · 5 min</div>
+        </div>
+        <div class="btn-call-sm"><span class="material-symbols-rounded">call</span></div>
+      </div>
+
+    </div>`;
+  setTimeout(() => placeHand('rec-unknown', 160, 10), 500);
+}
+
+function tapSaveRec() {
+  hideHand();
+  clearFb();
+  drawForm(document.getElementById('scr'));
+}
+
+function drawForm(el) {
+  nameOk = false;
+  el.innerHTML = `
+    <div class="s-form">
+      <div class="form-hdr">
+        <span class="form-back" onclick="drawRecents(document.getElementById('scr'))">←</span>
+        <span class="form-hdr-title">Nuevo contacto</span>
+      </div>
+      <div class="form-av-area">
+        <div class="form-av" id="form-av">👤</div>
+        <span class="form-av-lbl">Agregar foto</span>
+      </div>
+      <div class="form-fields">
+        <div class="form-field">
+          <div class="form-lbl">NOMBRE</div>
+          <input class="form-inp" type="text" id="name-inp"
+            placeholder="Toca aquí para escribir el nombre"
+            onfocus="autoFillName()"
+            oninput="onNameInput(this.value)"
+            autocomplete="off" autocorrect="off" />
+        </div>
+        <div class="form-field">
+          <div class="form-lbl">TELÉFONO</div>
+          <div class="form-phone-val">310 555 0001</div>
+        </div>
+      </div>
+      <button class="btn-form-save" id="btn-form-save" onclick="tapFormSave()">
+        Guardar contacto
+      </button>
+    </div>`;
+  setTimeout(() => document.getElementById('name-inp').focus(), 200);
+}
+
+function autoFillName() {
+  const inp = document.getElementById('name-inp');
+  if (inp && inp.value === '') {
+    inp.value = 'Jorge Gómez';
+    onNameInput('Jorge Gómez');
+  }
+}
+
+function onNameInput(v) {
+  nameOk = v.trim().length > 0;
+  const btn = document.getElementById('btn-form-save');
+  const av  = document.getElementById('form-av');
+  if (btn) btn.classList.toggle('on', nameOk);
+  if (av) av.textContent = nameOk ? v.trim()[0].toUpperCase() : '👤';
+}
+
+function tapFormSave() {
+  if (!nameOk) { err('Escribe el nombre del contacto antes de guardar.'); return; }
+  const name = document.getElementById('name-inp').value.trim();
+  ok(`¡Contacto "${name}" guardado! Ahora lo encontrarás por nombre en tus contactos.`);
+  setTimeout(next, 1800);
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   SCREEN 8 — ACHIEVEMENT
+   ════════════════════════════════════════════════════════════════════ */
+function drawAchieve(el) {
+  el.innerHTML = `
+    <div class="s-achieve">
+      <div class="achv-icon">🏆</div>
+      <div class="achv-title">¡Lo lograste!</div>
+      <div class="achv-sub">
+        Ya sabes cómo hacer llamadas, contestar<br>y guardar contactos en tu celular.<br>
+        <strong>¡Igual que Don Julio!</strong>
+      </div>
+      <div class="achv-btns">
+        <button class="btn-rep" onclick="restart()">↩ Repetir simulador</button>
+      </div>
+    </div>`;
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   HAND POINTER
+   ════════════════════════════════════════════════════════════════════ */
+function placeHand(targetId, offsetX = 0, offsetY = 0) {
+  const hand   = document.getElementById('hand');
+  const target = document.getElementById(targetId);
+  const outer  = document.querySelector('.phone-outer');
+  if (!target || !outer) return;
+
+  const tR = target.getBoundingClientRect();
+  const oR = outer.getBoundingClientRect();
+
+  hand.style.left = (tR.left - oR.left + tR.width  / 2 - 15 + offsetX) + 'px';
+  hand.style.top  = (tR.top  - oR.top  + tR.height / 2 - 8  + offsetY) + 'px';
+  hand.classList.add('on');
+}
+
+function hideHand() {
+  document.getElementById('hand').classList.remove('on');
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   FEEDBACK
+   ════════════════════════════════════════════════════════════════════ */
+let fbTimer = null;
+
+function showFb(type, msg, dur) {
+  if (fbTimer) { clearTimeout(fbTimer); fbTimer = null; }
+  const bar  = document.getElementById('fb-bar');
+  const fill = document.getElementById('fb-prog-fill');
+  document.getElementById('fb-ico').textContent = type === 'ok' ? '✅' : '❌';
+  document.getElementById('fb-msg').textContent = msg;
+  bar.className = 'fb-bar show ' + type;
+  if (fill) {
+    fill.style.animation = 'none';
+    void fill.offsetWidth;
+    fill.style.animation = `fbCountdown ${dur}ms linear forwards`;
+  }
+  fbTimer = setTimeout(clearFb, dur);
+}
+function ok(msg)  { showFb('ok',  msg, 3500); }
+function err(msg) { showFb('err', msg, 5000); }
+function clearFb() {
+  if (fbTimer) { clearTimeout(fbTimer); fbTimer = null; }
+  document.getElementById('fb-bar').className = 'fb-bar';
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   UTILS
+   ════════════════════════════════════════════════════════════════════ */
+function shake(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.classList.remove('shake');
+  void el.offsetWidth;
+  el.classList.add('shake');
+  setTimeout(() => el.classList.remove('shake'), 500);
+}
+function clearTimer() {
+  if (timerID) { clearInterval(timerID); timerID = null; }
+}
+function clearAuto() {
+  if (autoTypeTimer) { clearInterval(autoTypeTimer); autoTypeTimer = null; }
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   INIT
+   ════════════════════════════════════════════════════════════════════ */
+go(1);
+</script>
+</body>
+</html>
