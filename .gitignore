@@ -1,0 +1,13 @@
+# Insumos de diseño — no van al repo
+Insumos gráficos/
+
+# Documentos de diseño instruccional
+*.docx
+*.doc
+*.pptx
+*.xlsx
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+desktop.ini
