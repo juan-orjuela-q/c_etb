@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>M4 — Quiz: Situaciones con la cámara</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --cs-blue:    #5B8DB8;
+      --cs-blue-dk: #3A6E9F;
+      --cs-yellow:  #F5C800;
+      --cs-dark:    #1A1A1A;
+      --cs-gray:    #6B7280;
+      --opt-neutral:#EEF2F7;
+      --opt-border: #CBD5E1;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: #F0F4F8;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px 12px 32px;
+    }
+
+    /* Brand header */
+    .brand-bar {
+      width: 100%; max-width: 660px;
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .brand-logo { font-size: 11px; font-weight: 700; color: var(--cs-blue-dk); text-transform: uppercase; letter-spacing: .06em; }
+    .mod-tag { background: var(--cs-blue); color: #fff; font-size: 10px; font-weight: 700; border-radius: 20px; padding: 3px 11px; text-transform: uppercase; letter-spacing: .05em; }
+
+    /* Progress */
+    .progress-wrap { width: 100%; max-width: 660px; margin-bottom: 12px; }
+    .progress-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--cs-gray); margin-bottom: 4px; }
+    .progress-bar { height: 6px; background: #D1D5DB; border-radius: 3px; overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--cs-blue); border-radius: 3px; transition: width .4s ease; }
+
+    /* Card */
+    .card {
+      width: 100%; max-width: 660px;
+      background: #fff; border-radius: 16px;
+      box-shadow: 0 2px 14px rgba(0,0,0,.08);
+      padding: 28px 28px 24px;
+      margin-bottom: 12px;
+    }
+
+    /* Welcome */
+    .welcome-icon { font-size: 52px; text-align: center; margin-bottom: 14px; }
+    .welcome-title { font-size: 21px; font-weight: 700; color: var(--cs-dark); text-align: center; margin-bottom: 10px; }
+    .welcome-body { font-size: 15px; color: #4B5563; line-height: 1.65; text-align: center; }
+    .welcome-note { margin-top: 16px; background: #EEF2F7; border-radius: 10px; padding: 10px 14px; font-size: 14px; color: var(--cs-gray); }
+
+    /* Question */
+    .q-label { font-size: 11px; font-weight: 700; color: var(--cs-blue); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 12px; }
+    .situation-box {
+      background: #F8FAFC; border-left: 3px solid var(--cs-yellow);
+      border-radius: 0 10px 10px 0; padding: 12px 14px;
+      margin-bottom: 16px;
+    }
+    .situation-label { font-size: 10px; font-weight: 700; color: var(--cs-gray); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 5px; }
+    .situation-text { font-size: 14px; color: var(--cs-dark); line-height: 1.55; }
+    .q-text { font-size: 16px; font-weight: 700; color: var(--cs-dark); line-height: 1.4; margin-bottom: 18px; }
+
+    /* Options */
+    .options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+    .opt-btn {
+      background: var(--opt-neutral); border: 2px solid var(--opt-border);
+      border-radius: 10px; padding: 13px 16px;
+      font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--cs-dark);
+      text-align: left; cursor: pointer; transition: border-color .15s, background .15s;
+      line-height: 1.45; display: flex; align-items: flex-start; gap: 10px;
+    }
+    .opt-btn:hover:not(:disabled) { border-color: var(--cs-blue); background: #E8F0F8; }
+    .opt-btn .opt-letter {
+      min-width: 24px; height: 24px; border-radius: 50%;
+      background: #D1D5DB; color: var(--cs-gray);
+      font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px; transition: background .15s, color .15s;
+    }
+    .opt-btn.correct { background: #D1FAE5; border-color: #059669; }
+    .opt-btn.correct .opt-letter { background: #059669; color: #fff; }
+    .opt-btn.wrong   { background: #FEE2E2; border-color: #DC2626; opacity: .75; }
+    .opt-btn.wrong   .opt-letter { background: #DC2626; color: #fff; }
+    .opt-btn:disabled { cursor: default; }
+
+    /* Feedback */
+    .feedback { border-radius: 10px; padding: 12px 14px; font-size: 14px; line-height: 1.55; display: none; }
+    .feedback.ok  { display: block; background: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0; }
+    .feedback.err { display: block; background: #FEE2E2; color: #991B1B; border: 1px solid #FECACA; }
+
+    /* Next button */
+    .btn-next {
+      display: none; width: 100%; max-width: 660px;
+      background: var(--cs-blue); color: #fff;
+      font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 700;
+      border: none; border-radius: 12px; padding: 15px;
+      cursor: pointer; transition: background .15s; text-align: center;
+      margin-bottom: 10px;
+    }
+    .btn-next:hover { background: var(--cs-blue-dk); }
+    .btn-next.visible { display: block; }
+    .btn-next.secondary {
+      background: #fff; color: var(--cs-blue);
+      border: 2px solid var(--cs-blue);
+    }
+    .btn-next.secondary:hover { background: #EBF2FA; }
+
+    /* Don Julio */
+    .dj-card {
+      width: 100%; max-width: 660px;
+      background: #FFFBEB; border: 1.5px solid var(--cs-yellow);
+      border-radius: 12px; padding: 10px 14px;
+      display: flex; align-items: flex-start; gap: 10px;
+      margin-top: 4px;
+    }
+    .dj-icon { font-size: 22px; flex-shrink: 0; }
+    .dj-text { font-size: 13px; color: #92400E; line-height: 1.5; }
+
+    /* Done */
+    .score-trophy { font-size: 56px; text-align: center; margin-bottom: 10px; }
+    .score-big { font-size: 52px; font-weight: 700; color: var(--cs-blue); text-align: center; line-height: 1; }
+    .score-sub { font-size: 13px; color: var(--cs-gray); text-align: center; margin-bottom: 6px; }
+    .done-msg { font-size: 15px; color: #4B5563; line-height: 1.65; text-align: center; margin: 16px 0 0; }
+    .chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin: 14px 0; }
+    .chip { background: #EEF2F7; border-radius: 20px; padding: 4px 12px; font-size: 12px; color: var(--cs-gray); }
+    .chip.ok { background: #D1FAE5; color: #065F46; }
+
+    @media (max-width: 360px) {
+      .card { padding: 20px 14px 18px; }
+      .q-text { font-size: 15px; }
+      .opt-btn { font-size: 13px; padding: 11px 12px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="brand-bar">
+  <div class="brand-logo">Conexión Social · Bogotá me conecta</div>
+  <div class="mod-tag">Módulo 4</div>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-label">
+    <span id="prog-label">Pregunta 0 de 5</span>
+    <span id="prog-pct">0%</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+</div>
+
+<div class="card" id="main-card"></div>
+
+<button class="btn-next" id="next-btn" onclick="nextStep()">Siguiente →</button>
+
+<div class="dj-card">
+  <div class="dj-icon">👴</div>
+  <div class="dj-text" id="dj-text">Don Julio aprendió a fotografiar sus productos para enviarlos a los clientes por WhatsApp.</div>
+</div>
+
+<script>
+const QS = [
+  {
+    sit: 'Don Julio quiere tomar una foto de sus productos, pero la foto sale muy oscura.',
+    q:   '¿Qué debe hacer para que la foto salga clara?',
+    opts: ['Acercarse a una ventana o buscar más luz natural', 'Limpiar el lente con la camisa', 'Tomar la foto más rápido'],
+    ok: 0,
+    fb_ok:  '✅ ¡Correcto! La luz mejora la foto. La cámara no crea luz, solo captura la que hay. La luz natural de una ventana es la mejor opción.',
+    fb_err: '❌ La luz es el factor clave. La cámara captura la luz del ambiente — buscar una ventana o salir al patio mejora la foto de inmediato.',
+    dj: 'Don Julio ahora fotografia sus productos cerca a la ventana. ¡Las fotos le quedaron perfectas!'
+  },
+  {
+    sit: 'Don Julio toma una foto del estante, pero sale borrosa y movida.',
+    q:   '¿Cómo puede evitar que la foto salga movida?',
+    opts: ['Acercar más el celular al objeto', 'Sostener el celular con ambas manos y pegar los codos al cuerpo', 'Esperar a que haya silencio en la tienda'],
+    ok: 1,
+    fb_ok:  '✅ ¡Correcto! Dos manos = menos movimiento. Pegando los codos al cuerpo el celular se estabiliza aún más.',
+    fb_err: '❌ El movimiento de las manos es el problema. Usar ambas manos y apoyar los codos evita las fotos borrosas.',
+    dj: 'Don Julio ahora siempre usa las dos manos. ¡Ya no le salen fotos borrosas!'
+  },
+  {
+    sit: 'Don Julio quiere grabar a su nieta Sofía cantando en la tienda.',
+    q:   '¿Qué debe tocar primero para grabar un video?',
+    opts: ['El botón rojo grande en la pantalla de la cámara', 'El ícono de video dentro de la app cámara para cambiar a modo video', 'Abrir WhatsApp y grabar desde ahí'],
+    ok: 1,
+    fb_ok:  '✅ ¡Correcto! Primero cambia al modo video tocando el ícono de video. Después el botón rojo inicia la grabación.',
+    fb_err: '❌ Hay que cambiar al modo video antes de grabar. El ícono de video (junto al modo foto) cambia el modo, y el botón rojo inicia la grabación.',
+    dj: 'Don Julio grabó los primeros pasos de su nieta. ¡Le mandó el video a toda la familia!'
+  },
+  {
+    sit: 'Don Julio acaba de tomar una foto del estante. Quiere verla.',
+    q:   '¿Dónde busca la foto que acaba de tomar?',
+    opts: ['En la carpeta Descargas', 'En la Galería — el cuadrado en la esquina de la cámara o la app Galería', 'Tiene que ir a WhatsApp para verla'],
+    ok: 1,
+    fb_ok:  '✅ ¡Correcto! Las fotos se guardan automáticamente en la Galería. El cuadrado pequeño en la esquina de la cámara la muestra de inmediato.',
+    fb_err: '❌ La Galería guarda todas las fotos. Toca el cuadrado pequeño en la esquina de la app cámara, o abre la app Galería.',
+    dj: 'Don Julio ya tiene una carpeta en la galería solo para fotos de los productos de su tienda.'
+  },
+  {
+    sit: 'Don Julio quiere enviarle la foto de Sofía a su hijo Santiago por WhatsApp.',
+    q:   '¿Qué paso sigue después de abrir la foto en la galería?',
+    opts: ['Tomar una captura de pantalla de la foto', 'Tocar el botón compartir (flecha) y elegir WhatsApp', 'Copiar la foto y pegarla en un mensaje'],
+    ok: 1,
+    fb_ok:  '✅ ¡Correcto! El botón compartir (una flecha) envía la foto directo a WhatsApp. La foto llega en su calidad original.',
+    fb_err: '❌ El botón compartir es el camino. Busca la flecha apuntando hacia afuera cuando la foto esté abierta, elige WhatsApp y selecciona el contacto.',
+    dj: 'Don Julio ya manda fotos de los productos a sus clientes desde la galería. ¡El negocio mejoró!'
+  }
+];
+
+let step = 0, score = 0, answered = false;
+
+const card    = document.getElementById('main-card');
+const nextBtn = document.getElementById('next-btn');
+const djText  = document.getElementById('dj-text');
+const pLabel  = document.getElementById('prog-label');
+const pPct    = document.getElementById('prog-pct');
+const pFill   = document.getElementById('prog-fill');
+
+function setProgress(n, total) {
+  const pct = total === 0 ? 0 : Math.round((n / total) * 100);
+  pLabel.textContent = n === 0 ? 'Pregunta 0 de 5' : `Pregunta ${n} de ${total}`;
+  pPct.textContent   = pct + '%';
+  pFill.style.width  = pct + '%';
+}
+
+function go(n) {
+  step = n; answered = false;
+  nextBtn.classList.remove('visible', 'secondary');
+  setProgress(n === 0 ? 0 : n, 5);
+  if (n === 0)              drawWelcome();
+  else if (n >= 1 && n <= 5) drawQuestion(n - 1);
+  else                      drawDone();
+}
+
+function drawWelcome() {
+  card.innerHTML = `
+    <div class="welcome-icon">📷</div>
+    <div class="welcome-title">Situaciones con la cámara</div>
+    <div class="welcome-body">
+      Son 5 situaciones reales que le pueden pasar a Don Julio — y a usted — con la cámara del celular.<br><br>
+      Lea cada situación con calma, elija la respuesta y aprenda con la explicación.
+      <div class="welcome-note">📱 Esta actividad es solo para practicar. No tiene nota y puede intentarla las veces que quiera.</div>
+    </div>`;
+  djText.textContent = 'Don Julio aprendió a fotografiar sus productos para enviarlos a los clientes por WhatsApp.';
+  showNext('Empezar →');
+}
+
+function drawQuestion(qi) {
+  const q = QS[qi];
+  const letters = ['A', 'B', 'C'];
+  card.innerHTML = `
+    <div class="q-label">Pregunta ${qi + 1} de 5</div>
+    <div class="situation-box">
+      <div class="situation-label">📍 Situación</div>
+      <div class="situation-text">${q.sit}</div>
+    </div>
+    <div class="q-text">${q.q}</div>
+    <div class="options" id="opts">
+      ${q.opts.map((o, i) => `
+        <button class="opt-btn" id="opt-${i}" onclick="choose(${i},${qi})">
+          <span class="opt-letter">${letters[i]}</span>
+          <span>${o}</span>
+        </button>`).join('')}
+    </div>
+    <div class="feedback" id="fb"></div>`;
+  djText.textContent = q.dj;
+}
+
+function choose(chosen, qi) {
+  if (answered) return;
+  answered = true;
+  const q = QS[qi];
+  const fb = document.getElementById('fb');
+  for (let i = 0; i < 3; i++) {
+    const btn = document.getElementById('opt-' + i);
+    btn.disabled = true;
+    if (i === q.ok) btn.classList.add('correct');
+    else if (i === chosen) btn.classList.add('wrong');
+  }
+  if (chosen === q.ok) {
+    score++;
+    fb.className = 'feedback ok';
+    fb.textContent = q.fb_ok;
+  } else {
+    fb.className = 'feedback err';
+    fb.textContent = q.fb_err;
+  }
+  showNext(qi < 4 ? 'Siguiente pregunta →' : 'Ver resultado →');
+}
+
+function drawDone() {
+  setProgress(5, 5);
+  pLabel.textContent = 'Completado';
+  const pct = Math.round((score / 5) * 100);
+  const emoji = score === 5 ? '🏆' : score >= 3 ? '⭐' : '📚';
+  const msg = score === 5
+    ? '¡Perfecto! Don Julio y usted ya son expertos usando la cámara.'
+    : score >= 3
+    ? '¡Buen trabajo! Ya conoce las situaciones más comunes. Repase las que generaron duda.'
+    : 'Lo importante es aprender. Puede repetir la actividad y mejorar su resultado.';
+
+  card.innerHTML = `
+    <div class="score-trophy">${emoji}</div>
+    <div class="score-big">${score}/5</div>
+    <div class="score-sub">${pct}% de respuestas correctas</div>
+    <div class="chips">
+      ${QS.map((_, i) => `<div class="chip ${i < score ? 'ok' : ''}">Pregunta ${i+1}</div>`).join('')}
+    </div>
+    <div class="done-msg">${msg}</div>`;
+
+  nextBtn.onclick = () => { score = 0; nextBtn.onclick = nextStep; go(0); };
+  showNext('🔄 Repetir actividad', true);
+  djText.textContent = 'Don Julio completó la actividad. ¡Ahora usted también puede decir que sabe usar la cámara!';
+}
+
+function showNext(txt, secondary = false) {
+  nextBtn.textContent = txt;
+  nextBtn.classList.add('visible');
+  if (secondary) nextBtn.classList.add('secondary');
+}
+
+function nextStep() {
+  if (step === 0) go(1);
+  else if (step < 5) go(step + 1);
+  else go(6);
+}
+
+go(0);
+</script>
+</body>
+</html>

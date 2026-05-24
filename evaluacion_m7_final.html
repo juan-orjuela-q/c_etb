@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>M7 — Evaluación final del curso</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --cs-blue:    #5B8DB8;
+      --cs-blue-dk: #3A6E9F;
+      --cs-yellow:  #F5C800;
+      --cs-dark:    #1A1A1A;
+      --cs-gray:    #6B7280;
+      --opt-neutral:#EEF2F7;
+      --opt-border: #CBD5E1;
+      --gold:       #D97706;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: #F0F4F8;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px 12px 40px;
+    }
+
+    /* Brand */
+    .brand-bar {
+      width: 100%; max-width: 660px;
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .brand-logo { font-size: 11px; font-weight: 700; color: var(--cs-blue-dk); text-transform: uppercase; letter-spacing: .06em; }
+    .mod-tag { background: var(--cs-blue); color: #fff; font-size: 10px; font-weight: 700; border-radius: 20px; padding: 3px 11px; text-transform: uppercase; letter-spacing: .05em; }
+
+    /* Progress */
+    .progress-wrap { width: 100%; max-width: 660px; margin-bottom: 12px; }
+    .progress-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--cs-gray); margin-bottom: 4px; }
+    .progress-bar { height: 6px; background: #D1D5DB; border-radius: 3px; overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--cs-blue); border-radius: 3px; transition: width .4s ease; }
+
+    /* Attempt badge */
+    .attempt-bar {
+      width: 100%; max-width: 660px;
+      display: flex; align-items: center; justify-content: flex-end;
+      gap: 6px; margin-bottom: 8px;
+    }
+    .attempt-dot {
+      width: 10px; height: 10px; border-radius: 50%;
+      background: #D1D5DB; transition: background .3s;
+    }
+    .attempt-dot.used { background: var(--cs-blue); }
+    .attempt-label { font-size: 11px; color: var(--cs-gray); }
+
+    /* Card */
+    .card {
+      width: 100%; max-width: 660px;
+      background: #fff; border-radius: 16px;
+      box-shadow: 0 2px 14px rgba(0,0,0,.08);
+      padding: 28px 28px 24px;
+      margin-bottom: 12px;
+    }
+
+    /* Welcome */
+    .welcome-icon { font-size: 52px; text-align: center; margin-bottom: 14px; }
+    .welcome-title { font-size: 21px; font-weight: 700; color: var(--cs-dark); text-align: center; margin-bottom: 10px; }
+    .welcome-body { font-size: 15px; color: #4B5563; line-height: 1.65; text-align: center; }
+
+    .rules-box {
+      margin-top: 16px; background: #F8FAFC;
+      border-radius: 10px; padding: 14px 16px;
+      text-align: left;
+    }
+    .rules-box .rule { font-size: 14px; color: var(--cs-gray); margin-bottom: 6px; display: flex; gap: 8px; }
+    .rules-box .rule:last-child { margin-bottom: 0; }
+    .rule-icon { flex-shrink: 0; }
+
+    /* Question */
+    .q-label { font-size: 11px; font-weight: 700; color: var(--cs-blue); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 12px; }
+    .rac-pill {
+      display: inline-block; background: #EEF2F7; color: var(--cs-gray);
+      font-size: 10px; font-weight: 700; border-radius: 4px;
+      padding: 2px 8px; margin-bottom: 12px;
+    }
+    .situation-box {
+      background: #F8FAFC; border-left: 3px solid var(--cs-yellow);
+      border-radius: 0 10px 10px 0; padding: 12px 14px;
+      margin-bottom: 16px;
+    }
+    .situation-label { font-size: 10px; font-weight: 700; color: var(--cs-gray); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 5px; }
+    .situation-text { font-size: 14px; color: var(--cs-dark); line-height: 1.55; }
+    .q-text { font-size: 16px; font-weight: 700; color: var(--cs-dark); line-height: 1.4; margin-bottom: 18px; }
+
+    /* Options */
+    .options { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+    .opt-btn {
+      background: var(--opt-neutral); border: 2px solid var(--opt-border);
+      border-radius: 10px; padding: 13px 16px;
+      font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--cs-dark);
+      text-align: left; cursor: pointer; transition: border-color .15s, background .15s;
+      line-height: 1.45; display: flex; align-items: flex-start; gap: 10px;
+    }
+    .opt-btn:hover:not(:disabled) { border-color: var(--cs-blue); background: #E8F0F8; }
+    .opt-btn .opt-letter {
+      min-width: 24px; height: 24px; border-radius: 50%;
+      background: #D1D5DB; color: var(--cs-gray);
+      font-size: 11px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; margin-top: 1px; transition: background .15s, color .15s;
+    }
+    .opt-btn.correct { background: #D1FAE5; border-color: #059669; }
+    .opt-btn.correct .opt-letter { background: #059669; color: #fff; }
+    .opt-btn.wrong   { background: #FEE2E2; border-color: #DC2626; opacity: .75; }
+    .opt-btn.wrong   .opt-letter { background: #DC2626; color: #fff; }
+    .opt-btn:disabled { cursor: default; }
+
+    /* Feedback */
+    .feedback { border-radius: 10px; padding: 12px 14px; font-size: 14px; line-height: 1.55; display: none; }
+    .feedback.ok  { display: block; background: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0; }
+    .feedback.err { display: block; background: #FEE2E2; color: #991B1B; border: 1px solid #FECACA; }
+
+    /* Buttons */
+    .btn-next {
+      display: none; width: 100%; max-width: 660px;
+      background: var(--cs-blue); color: #fff;
+      font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 700;
+      border: none; border-radius: 12px; padding: 15px;
+      cursor: pointer; transition: background .15s; text-align: center;
+      margin-bottom: 10px;
+    }
+    .btn-next:hover { background: var(--cs-blue-dk); }
+    .btn-next.visible { display: block; }
+    .btn-next.secondary {
+      background: #fff; color: var(--cs-blue);
+      border: 2px solid var(--cs-blue);
+    }
+    .btn-next.secondary:hover { background: #EBF2FA; }
+
+    /* Don Julio */
+    .dj-card {
+      width: 100%; max-width: 660px;
+      background: #FFFBEB; border: 1.5px solid var(--cs-yellow);
+      border-radius: 12px; padding: 10px 14px;
+      display: flex; align-items: flex-start; gap: 10px;
+    }
+    .dj-icon { font-size: 22px; flex-shrink: 0; }
+    .dj-text { font-size: 13px; color: #92400E; line-height: 1.5; }
+
+    /* --- RESULT SCREEN --- */
+    .result-icon { font-size: 56px; text-align: center; margin-bottom: 12px; animation: pop .5s ease; }
+    @keyframes pop { 0%{transform:scale(.5);opacity:0} 80%{transform:scale(1.1)} 100%{transform:scale(1);opacity:1} }
+    .result-score { font-size: 52px; font-weight: 700; color: var(--cs-blue); text-align: center; line-height: 1; }
+    .result-label { font-size: 13px; color: var(--cs-gray); text-align: center; margin-bottom: 16px; }
+    .result-msg { font-size: 15px; color: #4B5563; line-height: 1.65; text-align: center; }
+    .retry-tips {
+      margin-top: 14px; background: #FEF9C3; border-radius: 10px; padding: 12px 14px;
+      font-size: 13px; color: #713F12; line-height: 1.6; text-align: left;
+    }
+    .retry-tips strong { display: block; margin-bottom: 4px; }
+
+    /* --- DIPLOMA SCREEN --- */
+    .diploma-wrap { width: 100%; max-width: 660px; margin-bottom: 12px; }
+
+    /* Insignia */
+    .insignia-container { text-align: center; margin-bottom: 20px; }
+    .insignia-hex {
+      display: inline-block; position: relative;
+      width: 120px; height: 120px; margin: 0 auto 10px;
+    }
+    .hex-svg { width: 120px; height: 120px; }
+    .insignia-icon { font-size: 38px; display: block; text-align: center; margin-bottom: 4px; animation: float 3s ease-in-out infinite; }
+    @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-6px)} }
+    .insignia-name { font-size: 13px; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: .06em; }
+    .insignia-sub { font-size: 11px; color: var(--cs-gray); margin-top: 2px; }
+
+    /* Diploma card */
+    .diploma-card {
+      background: linear-gradient(160deg, #FFF9F0 0%, #fff 60%);
+      border: 2px solid var(--cs-yellow);
+      border-radius: 16px; padding: 28px 24px;
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .diploma-corner {
+      position: absolute; font-size: 48px; opacity: .06;
+      font-weight: 900; color: var(--gold);
+    }
+    .diploma-corner.tl { top: -8px; left: 4px; }
+    .diploma-corner.br { bottom: -8px; right: 4px; transform: rotate(180deg); }
+    .diploma-org { font-size: 11px; font-weight: 700; color: var(--cs-blue); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 6px; }
+    .diploma-certif { font-size: 13px; color: var(--cs-gray); margin-bottom: 10px; }
+    .diploma-name-label { font-size: 11px; color: var(--cs-gray); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 4px; }
+    .diploma-name-input {
+      width: 100%; max-width: 320px; border: none; border-bottom: 2px solid var(--cs-yellow);
+      font-family: 'DM Sans', sans-serif; font-size: 22px; font-weight: 700; color: var(--cs-dark);
+      text-align: center; background: transparent; outline: none; padding: 4px 8px; margin-bottom: 14px;
+    }
+    .diploma-name-display { font-size: 24px; font-weight: 700; color: var(--cs-dark); margin-bottom: 14px; min-height: 36px; }
+    .diploma-course { font-size: 14px; color: #4B5563; margin-bottom: 4px; }
+    .diploma-course strong { color: var(--cs-dark); }
+    .diploma-date { font-size: 12px; color: var(--cs-gray); margin-bottom: 16px; }
+    .diploma-seal { font-size: 28px; }
+
+    .share-row { display: flex; gap: 10px; margin-top: 16px; }
+    .btn-share {
+      flex: 1; border: none; border-radius: 10px; padding: 12px;
+      font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 700;
+      cursor: pointer; transition: opacity .15s; text-align: center;
+    }
+    .btn-share:hover { opacity: .85; }
+    .btn-whatsapp { background: #25D366; color: #fff; }
+    .btn-save { background: var(--cs-blue); color: #fff; }
+
+    @media (max-width: 360px) {
+      .card { padding: 20px 14px 18px; }
+      .q-text { font-size: 15px; }
+      .opt-btn { font-size: 13px; padding: 11px 12px; }
+      .share-row { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="brand-bar">
+  <div class="brand-logo">Conexión Social · Bogotá me conecta</div>
+  <div class="mod-tag">Evaluación Final</div>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-label">
+    <span id="prog-label">Pregunta 0 de 5</span>
+    <span id="prog-pct">0%</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+</div>
+
+<div class="attempt-bar">
+  <span class="attempt-label">Intentos:</span>
+  <div class="attempt-dot" id="dot-0"></div>
+  <div class="attempt-dot" id="dot-1"></div>
+  <div class="attempt-dot" id="dot-2"></div>
+</div>
+
+<div class="card" id="main-card"></div>
+
+<button class="btn-next" id="next-btn" onclick="nextStep()">Siguiente →</button>
+
+<div class="dj-card" id="dj-card">
+  <div class="dj-icon">👴</div>
+  <div class="dj-text" id="dj-text">Don Julio repasó todo lo que aprendió. Ahora le toca a usted demostrar lo mismo.</div>
+</div>
+
+<script>
+const QS = [
+  {
+    rac: 'RAC 1 — Conocer',
+    sit: 'Don Julio desliza el dedo desde la parte de arriba de la pantalla y aparece una franja con íconos de WiFi, linterna y datos.',
+    q:   '¿Cómo se llama eso y para qué sirve?',
+    opts: [
+      'Es la pantalla de inicio — ahí están las apps',
+      'Panel de control. Desde ahí se activa WiFi, datos, bluetooth y linterna rápidamente',
+      'Es la barra de notificaciones — solo muestra mensajes'
+    ],
+    ok: 1,
+    fb_ok:  '✅ ¡Correcto! El panel de control da acceso rápido a las conexiones del celular — WiFi, datos, bluetooth y linterna — con un solo desliz.',
+    fb_err: '❌ Es el panel de control. Se abre deslizando desde arriba de la pantalla y da acceso rápido a WiFi, datos, bluetooth y linterna.',
+    dj: 'Don Julio usa el panel de control para activar el WiFi de la tienda sin tener que buscar en Configuración.'
+  },
+  {
+    rac: 'RAC 2 — Aplicar',
+    sit: 'La vecina María llamó a Don Julio. Él quiere guardar el número de ella para no perderlo.',
+    q:   '¿Qué debe hacer para guardar ese número?',
+    opts: [
+      'Marcar el número de nuevo y guardarlo mientras suena',
+      'Ir a Recientes, tocar el número de María y seleccionar Guardar contacto',
+      'Pedirle a María que le envíe el número por WhatsApp'
+    ],
+    ok: 1,
+    fb_ok:  '✅ ¡Correcto! Desde Recientes se guarda el número con nombre en un solo paso — sin volver a marcarlo.',
+    fb_err: '❌ El número queda en Recientes después de la llamada. Desde ahí se toca el número y se elige Guardar contacto para añadirle un nombre.',
+    dj: 'Don Julio guarda todos los números de los proveedores desde Recientes. Ya tiene más de 20 contactos guardados.'
+  },
+  {
+    rac: 'RAC 2 — Aplicar',
+    sit: 'Don Julio tomó una foto del estante de productos, pero la foto salió borrosa y oscura.',
+    q:   '¿Cuáles son los dos errores que cometió?',
+    opts: [
+      'No limpió el lente y usó la cámara frontal',
+      'Movió el celular al disparar (usar ambas manos) y había poca luz (acercarse a la ventana)',
+      'El celular necesita actualización y no tenía suficiente batería'
+    ],
+    ok: 1,
+    fb_ok:  '✅ ¡Correcto! Estabilidad + luz son los dos factores más importantes. Ambas manos evitan el movimiento; la ventana da la luz natural que necesita.',
+    fb_err: '❌ Hay dos problemas: la foto borrosa se evita con ambas manos y los codos pegados. La foto oscura se resuelve buscando luz natural cerca a una ventana.',
+    dj: 'Don Julio ya sabe: dos manos + ventana = foto perfecta para mostrar los productos del negocio.'
+  },
+  {
+    rac: 'RAC 4 — Analizar',
+    sit: 'Don Julio no puede leer bien las letras del celular después de largas jornadas en la tienda. Las letras le parecen muy pequeñas.',
+    q:   '¿Qué ajuste necesita hacer en el celular?',
+    opts: [
+      'Comprar un celular nuevo con pantalla más grande',
+      'Configuración → Accesibilidad → Tamaño de texto → deslizar la barra hacia la derecha',
+      'Acercar el celular más a los ojos cada vez que lea'
+    ],
+    ok: 1,
+    fb_ok:  '✅ ¡Correcto! El tamaño de texto agranda las letras de todo el celular sin comprar nada nuevo. La ruta es Configuración → Accesibilidad → Tamaño de texto.',
+    fb_err: '❌ La ruta es Configuración → Accesibilidad → Tamaño de texto → deslizar la barra. Agranda las letras de todo el celular sin costo alguno.',
+    dj: 'Don Julio agrandó las letras del celular y ahora puede leer los mensajes de WhatsApp sin esfuerzo, hasta al final del día.'
+  },
+  {
+    rac: 'RAC 4 — Evaluar',
+    sit: 'El celular de Don Julio muestra "Almacenamiento insuficiente". Él ya borró fotos, pero el celular sigue lleno.',
+    q:   '¿Qué le falta hacer?',
+    opts: [
+      'Apagar y prender el celular para que se libere la memoria',
+      'Vaciar la papelera — las fotos borradas siguen ocupando espacio hasta que se vacía',
+      'Desinstalar WhatsApp para ganar espacio'
+    ],
+    ok: 1,
+    fb_ok:  '✅ ¡Correcto! Las fotos borradas van a la papelera y siguen ocupando espacio hasta que se vacía. La ruta es Galería → Papelera → Vaciar.',
+    fb_err: '❌ Borrar fotos no libera espacio de inmediato — van a la papelera. Hay que vaciarla: Galería → Papelera → Vaciar. Ahí sí se libera el espacio.',
+    dj: 'Don Julio vació la papelera y liberó 2 GB de espacio. Ahora puede tomar todas las fotos que quiera.'
+  }
+];
+
+const MAX_ATTEMPTS = 3;
+const PASS_SCORE   = 4; // 4 de 5 = 70%
+
+let step = 0, score = 0, answered = false, attempt = 0;
+let scores = []; // score per attempt
+
+const card    = document.getElementById('main-card');
+const nextBtn = document.getElementById('next-btn');
+const djText  = document.getElementById('dj-text');
+const djCard  = document.getElementById('dj-card');
+const pLabel  = document.getElementById('prog-label');
+const pPct    = document.getElementById('prog-pct');
+const pFill   = document.getElementById('prog-fill');
+
+function setProgress(n) {
+  const pct = n === 0 ? 0 : Math.round((n / 5) * 100);
+  pLabel.textContent = n === 0 ? 'Pregunta 0 de 5' : `Pregunta ${n} de 5`;
+  pPct.textContent   = pct + '%';
+  pFill.style.width  = pct + '%';
+}
+
+function updateAttemptDots() {
+  for (let i = 0; i < 3; i++) {
+    const dot = document.getElementById('dot-' + i);
+    dot.classList.toggle('used', i < attempt);
+  }
+}
+
+function go(n) {
+  step = n; answered = false;
+  nextBtn.classList.remove('visible', 'secondary');
+  setProgress(n === 0 ? 0 : n);
+  if (n === 0)              drawWelcome();
+  else if (n >= 1 && n <= 5) drawQuestion(n - 1);
+  else                      drawResult();
+}
+
+function drawWelcome() {
+  const today = new Date().toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' });
+  card.innerHTML = `
+    <div class="welcome-icon">🎯</div>
+    <div class="welcome-title">Evaluación final del curso</div>
+    <div class="welcome-body">
+      <em>"El hijo de Don Julio le preguntó: ¿Y qué aprendió en el curso? Ella empezó a contar con los dedos: las partes del celular, llamar y guardar contactos, tomar fotos, organizar la pantalla, ajustar la accesibilidad y limpiar el almacenamiento."</em>
+      <div class="rules-box">
+        <div class="rule"><span class="rule-icon">📋</span><span>5 preguntas situacionales — 3 opciones cada una</span></div>
+        <div class="rule"><span class="rule-icon">✅</span><span>Necesita <strong>4 de 5 correctas</strong> (80%) para obtener el diploma</span></div>
+        <div class="rule"><span class="rule-icon">🔄</span><span>Tiene <strong>3 intentos</strong> — sin límite de tiempo</span></div>
+        <div class="rule"><span class="rule-icon">💡</span><span>Recibirá explicación inmediata después de cada respuesta</span></div>
+      </div>
+    </div>`;
+  djText.textContent = 'Don Julio repasó todo lo que aprendió. Ahora le toca a usted demostrar lo mismo.';
+  showNext('Comenzar evaluación →');
+}
+
+function drawQuestion(qi) {
+  const q = QS[qi];
+  const letters = ['A', 'B', 'C'];
+  card.innerHTML = `
+    <div class="q-label">Pregunta ${qi + 1} de 5</div>
+    <div class="rac-pill">${q.rac}</div>
+    <div class="situation-box">
+      <div class="situation-label">📍 Situación</div>
+      <div class="situation-text">${q.sit}</div>
+    </div>
+    <div class="q-text">${q.q}</div>
+    <div class="options" id="opts">
+      ${q.opts.map((o, i) => `
+        <button class="opt-btn" id="opt-${i}" onclick="choose(${i},${qi})">
+          <span class="opt-letter">${letters[i]}</span>
+          <span>${o}</span>
+        </button>`).join('')}
+    </div>
+    <div class="feedback" id="fb"></div>`;
+  djText.textContent = q.dj;
+}
+
+function choose(chosen, qi) {
+  if (answered) return;
+  answered = true;
+  const q = QS[qi];
+  const fb = document.getElementById('fb');
+  for (let i = 0; i < 3; i++) {
+    const btn = document.getElementById('opt-' + i);
+    btn.disabled = true;
+    if (i === q.ok) btn.classList.add('correct');
+    else if (i === chosen) btn.classList.add('wrong');
+  }
+  if (chosen === q.ok) {
+    score++;
+    fb.className = 'feedback ok';
+    fb.textContent = q.fb_ok;
+  } else {
+    fb.className = 'feedback err';
+    fb.textContent = q.fb_err;
+  }
+  showNext(qi < 4 ? 'Siguiente pregunta →' : 'Ver resultado →');
+}
+
+function drawResult() {
+  scores.push(score);
+  const passed = score >= PASS_SCORE;
+  const pct = Math.round((score / 5) * 100);
+  setProgress(5);
+  pLabel.textContent = 'Completado';
+  pPct.textContent = '100%';
+
+  if (passed) {
+    // Go to diploma
+    drawDiploma(score, pct);
+    return;
+  }
+
+  // Failed — show result + retry or exhausted
+  const attemptsLeft = MAX_ATTEMPTS - attempt;
+  const emoji = score >= 3 ? '📚' : '💪';
+  let tips = '';
+  if (score < 5) {
+    tips = '<div class="retry-tips"><strong>Repasos recomendados:</strong>';
+    if (score < 2) tips += 'Preguntas 1–2: Repase el Módulo 1 (partes del celular) y Módulo 2 (llamadas).<br>';
+    tips += 'Pregunta 3: Repase el Módulo 4 (cámara).<br>';
+    tips += 'Preguntas 4–5: Repase el Módulo 6 (accesibilidad) y Módulo 7 (almacenamiento).';
+    tips += '</div>';
+  }
+
+  card.innerHTML = `
+    <div class="result-icon">${emoji}</div>
+    <div class="result-score">${score}/5</div>
+    <div class="result-label">${pct}% · Necesita 80% para el diploma</div>
+    <div class="result-msg">
+      ${attemptsLeft > 0
+        ? `Quedaron ${attemptsLeft} intento${attemptsLeft > 1 ? 's' : ''} disponible${attemptsLeft > 1 ? 's' : ''}. Puede repasar los módulos y volver a intentarlo.`
+        : 'Agotó los 3 intentos. Repase los módulos señalados y consulte a su facilitador para continuar.'}
+    </div>
+    ${tips}`;
+
+  if (attemptsLeft > 0) {
+    showNext('🔄 Intentar de nuevo', true);
+    nextBtn.onclick = startNewAttempt;
+  } else {
+    djCard.style.display = 'none';
+    nextBtn.classList.remove('visible');
+  }
+  djText.textContent = 'Don Julio también tuvo que repasar algunos temas. Lo importante es seguir intentando.';
+}
+
+function startNewAttempt() {
+  attempt++;
+  score = 0;
+  nextBtn.onclick = nextStep;
+  updateAttemptDots();
+  go(0);
+}
+
+function drawDiploma(finalScore, pct) {
+  djCard.style.display = 'none';
+  nextBtn.classList.remove('visible');
+
+  const today = new Date().toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' });
+
+  card.innerHTML = `
+    <!-- Insignia -->
+    <div class="insignia-container">
+      <span class="insignia-icon">🚀</span>
+      <svg class="hex-svg" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="60,4 112,32 112,88 60,116 8,88 8,32"
+          fill="#1E40AF" stroke="#3B82F6" stroke-width="3" opacity=".15"/>
+        <polygon points="60,12 104,36 104,84 60,108 16,84 16,36"
+          fill="none" stroke="#D97706" stroke-width="2.5"/>
+      </svg>
+      <div class="insignia-name">Celular Optimizado</div>
+      <div class="insignia-sub">Guardián del Dispositivo</div>
+    </div>
+
+    <!-- Diploma -->
+    <div class="diploma-card">
+      <div class="diploma-corner tl">be</div>
+      <div class="diploma-corner br">be</div>
+
+      <div class="diploma-org">Conexión Social · Bogotá me conecta</div>
+      <div class="diploma-certif">Certifica que</div>
+
+      <div class="diploma-name-label">Su nombre</div>
+      <input class="diploma-name-input" id="dip-name" type="text"
+        placeholder="Escriba su nombre aquí"
+        oninput="document.getElementById('dip-display').textContent = this.value || ''"
+        maxlength="50">
+      <div class="diploma-name-display" id="dip-display"></div>
+
+      <div class="diploma-course">
+        completó con éxito el curso<br>
+        <strong>Más usos útiles de tu celular</strong>
+      </div>
+      <div class="diploma-date">Bogotá, ${today}</div>
+      <div class="diploma-seal">🏆</div>
+    </div>
+
+    <div class="share-row">
+      <button class="btn-share btn-whatsapp" onclick="shareWhatsApp()">📲 Compartir por WhatsApp</button>
+      <button class="btn-share btn-save" onclick="saveDiploma()">💾 Guardar imagen</button>
+    </div>`;
+
+  // Update progress to 100%
+  pLabel.textContent = '¡Felicitaciones!';
+  pPct.textContent   = '100%';
+  pFill.style.width  = '100%';
+}
+
+function shareWhatsApp() {
+  const name = document.getElementById('dip-name').value || 'usted';
+  const text = encodeURIComponent(
+    `🏆 ¡Completé el curso "Más usos útiles de tu celular" de Conexión Social Bogotá! Ya sé llamar, tomar fotos, configurar mi celular y mucho más. 📱 — ${name}`
+  );
+  window.open(`https://wa.me/?text=${text}`, '_blank');
+}
+
+function saveDiploma() {
+  alert('Para guardar el diploma: tome una captura de pantalla presionando los botones de volumen y encendido al mismo tiempo, o use el botón de captura de pantalla de su celular.');
+}
+
+function showNext(txt, secondary = false) {
+  nextBtn.textContent = txt;
+  nextBtn.classList.add('visible');
+  if (secondary) nextBtn.classList.add('secondary');
+}
+
+function nextStep() {
+  if (step === 0) { attempt++; updateAttemptDots(); go(1); }
+  else if (step < 5) go(step + 1);
+  else go(6);
+}
+
+go(0);
+</script>
+</body>
+</html>

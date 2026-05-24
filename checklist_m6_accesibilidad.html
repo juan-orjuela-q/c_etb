@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>M6 — Checklist: Confirma tus ajustes de accesibilidad</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --cs-blue:    #5B8DB8;
+      --cs-blue-dk: #3A6E9F;
+      --cs-yellow:  #F5C800;
+      --cs-dark:    #1A1A1A;
+      --cs-gray:    #6B7280;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: #F0F4F8;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px 12px 32px;
+    }
+
+    /* Brand */
+    .brand-bar {
+      width: 100%; max-width: 660px;
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .brand-logo { font-size: 11px; font-weight: 700; color: var(--cs-blue-dk); text-transform: uppercase; letter-spacing: .06em; }
+    .mod-tag { background: var(--cs-blue); color: #fff; font-size: 10px; font-weight: 700; border-radius: 20px; padding: 3px 11px; text-transform: uppercase; letter-spacing: .05em; }
+
+    /* Progress */
+    .progress-wrap { width: 100%; max-width: 660px; margin-bottom: 12px; }
+    .progress-label { display: flex; justify-content: space-between; font-size: 11px; color: var(--cs-gray); margin-bottom: 4px; }
+    .progress-bar { height: 6px; background: #D1D5DB; border-radius: 3px; overflow: hidden; }
+    .progress-fill { height: 100%; background: var(--cs-blue); border-radius: 3px; transition: width .5s ease; }
+
+    /* Card */
+    .card {
+      width: 100%; max-width: 660px;
+      background: #fff; border-radius: 16px;
+      box-shadow: 0 2px 14px rgba(0,0,0,.08);
+      padding: 28px 28px 24px;
+      margin-bottom: 12px;
+    }
+
+    /* Welcome */
+    .welcome-icon { font-size: 52px; text-align: center; margin-bottom: 14px; }
+    .welcome-title { font-size: 21px; font-weight: 700; color: var(--cs-dark); text-align: center; margin-bottom: 10px; }
+    .welcome-body { font-size: 15px; color: #4B5563; line-height: 1.65; text-align: center; }
+    .welcome-note { margin-top: 14px; background: #EEF2F7; border-radius: 10px; padding: 10px 14px; font-size: 14px; color: var(--cs-gray); text-align: left; line-height: 1.5; }
+
+    /* Checklist section header */
+    .section-title { font-size: 16px; font-weight: 700; color: var(--cs-dark); margin-bottom: 6px; }
+    .section-sub { font-size: 14px; color: var(--cs-gray); margin-bottom: 20px; line-height: 1.5; }
+
+    /* Checklist items */
+    .check-list { display: flex; flex-direction: column; gap: 12px; }
+    .check-item {
+      border: 2px solid #E5E7EB;
+      border-radius: 12px; overflow: hidden;
+      transition: border-color .25s;
+    }
+    .check-item.done { border-color: #059669; }
+
+    .check-header {
+      display: flex; align-items: flex-start; gap: 12px;
+      padding: 14px 16px; cursor: pointer;
+      background: #fff; transition: background .15s;
+    }
+    .check-item.done .check-header { background: #F0FDF4; }
+    .check-header:hover { background: #F8FAFC; }
+    .check-item.done .check-header:hover { background: #DCFCE7; }
+
+    /* Custom checkbox */
+    .chk-box {
+      width: 26px; height: 26px; border-radius: 50%;
+      border: 2.5px solid #CBD5E1;
+      background: #fff; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      transition: all .2s; margin-top: 1px;
+    }
+    .check-item.done .chk-box {
+      background: #059669; border-color: #059669;
+    }
+    .chk-tick { display: none; color: #fff; font-size: 14px; font-weight: 700; }
+    .check-item.done .chk-tick { display: block; }
+
+    .check-content { flex: 1; }
+    .check-action { font-size: 15px; font-weight: 700; color: var(--cs-dark); margin-bottom: 4px; line-height: 1.35; }
+    .check-item.done .check-action { color: #065F46; }
+
+    /* Route pill */
+    .route {
+      display: inline-flex; align-items: center; flex-wrap: wrap; gap: 2px;
+      margin-top: 6px;
+    }
+    .route-step {
+      background: #EEF2F7; color: var(--cs-gray);
+      font-size: 12px; font-weight: 600; border-radius: 4px;
+      padding: 2px 7px; white-space: nowrap;
+    }
+    .route-arrow { color: #9CA3AF; font-size: 11px; margin: 0 1px; }
+    .check-item.done .route-step { background: #D1FAE5; color: #065F46; }
+
+    /* Optional badge */
+    .opt-badge {
+      display: inline-block; background: #FEF3C7; color: #92400E;
+      font-size: 10px; font-weight: 700; border-radius: 4px;
+      padding: 1px 7px; margin-left: 6px; vertical-align: middle;
+    }
+
+    /* Button */
+    .btn-next {
+      display: none; width: 100%; max-width: 660px;
+      background: var(--cs-blue); color: #fff;
+      font-family: 'DM Sans', sans-serif; font-size: 16px; font-weight: 700;
+      border: none; border-radius: 12px; padding: 15px;
+      cursor: pointer; transition: background .15s; text-align: center;
+      margin-bottom: 10px;
+    }
+    .btn-next:hover { background: var(--cs-blue-dk); }
+    .btn-next.visible { display: block; }
+
+    /* Don Julio */
+    .dj-card {
+      width: 100%; max-width: 660px;
+      background: #FFFBEB; border: 1.5px solid var(--cs-yellow);
+      border-radius: 12px; padding: 10px 14px;
+      display: flex; align-items: flex-start; gap: 10px;
+    }
+    .dj-icon { font-size: 22px; flex-shrink: 0; }
+    .dj-text { font-size: 13px; color: #92400E; line-height: 1.5; }
+
+    /* Completion */
+    .done-icon { font-size: 60px; text-align: center; margin-bottom: 14px; animation: pop .5s ease; }
+    @keyframes pop { 0% { transform: scale(.5); opacity: 0; } 80% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; } }
+    .done-title { font-size: 22px; font-weight: 700; color: var(--cs-dark); text-align: center; margin-bottom: 10px; }
+    .done-quote {
+      background: #F0FDF4; border-left: 3px solid #059669;
+      border-radius: 0 10px 10px 0; padding: 14px 16px;
+      font-size: 16px; font-style: italic; color: #065F46; line-height: 1.6;
+      margin-bottom: 16px;
+    }
+    .done-body { font-size: 15px; color: #4B5563; line-height: 1.65; text-align: center; }
+    .done-chips { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin: 14px 0; }
+    .done-chip { background: #D1FAE5; color: #065F46; font-size: 12px; font-weight: 600; border-radius: 20px; padding: 4px 12px; }
+
+    @media (max-width: 360px) {
+      .card { padding: 20px 14px 18px; }
+      .check-action { font-size: 14px; }
+      .route-step { font-size: 11px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="brand-bar">
+  <div class="brand-logo">Conexión Social · Bogotá me conecta</div>
+  <div class="mod-tag">Módulo 6</div>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-label">
+    <span id="prog-label">0 de 5 ajustes confirmados</span>
+    <span id="prog-pct">0%</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+</div>
+
+<div class="card" id="main-card"></div>
+
+<button class="btn-next" id="next-btn" onclick="nextStep()">Continuar →</button>
+
+<div class="dj-card">
+  <div class="dj-icon">👴</div>
+  <div class="dj-text" id="dj-text">Don Julio configuró el tamaño del texto para poder leer los precios más fácil durante sus largas jornadas en la tienda.</div>
+</div>
+
+<script>
+const ITEMS = [
+  {
+    action: 'Aumente el tamaño del texto',
+    route: ['Configuración', 'Accesibilidad', 'Tamaño de texto', 'Desliza la barra →'],
+    optional: false,
+    dj: 'Don Julio agrandó las letras del celular. Ahora puede leer los mensajes de WhatsApp sin esfuerzo.'
+  },
+  {
+    action: 'Active el lector de pantalla (si lo necesita)',
+    route: ['Configuración', 'Accesibilidad', 'TalkBack o Lector de pantalla', 'Activar'],
+    optional: true,
+    dj: 'El lector de pantalla hace que el celular lea en voz alta lo que aparece en la pantalla.'
+  },
+  {
+    action: 'Active los subtítulos',
+    route: ['Configuración', 'Accesibilidad', 'Subtítulos', 'Activar interruptor'],
+    optional: false,
+    dj: 'Con los subtítulos activados, Don Julio puede seguir videos aunque haya ruido en la tienda.'
+  },
+  {
+    action: 'Suba el volumen a un nivel cómodo',
+    route: ['Configuración', 'Sonido', 'Desliza la barra de volumen de medios →'],
+    optional: false,
+    dj: 'Don Julio subió el volumen para escuchar las llamadas aunque haya bulla en el mercado.'
+  },
+  {
+    action: 'Active la vibración para llamadas',
+    route: ['Configuración', 'Sonido', 'Vibrar para llamadas', 'Activar'],
+    optional: false,
+    dj: 'Con la vibración activada, Don Julio no se pierde ninguna llamada aunque el celular esté en el bolsillo.'
+  }
+];
+
+let screen = 'welcome'; // 'welcome' | 'checklist' | 'done'
+let checked = [false, false, false, false, false];
+
+const card    = document.getElementById('main-card');
+const nextBtn = document.getElementById('next-btn');
+const djText  = document.getElementById('dj-text');
+const pLabel  = document.getElementById('prog-label');
+const pPct    = document.getElementById('prog-pct');
+const pFill   = document.getElementById('prog-fill');
+
+function updateProgress() {
+  const n = checked.filter(Boolean).length;
+  const pct = Math.round((n / 5) * 100);
+  pLabel.textContent = `${n} de 5 ajustes confirmados`;
+  pPct.textContent   = pct + '%';
+  pFill.style.width  = pct + '%';
+  // Show complete button when all done (or at least mandatory ones)
+  if (screen === 'checklist') {
+    const allDone = checked.every(Boolean);
+    nextBtn.textContent = allDone ? 'Ver logro →' : 'Continuar sin completar todos →';
+    nextBtn.classList.add('visible');
+  }
+}
+
+function toggle(i) {
+  checked[i] = !checked[i];
+  const item = document.getElementById('item-' + i);
+  if (checked[i]) {
+    item.classList.add('done');
+    djText.textContent = ITEMS[i].dj;
+  } else {
+    item.classList.remove('done');
+  }
+  updateProgress();
+}
+
+function nextStep() {
+  if (screen === 'welcome') {
+    screen = 'checklist';
+    drawChecklist();
+    nextBtn.classList.add('visible');
+    nextBtn.textContent = 'Continuar →';
+    updateProgress();
+  } else if (screen === 'checklist') {
+    screen = 'done';
+    drawDone();
+    nextBtn.classList.remove('visible');
+  }
+}
+
+function drawWelcome() {
+  screen = 'welcome';
+  card.innerHTML = `
+    <div class="welcome-icon">♿</div>
+    <div class="welcome-title">Confirma tus ajustes</div>
+    <div class="welcome-body">
+      En este módulo aprendiste a configurar tu celular para que sea más cómodo de usar cada día.<br><br>
+      Ahora es el momento de hacerlo en <strong>tu celular real</strong>.
+      <div class="welcome-note">
+        ✅ Marca cada casilla cuando hayas hecho el ajuste.<br>
+        📱 El checklist es para ti — no tiene nota.<br>
+        ⚡ Si ya tienes alguno configurado, puedes marcarlo directamente.
+      </div>
+    </div>`;
+  djText.textContent = 'Don Julio configuró el tamaño del texto para poder leer los precios más fácil durante sus largas jornadas en la tienda.';
+  nextBtn.textContent = 'Empezar →';
+  nextBtn.classList.add('visible');
+}
+
+function drawChecklist() {
+  const routeHtml = (r) => r.map((s, i) =>
+    i < r.length - 1
+      ? `<span class="route-step">${s}</span><span class="route-arrow">›</span>`
+      : `<span class="route-step">${s}</span>`
+  ).join('');
+
+  card.innerHTML = `
+    <div class="section-title">Ajusta tu celular ahora</div>
+    <div class="section-sub">Realiza cada ajuste en tu celular real y marca la casilla. Si no necesitas alguno, puedes saltarlo.</div>
+    <div class="check-list">
+      ${ITEMS.map((item, i) => `
+        <div class="check-item" id="item-${i}">
+          <div class="check-header" onclick="toggle(${i})">
+            <div class="chk-box"><span class="chk-tick">✓</span></div>
+            <div class="check-content">
+              <div class="check-action">${item.action}${item.optional ? '<span class="opt-badge">opcional</span>' : ''}</div>
+              <div class="route">${routeHtml(item.route)}</div>
+            </div>
+          </div>
+        </div>`).join('')}
+    </div>`;
+
+  // Restore check state
+  checked.forEach((c, i) => { if (c) document.getElementById('item-' + i).classList.add('done'); });
+}
+
+function drawDone() {
+  const n = checked.filter(Boolean).length;
+  screen = 'done';
+  pLabel.textContent = 'Completado';
+  pPct.textContent   = '100%';
+  pFill.style.width  = '100%';
+
+  card.innerHTML = `
+    <div class="done-icon">🎉</div>
+    <div class="done-title">¡Tu celular ahora se adapta a ti!</div>
+    <div class="done-quote">"Tu celular ahora se adapta a ti — no al revés."</div>
+    <div class="done-chips">
+      ${ITEMS.map((it, i) => checked[i]
+        ? `<div class="done-chip">✓ ${it.action.split(' ').slice(0,3).join(' ')}...</div>`
+        : '').join('')}
+    </div>
+    <div class="done-body">
+      ${n === 5
+        ? 'Completaste todos los ajustes. Tu celular está configurado exactamente como lo necesitas.'
+        : `Marcaste ${n} de 5 ajustes. Puedes volver a la actividad en cualquier momento para completar los que faltan.`}
+    </div>`;
+  djText.textContent = 'Don Julio configuró su celular y ahora lee los mensajes sin problema, incluso al final del día de trabajo.';
+}
+
+drawWelcome();
+</script>
+</body>
+</html>
