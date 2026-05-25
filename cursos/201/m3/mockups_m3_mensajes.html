@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mockups M3 — Mensajería | Conexión Social</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet">
+  <style>
+    /* ── Reset & Variables ─────────────────────────────────────────── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --cs-blue:    #4b97fb;
+      --cs-blue-dk: #2d7de0;
+      --cs-yellow:  #ffc524;
+      --cs-dark:    #1A1A1A;
+      --cs-gray:    #6B7280;
+      --cs-lgray:   #F3F4F6;
+      --and-green:  #00C853;
+      --and-red:    #FF1744;
+      --phone-w:    320px;
+      --phone-h:    580px;
+      --screen-r:   34px;
+    }
+
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      /*background: linear-gradient(145deg, #E8EFF8 0%, #EDE8F8 60%, #E8F2F8 100%);
+      */min-height: 100vh;
+      padding: 36px 20px 60px;
+      color: var(--cs-dark);
+    }
+
+    /* ── Page layout ────────────────────────────────────────────────── */
+    .page-header {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+    .page-title {
+      font-size: 22px; font-weight: 700;
+      color: var(--cs-blue-dk); margin-bottom: 4px;
+    }
+    .page-subtitle {
+      font-size: 13px; color: var(--cs-gray);
+    }
+
+    .section-hdr {
+      display: flex; align-items: center; gap: 12px;
+      margin: 0 0 28px;
+    }
+    .section-hdr h2 {
+      font-size: 13px; font-weight: 700;
+      color: var(--cs-blue-dk); text-transform: uppercase; letter-spacing: .7px;
+      white-space: nowrap;
+    }
+    .section-tag {
+      background: var(--cs-blue); color: white;
+      font-size: 11px; font-weight: 700;
+      padding: 3px 10px; border-radius: 99px; white-space: nowrap;
+    }
+    .section-divider {
+      height: 2px; flex: 1;
+      background: linear-gradient(90deg, var(--cs-blue) 0%, transparent 100%);
+    }
+
+    .phones-row {
+      display: flex; flex-wrap: wrap;
+      gap: 40px; justify-content: center;
+      margin-bottom: 56px;
+    }
+    .phone-unit {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 8px;
+    }
+    .screen-badge {
+      background: var(--cs-blue-dk); color: white;
+      font-size: 11px; font-weight: 700;
+      padding: 3px 10px; border-radius: 99px; letter-spacing: .5px;
+    }
+    .screen-name {
+      font-size: 13px; font-weight: 700; color: #1F2937; text-align: center;
+    }
+    .screen-caption {
+      font-size: 11px; color: var(--cs-gray);
+      text-align: center; max-width: 190px; line-height: 1.5;
+    }
+
+    /* ── Phone frame (idéntico a M2) ─────────────────────────────── */
+    .phone-outer { position: relative; }
+    .phone-frame {
+      width: var(--phone-w); height: var(--phone-h);
+      background: #111; border-radius: 44px; padding: 11px;
+      position: relative;
+    }
+    .phone-frame::before {
+      content: '';
+      position: absolute; top: 11px; left: 50%;
+      transform: translateX(-50%);
+      width: 76px; height: 20px;
+      background: #111; border-radius: 0 0 18px 18px; z-index: 20;
+    }
+    .phone-screen {
+      width: 100%; height: 100%; background: white;
+      border-radius: var(--screen-r);
+      overflow: hidden; display: flex; flex-direction: column;
+      position: relative;
+    }
+
+    /* Status bar */
+    .sbar {
+      height: 26px; display: flex; align-items: center;
+      justify-content: space-between; padding: 4px 18px 0;
+      flex-shrink: 0; z-index: 10; position: relative;
+    }
+    .sbar-time { font-size: 11px; font-weight: 700; }
+    .sbar-icons { display: flex; gap: 3px; align-items: center; font-size: 11px; }
+    .sbar.on-dark { color: white; }
+    .sbar.on-dark .sbar-time,
+    .sbar.on-dark .sbar-icons { color: rgba(255,255,255,.9); }
+
+    /* Screen area */
+    .scr { flex: 1; overflow: hidden; position: relative; display: flex; flex-direction: column; }
+
+    /* Nav bar */
+    .nav-bar {
+      height: 38px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: space-around;
+      padding: 0 40px; background: #f7f7f7; border-top: 1px solid #EBEBEB;
+    }
+    .nav-btn {
+      width: 22px; height: 22px;
+      display: flex; align-items: center; justify-content: center;
+      color: #555; font-size: 13px;
+    }
+
+    /* ── Home screen ─────────────────────────────────────────────── */
+    .s-home {
+      flex: 1;
+      background: linear-gradient(160deg, #1a237e 0%, #1565C0 100%);
+      padding: 4px 8px 0;
+      display: flex; flex-direction: column;
+    }
+    .home-clock { text-align: center; color: white; font-size: 34px; font-weight: 300; margin: 4px 0 2px; }
+    .home-date  { text-align: center; color: rgba(255,255,255,.75); font-size: 13px; margin-bottom: 14px; }
+    .apps-grid  {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 10px; padding: 0 4px;
+    }
+    .app-item   {
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      padding: 4px; border-radius: 12px;
+    }
+    .app-icon-box {
+      width: 50px; height: 50px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,.25); overflow: hidden;
+    }
+    .app-svg   { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .app-label { font-size: 11px; color: white; text-align: center; line-height: 1.2; }
+    .app-item.is-target .app-icon-box {
+      border-radius: 50%;
+      box-shadow: 0 0 0 3px var(--cs-yellow), 0 4px 14px rgba(0,0,0,.3);
+      animation: glow-target 1.8s infinite;
+    }
+    @keyframes glow-target {
+      0%,100% { box-shadow: 0 0 0 3px var(--cs-yellow), 0 4px 14px rgba(0,0,0,.3); }
+      50%      { box-shadow: 0 0 0 6px rgba(255,197,36,.45), 0 4px 20px rgba(0,0,0,.35); }
+    }
+
+    /* ── Google Messages — App bar ───────────────────────────────── */
+    .msg-app-bar {
+      display: flex; align-items: center;
+      height: 44px; padding: 0 6px; flex-shrink: 0;
+      background: white; border-bottom: 1px solid #E5E7EB;
+    }
+    .btn-back {
+      width: 36px; height: 36px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--cs-blue);
+    }
+    .btn-back .material-symbols-rounded { font-size: 22px; }
+    .app-bar-title { flex: 1; font-size: 17px; font-weight: 700; color: var(--cs-dark); padding-left: 4px; }
+    .app-bar-icons { display: flex; gap: 2px; }
+    .app-bar-icon  {
+      width: 34px; height: 34px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--cs-gray);
+    }
+    .app-bar-icon .material-symbols-rounded { font-size: 22px; }
+
+    /* ── Google Messages — Conversation list ─────────────────────── */
+    .msg-search-bar {
+      margin: 8px 12px; background: #F3F4F6;
+      border-radius: 99px; display: flex; align-items: center;
+      padding: 7px 12px; gap: 8px; flex-shrink: 0;
+    }
+    .msg-search-bar .material-symbols-rounded { font-size: 18px; color: var(--cs-gray); }
+    .search-text { font-size: 15px; color: #9CA3AF; }
+
+    .conv-list { flex: 1; overflow: hidden; }
+    .conv-item {
+      display: flex; align-items: center;
+      padding: 10px 14px; border-bottom: 1px solid #F3F4F6; gap: 10px;
+    }
+    .conv-avatar {
+      width: 44px; height: 44px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 17px; font-weight: 700; color: white; flex-shrink: 0;
+    }
+    .conv-body  { flex: 1; min-width: 0; }
+    .conv-name  { font-size: 15px; font-weight: 600; color: var(--cs-dark); }
+    .conv-prev  { font-size: 13px; color: var(--cs-gray); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .conv-time  { font-size: 12px; color: var(--cs-gray); flex-shrink: 0; }
+
+    /* FAB */
+    .msg-fab {
+      position: absolute; bottom: 12px; right: 12px;
+      width: 52px; height: 52px; border-radius: 16px;
+      background: var(--cs-blue);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 14px rgba(75,151,251,.4);
+    }
+    .msg-fab .material-symbols-rounded { font-size: 26px; color: white; }
+    .msg-fab.is-target {
+      border-radius: 50%;
+      box-shadow: 0 0 0 3px var(--cs-yellow), 0 4px 14px rgba(0,0,0,.25);
+      animation: glow-target 1.8s infinite;
+    }
+
+    /* ── New message — Para: field ───────────────────────────────── */
+    .new-msg-para {
+      display: flex; align-items: flex-start; gap: 8px;
+      padding: 10px 14px; border-bottom: 1px solid #E5E7EB; flex-shrink: 0;
+    }
+    .para-label { font-size: 15px; color: var(--cs-gray); padding-top: 4px; }
+    .para-field { flex: 1; display: flex; flex-wrap: wrap; gap: 5px; }
+    .contact-chip {
+      display: inline-flex; align-items: center; gap: 5px;
+      background: var(--cs-blue); color: white;
+      border-radius: 99px; padding: 5px 11px;
+      font-size: 14px; font-weight: 600;
+    }
+    .contact-chip.highlight {
+      box-shadow: 0 0 0 3px var(--cs-yellow);
+      animation: glow-chip 1.8s infinite;
+    }
+    @keyframes glow-chip {
+      0%,100% { box-shadow: 0 0 0 3px var(--cs-yellow); }
+      50%      { box-shadow: 0 0 0 5px rgba(255,197,36,.45); }
+    }
+    .chip-x { font-size: 10px; opacity: .75; }
+
+    .contact-sugg {
+      display: flex; align-items: center;
+      padding: 9px 14px; border-bottom: 1px solid #F3F4F6; gap: 10px;
+    }
+    .sugg-av {
+      width: 38px; height: 38px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; font-weight: 700; color: white; flex-shrink: 0;
+    }
+    .sugg-name { font-size: 15px; font-weight: 600; }
+    .sugg-num  { font-size: 13px; color: var(--cs-gray); }
+
+    /* ── Message thread ──────────────────────────────────────────── */
+    .thread-bar {
+      display: flex; align-items: center;
+      height: 44px; padding: 0 6px; flex-shrink: 0;
+      background: white; border-bottom: 1px solid #E5E7EB;
+    }
+    .thread-av {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 700; color: white; margin-right: 6px;
+    }
+    .thread-name  { flex: 1; font-size: 16px; font-weight: 700; color: var(--cs-dark); }
+    .thread-icons { display: flex; gap: 2px; }
+    .thread-icon  {
+      width: 30px; height: 30px;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--cs-gray);
+    }
+    .thread-icon .material-symbols-rounded { font-size: 20px; }
+
+    .msg-thread {
+      flex: 1; overflow: hidden;
+      padding: 8px 10px; display: flex; flex-direction: column; gap: 5px;
+    }
+    .date-sep { text-align: center; font-size: 12px; color: var(--cs-gray); margin: 2px 0 4px; }
+
+    .bubble-wrap       { display: flex; flex-direction: column; }
+    .bubble-wrap.sent  { align-items: flex-end; }
+    .bubble-wrap.recv  { align-items: flex-start; }
+
+    .bubble {
+      max-width: 78%; padding: 8px 12px;
+      border-radius: 18px; font-size: 15px; line-height: 1.4;
+    }
+    .bubble.sent { background: var(--cs-blue); color: white; border-bottom-right-radius: 4px; }
+    .bubble.recv { background: var(--cs-lgray); color: var(--cs-dark); border-bottom-left-radius: 4px; }
+
+    .bubble-meta { display: flex; align-items: center; gap: 3px; margin-top: 2px; padding: 0 4px; }
+    .bubble-time { font-size: 11px; color: var(--cs-gray); }
+    .check-single { font-size: 13px; font-weight: 700; color: #9CA3AF; }
+    .check-double { font-size: 13px; font-weight: 700; color: var(--cs-blue); }
+
+    /* ── Compose bar ─────────────────────────────────────────────── */
+    .compose-bar {
+      display: flex; align-items: center;
+      padding: 6px 8px; background: white;
+      border-top: 1px solid #E5E7EB;
+      gap: 5px; flex-shrink: 0;
+    }
+    .compose-ico {
+      width: 32px; height: 32px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--cs-gray);
+    }
+    .compose-ico .material-symbols-rounded { font-size: 21px; }
+
+    .compose-field {
+      flex: 1; min-height: 34px;
+      background: #F3F4F6; border-radius: 99px;
+      padding: 7px 14px; font-size: 15px;
+      color: var(--cs-dark); display: flex; align-items: center;
+    }
+    .compose-field.active {
+      background: white; border: 1.5px solid var(--cs-blue);
+    }
+    .compose-ph   { color: #9CA3AF; font-size: 15px; }
+    .compose-text { font-size: 15px; color: var(--cs-dark); }
+    .compose-cursor {
+      display: inline-block; width: 1.5px; height: 15px;
+      background: var(--cs-blue); margin-left: 1px;
+      vertical-align: middle; flex-shrink: 0;
+      animation: blink 1s infinite;
+    }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+
+    .send-btn {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--cs-blue); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .send-btn .material-symbols-rounded { font-size: 20px; color: white; }
+    .send-btn.is-target {
+      box-shadow: 0 0 0 3px var(--cs-yellow), 0 2px 10px rgba(0,0,0,.2);
+      animation: glow-target 1.8s infinite;
+    }
+
+    .mic-btn {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: var(--cs-lgray); flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .mic-btn .material-symbols-rounded { font-size: 20px; color: var(--cs-gray); }
+    .mic-btn.is-target {
+      background: white;
+      box-shadow: 0 0 0 3px var(--cs-yellow), 0 2px 10px rgba(0,0,0,.2);
+      animation: glow-target 1.8s infinite;
+    }
+    .mic-btn.is-target .material-symbols-rounded { color: var(--cs-blue); }
+    .mic-btn.recording {
+      background: var(--and-red);
+      animation: pulse-r 1.6s infinite;
+    }
+    .mic-btn.recording .material-symbols-rounded { color: white; }
+    @keyframes pulse-r {
+      0%,100% { box-shadow: 0 4px 14px rgba(255,23,68,.4); }
+      50%      { box-shadow: 0 4px 22px rgba(255,23,68,.7), 0 0 0 8px rgba(255,23,68,.14); }
+    }
+
+    /* Recording bar */
+    .recording-bar {
+      display: flex; align-items: center; gap: 7px;
+      padding: 6px 12px; background: #FEE2E2;
+      border-top: 1px solid #FECACA; flex-shrink: 0;
+    }
+    .rec-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--and-red); animation: blink 1s infinite; flex-shrink: 0;
+    }
+    .rec-text  { font-size: 14px; color: var(--and-red); font-weight: 600; }
+    .rec-timer { font-size: 14px; color: var(--and-red); margin-left: auto; }
+    .rec-slide { font-size: 12px; color: #F87171; }
+
+    /* ── Android Keyboard ────────────────────────────────────────── */
+    .android-kb {
+      background: #CDD3DA;
+      padding: 5px 3px 8px; flex-shrink: 0;
+    }
+    .kb-row {
+      display: flex; justify-content: center;
+      gap: 5px; margin-bottom: 5px;
+    }
+    .kb-row:last-child { margin-bottom: 0; }
+    .kb-key {
+      flex: 1; height: 36px; max-width: 28px;
+      background: white; border-radius: 5px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 500; color: var(--cs-dark);
+      box-shadow: 0 1px 0 #939AA3;
+    }
+    .kb-key.fn    { max-width: 36px; background: #ADB5BD; font-size: 10px; color: var(--cs-dark); }
+    .kb-key.shift { max-width: 36px; background: #ADB5BD; }
+    .kb-key.del   { max-width: 36px; background: #ADB5BD; }
+    .kb-key.space { flex: 4; max-width: 120px; font-size: 10px; color: var(--cs-gray); }
+    .kb-key.enter { max-width: 44px; background: var(--cs-blue); }
+    .kb-key .material-symbols-rounded { font-size: 15px; color: var(--cs-dark); }
+    .kb-key.enter .material-symbols-rounded { color: white; }
+
+    /* ── Callout boxes (infografía) ──────────────────────────────── */
+    .callout {
+      border-radius: 8px; padding: 7px 10px;
+      margin: 4px 0; font-size: 13px; line-height: 1.5;
+    }
+    .callout.yellow { background: #FEF9C3; border-left: 3px solid var(--cs-yellow); color: #92400E; }
+    .callout.blue   { background: #EFF6FF; border-left: 3px solid var(--cs-blue);   color: #1E40AF; }
+  </style>
+</head>
+<body>
+
+  <div class="page-header">
+    <div class="page-title">Mockups M3 — Mensajería</div>
+    <div class="page-subtitle">Pantallas estáticas para captura · Módulo 3 · Conexión Social</div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECCIÓN 1 — PARA EL GENIALLY
+       ═══════════════════════════════════════════════════════════════ -->
+  <div class="section-hdr">
+    <h2>Para el Genially</h2>
+    <span class="section-tag">6 pantallas</span>
+    <div class="section-divider"></div>
+  </div>
+
+  <div class="phones-row">
+
+    <!-- ── G1: Home screen — ícono Mensajes resaltado ── -->
+    <div class="phone-unit">
+      <div class="screen-badge">G1</div>
+      <div class="screen-name">Pantalla de inicio</div>
+      <div class="screen-caption">Toca el ícono de Mensajes</div>
+      <div class="phone-outer">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="sbar on-dark">
+              <span class="sbar-time">9:41</span>
+              <div class="sbar-icons"><span>▲▲</span><span>🔋</span></div>
+            </div>
+            <div class="scr">
+              <div class="s-home">
+                <div class="home-clock">9:41</div>
+                <div class="home-date">Sábado, 24 de mayo</div>
+                <div class="apps-grid">
+                  <div class="app-item">
+                    <div class="app-icon-box" style="background:transparent">
+                      <img src="../m2/img/ico_Calculator.svg" class="app-svg" alt="Calculadora">
+                    </div>
+                    <span class="app-label">Calculadora</span>
+                  </div>
+                  <div class="app-item is-target">
+                    <div class="app-icon-box" style="background:transparent">
+                      <img src="../m2/img/ico_Messages.svg" class="app-svg" alt="Mensajes">
+                    </div>
+                    <span class="app-label">Mensajes</span>
+                  </div>
+                  <div class="app-item">
+                    <div class="app-icon-box" style="background:transparent">
+                      <img src="../m2/img/ico_Camera.svg" class="app-svg" alt="Cámara">
+                    </div>
+                    <span class="app-label">Cámara</span>
+                  </div>
+                  <div class="app-item">
+                    <div class="app-icon-box" style="background:transparent">
+                      <img src="../m2/img/ico_Contacts.svg" class="app-svg" alt="Contactos">
+                    </div>
+                    <span class="app-label">Contactos</span>
+                  </div>
+                  <div class="app-item">
+                    <div class="app-icon-box" style="background:transparent">
+                      <img src="../m2/img/ico_Phone.svg" class="app-svg" alt="Teléfono">
+                    </div>
+                    <span class="app-label">Teléfono</span>
+                  </div>
+                  <div class="app-item">
+                    <div class="app-icon-box" style="background:transparent">
+                      <img src="../m2/img/ico_Clock.svg" class="app-svg" alt="Reloj">
+                    </div>
+                    <span class="app-label">Reloj</span>
+                  </div>
+                  <div class="app-item">
+                    <div class="app-icon-box" style="background:transparent">
+                      <img src="../m2/img/ico_Chrome.svg" class="app-svg" alt="Navegador">
+                    </div>
+                    <span class="app-label">Navegador</span>
+                  </div>
+                  <div class="app-item">
+                    <div class="app-icon-box" style="background:transparent">
+                      <img src="../m2/img/ico_Settings.svg" class="app-svg" alt="Ajustes">
+                    </div>
+                    <span class="app-label">Ajustes</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="nav-bar">
+              <div class="nav-btn">◀</div>
+              <div class="nav-btn">⬤</div>
+              <div class="nav-btn">▣</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /G1 -->
+
+    <!-- ── G2: Lista de conversaciones — FAB resaltado ── -->
+    <div class="phone-unit">
+      <div class="screen-badge">G2</div>
+      <div class="screen-name">Lista de conversaciones</div>
+      <div class="screen-caption">Toca el botón ✏ para escribir nuevo mensaje</div>
+      <div class="phone-outer">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="sbar">
+              <span class="sbar-time">9:41</span>
+              <div class="sbar-icons"><span>▲▲</span><span>🔋</span></div>
+            </div>
+            <div class="scr">
+              <!-- App bar -->
+              <div class="msg-app-bar">
+                <span class="app-bar-title" style="padding-left:10px">Mensajes</span>
+                <div class="app-bar-icons">
+                  <div class="app-bar-icon"><span class="material-symbols-rounded">search</span></div>
+                  <div class="app-bar-icon"><span class="material-symbols-rounded">more_vert</span></div>
+                </div>
+              </div>
+              <!-- Search -->
+              <div class="msg-search-bar">
+                <span class="material-symbols-rounded">search</span>
+                <span class="search-text">Buscar en Mensajes</span>
+              </div>
+              <!-- Conversations -->
+              <div class="conv-list">
+                <div class="conv-item">
+                  <div class="conv-avatar" style="background:#34A853">HS</div>
+                  <div class="conv-body">
+                    <div class="conv-name">Hijo Santiago</div>
+                    <div class="conv-prev">¡Qué bueno! Nos vemos pronto.</div>
+                  </div>
+                  <div class="conv-time">10:41</div>
+                </div>
+                <div class="conv-item">
+                  <div class="conv-avatar" style="background:#EA4335">M</div>
+                  <div class="conv-body">
+                    <div class="conv-name">Mamá</div>
+                    <div class="conv-prev">¿Ya llegaste bien?</div>
+                  </div>
+                  <div class="conv-time">Ayer</div>
+                </div>
+                <div class="conv-item">
+                  <div class="conv-avatar" style="background:#4b97fb">T</div>
+                  <div class="conv-body">
+                    <div class="conv-name">Trabajo</div>
+                    <div class="conv-prev">Reunión a las 3 pm.</div>
+                  </div>
+                  <div class="conv-time">Lun</div>
+                </div>
+                <div class="conv-item">
+                  <div class="conv-avatar" style="background:#8B5CF6">P</div>
+                  <div class="conv-body">
+                    <div class="conv-name">Pilar</div>
+                    <div class="conv-prev">Hasta mañana entonces.</div>
+                  </div>
+                  <div class="conv-time">Dom</div>
+                </div>
+              </div>
+              <!-- FAB -->
+              <div class="msg-fab is-target">
+                <span class="material-symbols-rounded">edit</span>
+              </div>
+            </div>
+            <div class="nav-bar">
+              <div class="nav-btn">◀</div>
+              <div class="nav-btn">⬤</div>
+              <div class="nav-btn">▣</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /G2 -->
+
+    <!-- ── G3: Para: con chip de contacto ── -->
+    <div class="phone-unit">
+      <div class="screen-badge">G3</div>
+      <div class="screen-name">Elegir destinatario</div>
+      <div class="screen-caption">"Hijo Santiago" seleccionado como contacto</div>
+      <div class="phone-outer">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="sbar">
+              <span class="sbar-time">9:41</span>
+              <div class="sbar-icons"><span>▲▲</span><span>🔋</span></div>
+            </div>
+            <div class="scr">
+              <!-- App bar -->
+              <div class="msg-app-bar">
+                <div class="btn-back"><span class="material-symbols-rounded">arrow_back</span></div>
+                <span class="app-bar-title">Nuevo mensaje</span>
+              </div>
+              <!-- Para: field -->
+              <div class="new-msg-para">
+                <span class="para-label">Para:</span>
+                <div class="para-field">
+                  <div class="contact-chip highlight">
+                    Hijo Santiago
+                    <span class="chip-x">✕</span>
+                  </div>
+                </div>
+              </div>
+              <!-- Search field -->
+              <div style="padding:8px 12px 10px; border-bottom:1px solid #E5E7EB;">
+                <div style="background:#F3F4F6; border-radius:8px; padding:7px 12px; font-size:15px; color:#9CA3AF;">
+                  Buscar o agregar número
+                </div>
+              </div>
+              <!-- Suggested contacts -->
+              <div class="contact-sugg">
+                <div class="sugg-av" style="background:#34A853">HS</div>
+                <div>
+                  <div class="sugg-name">Hijo Santiago</div>
+                  <div class="sugg-num">310 555 0001</div>
+                </div>
+              </div>
+              <div class="contact-sugg">
+                <div class="sugg-av" style="background:#EA4335">M</div>
+                <div>
+                  <div class="sugg-name">Mamá</div>
+                  <div class="sugg-num">311 222 3344</div>
+                </div>
+              </div>
+              <div class="contact-sugg">
+                <div class="sugg-av" style="background:#4b97fb">T</div>
+                <div>
+                  <div class="sugg-name">Trabajo</div>
+                  <div class="sugg-num">601 555 9900</div>
+                </div>
+              </div>
+              <div class="contact-sugg">
+                <div class="sugg-av" style="background:#8B5CF6">P</div>
+                <div>
+                  <div class="sugg-name">Pilar</div>
+                  <div class="sugg-num">315 888 4400</div>
+                </div>
+              </div>
+            </div>
+            <div class="nav-bar">
+              <div class="nav-btn">◀</div>
+              <div class="nav-btn">⬤</div>
+              <div class="nav-btn">▣</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /G3 -->
+
+    <!-- ── G4: Redactar — teclado visible, texto escrito ── -->
+    <div class="phone-unit">
+      <div class="screen-badge">G4</div>
+      <div class="screen-name">Redactar mensaje</div>
+      <div class="screen-caption">Campo de texto activo con teclado</div>
+      <div class="phone-outer">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="sbar">
+              <span class="sbar-time">9:41</span>
+              <div class="sbar-icons"><span>▲▲</span><span>🔋</span></div>
+            </div>
+            <div class="scr">
+              <!-- Thread bar -->
+              <div class="thread-bar">
+                <div class="btn-back"><span class="material-symbols-rounded">arrow_back</span></div>
+                <div class="thread-av" style="background:#34A853">HS</div>
+                <div class="thread-name">Hijo Santiago</div>
+                <div class="thread-icons">
+                  <div class="thread-icon"><span class="material-symbols-rounded">videocam</span></div>
+                  <div class="thread-icon"><span class="material-symbols-rounded">call</span></div>
+                </div>
+              </div>
+              <!-- Messages (compressed) -->
+              <div class="msg-thread" style="flex:0 0 auto; padding:8px 10px 4px;">
+                <div class="date-sep">Hoy</div>
+                <div class="bubble-wrap recv">
+                  <div class="bubble recv">¿Ya saliste?</div>
+                </div>
+              </div>
+              <!-- Compose bar -->
+              <div class="compose-bar">
+                <div class="compose-ico"><span class="material-symbols-rounded">sentiment_satisfied</span></div>
+                <div class="compose-field active">
+                  <span class="compose-text">Hola, ya estoy listo.</span>
+                  <span class="compose-cursor"></span>
+                </div>
+                <div class="compose-ico"><span class="material-symbols-rounded">attach_file</span></div>
+                <div class="send-btn">
+                  <span class="material-symbols-rounded">send</span>
+                </div>
+              </div>
+              <!-- Keyboard (nav bar replaced by keyboard) -->
+              <div class="android-kb">
+                <div class="kb-row">
+                  <div class="kb-key">q</div><div class="kb-key">w</div><div class="kb-key">e</div>
+                  <div class="kb-key">r</div><div class="kb-key">t</div><div class="kb-key">y</div>
+                  <div class="kb-key">u</div><div class="kb-key">i</div><div class="kb-key">o</div>
+                  <div class="kb-key">p</div>
+                </div>
+                <div class="kb-row">
+                  <div class="kb-key">a</div><div class="kb-key">s</div><div class="kb-key">d</div>
+                  <div class="kb-key">f</div><div class="kb-key">g</div><div class="kb-key">h</div>
+                  <div class="kb-key">j</div><div class="kb-key">k</div><div class="kb-key">l</div>
+                </div>
+                <div class="kb-row">
+                  <div class="kb-key shift"><span class="material-symbols-rounded">shift</span></div>
+                  <div class="kb-key">z</div><div class="kb-key">x</div><div class="kb-key">c</div>
+                  <div class="kb-key">v</div><div class="kb-key">b</div><div class="kb-key">n</div>
+                  <div class="kb-key">m</div>
+                  <div class="kb-key del"><span class="material-symbols-rounded">backspace</span></div>
+                </div>
+                <div class="kb-row">
+                  <div class="kb-key fn">?123</div>
+                  <div class="kb-key" style="max-width:22px">,</div>
+                  <div class="kb-key space">espacio</div>
+                  <div class="kb-key" style="max-width:22px">.</div>
+                  <div class="kb-key enter"><span class="material-symbols-rounded">keyboard_return</span></div>
+                </div>
+              </div>
+            </div>
+            <!-- no nav-bar: replaced by keyboard -->
+          </div>
+        </div>
+      </div>
+    </div><!-- /G4 -->
+
+    <!-- ── G5: Botón de enviar resaltado ── -->
+    <div class="phone-unit">
+      <div class="screen-badge">G5</div>
+      <div class="screen-name">Enviar el mensaje</div>
+      <div class="screen-caption">Botón de enviar (flecha) resaltado</div>
+      <div class="phone-outer">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="sbar">
+              <span class="sbar-time">9:41</span>
+              <div class="sbar-icons"><span>▲▲</span><span>🔋</span></div>
+            </div>
+            <div class="scr">
+              <!-- Thread bar -->
+              <div class="thread-bar">
+                <div class="btn-back"><span class="material-symbols-rounded">arrow_back</span></div>
+                <div class="thread-av" style="background:#34A853">HS</div>
+                <div class="thread-name">Hijo Santiago</div>
+                <div class="thread-icons">
+                  <div class="thread-icon"><span class="material-symbols-rounded">videocam</span></div>
+                  <div class="thread-icon"><span class="material-symbols-rounded">call</span></div>
+                </div>
+              </div>
+              <!-- Messages -->
+              <div class="msg-thread">
+                <div class="date-sep">Hoy</div>
+                <div class="bubble-wrap recv">
+                  <div class="bubble recv">¿Ya saliste?</div>
+                </div>
+              </div>
+              <!-- Compose bar — send button highlighted -->
+              <div class="compose-bar">
+                <div class="compose-ico"><span class="material-symbols-rounded">sentiment_satisfied</span></div>
+                <div class="compose-field active">
+                  <span class="compose-text">Hola, ya estoy listo.</span>
+                </div>
+                <div class="compose-ico"><span class="material-symbols-rounded">attach_file</span></div>
+                <div class="send-btn is-target">
+                  <span class="material-symbols-rounded">send</span>
+                </div>
+              </div>
+            </div>
+            <div class="nav-bar">
+              <div class="nav-btn">◀</div>
+              <div class="nav-btn">⬤</div>
+              <div class="nav-btn">▣</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /G5 -->
+
+    <!-- ── G6: Micrófono resaltado (mensaje de voz) ── -->
+    <div class="phone-unit">
+      <div class="screen-badge">G6</div>
+      <div class="screen-name">Mensaje de voz</div>
+      <div class="screen-caption">Mantén presionado el micrófono para grabar</div>
+      <div class="phone-outer">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="sbar">
+              <span class="sbar-time">9:41</span>
+              <div class="sbar-icons"><span>▲▲</span><span>🔋</span></div>
+            </div>
+            <div class="scr">
+              <!-- Thread bar -->
+              <div class="thread-bar">
+                <div class="btn-back"><span class="material-symbols-rounded">arrow_back</span></div>
+                <div class="thread-av" style="background:#34A853">HS</div>
+                <div class="thread-name">Hijo Santiago</div>
+                <div class="thread-icons">
+                  <div class="thread-icon"><span class="material-symbols-rounded">videocam</span></div>
+                  <div class="thread-icon"><span class="material-symbols-rounded">call</span></div>
+                </div>
+              </div>
+              <!-- Messages -->
+              <div class="msg-thread">
+                <div class="date-sep">Hoy</div>
+                <div class="bubble-wrap recv">
+                  <div class="bubble recv">¿Ya saliste?</div>
+                </div>
+                <div class="bubble-wrap sent">
+                  <div class="bubble sent">Hola, ya estoy listo.</div>
+                  <div class="bubble-meta">
+                    <span class="bubble-time">10:31</span>
+                    <span class="check-double">✓✓</span>
+                  </div>
+                </div>
+              </div>
+              <!-- Compose bar — mic highlighted, field empty -->
+              <div class="compose-bar">
+                <div class="compose-ico"><span class="material-symbols-rounded">sentiment_satisfied</span></div>
+                <div class="compose-field">
+                  <span class="compose-ph">Mensaje</span>
+                </div>
+                <div class="compose-ico"><span class="material-symbols-rounded">attach_file</span></div>
+                <div class="mic-btn is-target">
+                  <span class="material-symbols-rounded">mic</span>
+                </div>
+              </div>
+            </div>
+            <div class="nav-bar">
+              <div class="nav-btn">◀</div>
+              <div class="nav-btn">⬤</div>
+              <div class="nav-btn">▣</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /G6 -->
+
+  </div><!-- /phones-row genially -->
+
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECCIÓN 2 — ADICIONALES PARA INFOGRAFÍA
+       ═══════════════════════════════════════════════════════════════ -->
+  <div class="section-hdr">
+    <h2>Pantallas adicionales</h2>
+    <span class="section-tag">Para la infografía</span>
+    <div class="section-divider"></div>
+  </div>
+
+  <div class="phones-row">
+
+    <!-- ── I4: Micrófono en estado de grabación ── -->
+    <div class="phone-unit">
+      <div class="screen-badge">I4</div>
+      <div class="screen-name">Grabando mensaje de voz</div>
+      <div class="screen-caption">Micrófono rojo · estado grabando</div>
+      <div class="phone-outer">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="sbar">
+              <span class="sbar-time">9:41</span>
+              <div class="sbar-icons"><span>▲▲</span><span>🔋</span></div>
+            </div>
+            <div class="scr">
+              <div class="thread-bar">
+                <div class="btn-back"><span class="material-symbols-rounded">arrow_back</span></div>
+                <div class="thread-av" style="background:#34A853">HS</div>
+                <div class="thread-name">Hijo Santiago</div>
+                <div class="thread-icons">
+                  <div class="thread-icon"><span class="material-symbols-rounded">videocam</span></div>
+                  <div class="thread-icon"><span class="material-symbols-rounded">call</span></div>
+                </div>
+              </div>
+              <div class="msg-thread">
+                <div class="date-sep">Hoy</div>
+                <div class="bubble-wrap recv">
+                  <div class="bubble recv">¿Ya saliste?</div>
+                </div>
+                <div class="bubble-wrap sent">
+                  <div class="bubble sent">Hola, ya estoy listo.</div>
+                  <div class="bubble-meta">
+                    <span class="bubble-time">10:31</span>
+                    <span class="check-double">✓✓</span>
+                  </div>
+                </div>
+              </div>
+              <!-- Recording indicator bar -->
+              <div class="recording-bar">
+                <div class="rec-dot"></div>
+                <span class="rec-text">Grabando...</span>
+                <span class="rec-timer">0:04</span>
+                <span class="rec-slide">← Desliza para cancelar</span>
+              </div>
+              <!-- Compose bar with recording mic -->
+              <div class="compose-bar" style="background:#FEF2F2; justify-content:flex-end;">
+                <div class="mic-btn recording">
+                  <span class="material-symbols-rounded">mic</span>
+                </div>
+              </div>
+            </div>
+            <div class="nav-bar">
+              <div class="nav-btn">◀</div>
+              <div class="nav-btn">⬤</div>
+              <div class="nav-btn">▣</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /I4 -->
+
+    <!-- ── I5a: Un check — mensaje enviado ── -->
+    <div class="phone-unit">
+      <div class="screen-badge">I5a</div>
+      <div class="screen-name">Mensaje enviado</div>
+      <div class="screen-caption">✓ Un check gris = enviado</div>
+      <div class="phone-outer">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="sbar">
+              <span class="sbar-time">9:41</span>
+              <div class="sbar-icons"><span>▲▲</span><span>🔋</span></div>
+            </div>
+            <div class="scr">
+              <div class="thread-bar">
+                <div class="btn-back"><span class="material-symbols-rounded">arrow_back</span></div>
+                <div class="thread-av" style="background:#34A853">HS</div>
+                <div class="thread-name">Hijo Santiago</div>
+                <div class="thread-icons">
+                  <div class="thread-icon"><span class="material-symbols-rounded">videocam</span></div>
+                  <div class="thread-icon"><span class="material-symbols-rounded">call</span></div>
+                </div>
+              </div>
+              <div class="msg-thread">
+                <div class="date-sep">Hoy</div>
+                <div class="bubble-wrap recv">
+                  <div class="bubble recv">¿Ya saliste?</div>
+                </div>
+                <div class="bubble-wrap sent">
+                  <div class="bubble sent">Hola, ya estoy listo.</div>
+                  <div class="bubble-meta">
+                    <span class="bubble-time">10:31</span>
+                    <span class="check-single">✓</span>
+                  </div>
+                </div>
+                <div class="callout yellow">
+                  <strong>✓ Un check:</strong> el mensaje fue enviado correctamente.
+                </div>
+              </div>
+              <div class="compose-bar">
+                <div class="compose-ico"><span class="material-symbols-rounded">sentiment_satisfied</span></div>
+                <div class="compose-field">
+                  <span class="compose-ph">Mensaje</span>
+                </div>
+                <div class="compose-ico"><span class="material-symbols-rounded">attach_file</span></div>
+                <div class="mic-btn">
+                  <span class="material-symbols-rounded">mic</span>
+                </div>
+              </div>
+            </div>
+            <div class="nav-bar">
+              <div class="nav-btn">◀</div>
+              <div class="nav-btn">⬤</div>
+              <div class="nav-btn">▣</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /I5a -->
+
+    <!-- ── I5b: Dos checks — mensaje leído ── -->
+    <div class="phone-unit">
+      <div class="screen-badge">I5b</div>
+      <div class="screen-name">Mensaje leído</div>
+      <div class="screen-caption">✓✓ Dos checks azules = leído</div>
+      <div class="phone-outer">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="sbar">
+              <span class="sbar-time">9:41</span>
+              <div class="sbar-icons"><span>▲▲</span><span>🔋</span></div>
+            </div>
+            <div class="scr">
+              <div class="thread-bar">
+                <div class="btn-back"><span class="material-symbols-rounded">arrow_back</span></div>
+                <div class="thread-av" style="background:#34A853">HS</div>
+                <div class="thread-name">Hijo Santiago</div>
+                <div class="thread-icons">
+                  <div class="thread-icon"><span class="material-symbols-rounded">videocam</span></div>
+                  <div class="thread-icon"><span class="material-symbols-rounded">call</span></div>
+                </div>
+              </div>
+              <div class="msg-thread">
+                <div class="date-sep">Hoy</div>
+                <div class="bubble-wrap recv">
+                  <div class="bubble recv">¿Ya saliste?</div>
+                </div>
+                <div class="bubble-wrap sent">
+                  <div class="bubble sent">Hola, ya estoy listo.</div>
+                  <div class="bubble-meta">
+                    <span class="bubble-time">10:31</span>
+                    <span class="check-double">✓✓</span>
+                  </div>
+                </div>
+                <div class="callout blue">
+                  <strong>✓✓ Dos checks azules:</strong> el mensaje fue recibido y leído.
+                </div>
+              </div>
+              <div class="compose-bar">
+                <div class="compose-ico"><span class="material-symbols-rounded">sentiment_satisfied</span></div>
+                <div class="compose-field">
+                  <span class="compose-ph">Mensaje</span>
+                </div>
+                <div class="compose-ico"><span class="material-symbols-rounded">attach_file</span></div>
+                <div class="mic-btn">
+                  <span class="material-symbols-rounded">mic</span>
+                </div>
+              </div>
+            </div>
+            <div class="nav-bar">
+              <div class="nav-btn">◀</div>
+              <div class="nav-btn">⬤</div>
+              <div class="nav-btn">▣</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /I5b -->
+
+    <!-- ── I6: Conversación abierta — responder ── -->
+    <div class="phone-unit">
+      <div class="screen-badge">I6</div>
+      <div class="screen-name">Responder un mensaje</div>
+      <div class="screen-caption">Campo de respuesta activo con teclado</div>
+      <div class="phone-outer">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="sbar">
+              <span class="sbar-time">9:41</span>
+              <div class="sbar-icons"><span>▲▲</span><span>🔋</span></div>
+            </div>
+            <div class="scr">
+              <div class="thread-bar">
+                <div class="btn-back"><span class="material-symbols-rounded">arrow_back</span></div>
+                <div class="thread-av" style="background:#34A853">HS</div>
+                <div class="thread-name">Hijo Santiago</div>
+                <div class="thread-icons">
+                  <div class="thread-icon"><span class="material-symbols-rounded">videocam</span></div>
+                  <div class="thread-icon"><span class="material-symbols-rounded">call</span></div>
+                </div>
+              </div>
+              <!-- Messages (compressed) -->
+              <div class="msg-thread" style="flex:0 0 auto; padding:8px 10px 4px;">
+                <div class="date-sep">Hoy</div>
+                <div class="bubble-wrap sent">
+                  <div class="bubble sent">Hola, ya estoy listo.</div>
+                  <div class="bubble-meta">
+                    <span class="bubble-time">10:31</span>
+                    <span class="check-double">✓✓</span>
+                  </div>
+                </div>
+                <div class="bubble-wrap recv">
+                  <div class="bubble recv">¡Qué bueno! Nos vemos.</div>
+                </div>
+              </div>
+              <!-- Compose bar — active empty field -->
+              <div class="compose-bar">
+                <div class="compose-ico"><span class="material-symbols-rounded">sentiment_satisfied</span></div>
+                <div class="compose-field active">
+                  <span class="compose-cursor"></span>
+                </div>
+                <div class="compose-ico"><span class="material-symbols-rounded">attach_file</span></div>
+                <div class="mic-btn">
+                  <span class="material-symbols-rounded">mic</span>
+                </div>
+              </div>
+              <!-- Keyboard -->
+              <div class="android-kb">
+                <div class="kb-row">
+                  <div class="kb-key">q</div><div class="kb-key">w</div><div class="kb-key">e</div>
+                  <div class="kb-key">r</div><div class="kb-key">t</div><div class="kb-key">y</div>
+                  <div class="kb-key">u</div><div class="kb-key">i</div><div class="kb-key">o</div>
+                  <div class="kb-key">p</div>
+                </div>
+                <div class="kb-row">
+                  <div class="kb-key">a</div><div class="kb-key">s</div><div class="kb-key">d</div>
+                  <div class="kb-key">f</div><div class="kb-key">g</div><div class="kb-key">h</div>
+                  <div class="kb-key">j</div><div class="kb-key">k</div><div class="kb-key">l</div>
+                </div>
+                <div class="kb-row">
+                  <div class="kb-key shift"><span class="material-symbols-rounded">shift</span></div>
+                  <div class="kb-key">z</div><div class="kb-key">x</div><div class="kb-key">c</div>
+                  <div class="kb-key">v</div><div class="kb-key">b</div><div class="kb-key">n</div>
+                  <div class="kb-key">m</div>
+                  <div class="kb-key del"><span class="material-symbols-rounded">backspace</span></div>
+                </div>
+                <div class="kb-row">
+                  <div class="kb-key fn">?123</div>
+                  <div class="kb-key" style="max-width:22px">,</div>
+                  <div class="kb-key space">espacio</div>
+                  <div class="kb-key" style="max-width:22px">.</div>
+                  <div class="kb-key enter"><span class="material-symbols-rounded">keyboard_return</span></div>
+                </div>
+              </div>
+            </div>
+            <!-- no nav-bar: replaced by keyboard -->
+          </div>
+        </div>
+      </div>
+    </div><!-- /I6 -->
+
+  </div><!-- /phones-row infografía -->
+
+</body>
+</html>

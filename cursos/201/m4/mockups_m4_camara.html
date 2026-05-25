@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mockups M4 — Cámara | Conexión Social</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0" rel="stylesheet">
+  <style>
+    /* ── Reset & Variables ────────────────────────────────────────── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --cs-blue:    #4b97fb;
+      --cs-blue-dk: #2d7de0;
+      --cs-yellow:  #ffc524;
+      --cs-dark:    #1A1A1A;
+      --cs-gray:    #6B7280;
+      --cs-lgray:   #F3F4F6;
+      --and-green:  #00C853;
+      --and-red:    #FF1744;
+      --phone-w:    320px;
+      --phone-h:    580px;
+      --screen-r:   34px;
+    }
+
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      min-height: 100vh;
+      padding: 36px 20px 60px;
+      color: var(--cs-dark);
+    }
+
+    /* ── Page layout ─────────────────────────────────────────────── */
+    .page-header { text-align: center; margin-bottom: 36px; }
+    .page-title  { font-size: 22px; font-weight: 700; color: var(--cs-blue-dk); margin-bottom: 4px; }
+    .page-subtitle { font-size: 13px; color: var(--cs-gray); }
+
+    .section-hdr {
+      display: flex; align-items: center; gap: 12px;
+      margin: 0 0 28px;
+    }
+    .section-hdr h2 {
+      font-size: 13px; font-weight: 700;
+      color: var(--cs-blue-dk); text-transform: uppercase; letter-spacing: .7px;
+      white-space: nowrap;
+    }
+    .section-tag {
+      background: var(--cs-blue); color: white;
+      font-size: 11px; font-weight: 700;
+      padding: 3px 10px; border-radius: 99px; white-space: nowrap;
+    }
+    .section-divider {
+      height: 2px; flex: 1;
+      background: linear-gradient(90deg, var(--cs-blue) 0%, transparent 100%);
+    }
+
+    .phones-row {
+      display: flex; flex-wrap: wrap;
+      gap: 40px; justify-content: center;
+      margin-bottom: 56px;
+    }
+    .phone-unit {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 8px;
+    }
+    .screen-badge {
+      background: var(--cs-blue-dk); color: white;
+      font-size: 11px; font-weight: 700;
+      padding: 3px 10px; border-radius: 99px; letter-spacing: .5px;
+    }
+    .screen-badge.antes   { background: #DC2626; }
+    .screen-badge.despues { background: #16A34A; }
+    .screen-name    { font-size: 13px; font-weight: 700; color: #1F2937; text-align: center; }
+    .screen-caption {
+      font-size: 11px; color: var(--cs-gray);
+      text-align: center; max-width: 190px; line-height: 1.5;
+    }
+
+    /* ── Phone frame ──────────────────────────────────────────────── */
+    .phone-outer { position: relative; }
+    .phone-frame {
+      width: var(--phone-w); height: var(--phone-h);
+      background: #111; border-radius: 44px; padding: 11px;
+      position: relative;
+    }
+    .phone-frame::before {
+      content: '';
+      position: absolute; top: 11px; left: 50%;
+      transform: translateX(-50%);
+      width: 76px; height: 20px;
+      background: #111; border-radius: 0 0 18px 18px; z-index: 20;
+    }
+    .phone-screen {
+      width: 100%; height: 100%; background: white;
+      border-radius: var(--screen-r);
+      overflow: hidden; display: flex; flex-direction: column;
+      position: relative;
+    }
+
+    /* Status bar */
+    .sbar {
+      height: 26px; display: flex; align-items: center;
+      justify-content: space-between; padding: 4px 18px 0;
+      flex-shrink: 0; z-index: 10; position: relative;
+    }
+    .sbar-time  { font-size: 11px; font-weight: 700; }
+    .sbar-icons { display: flex; gap: 3px; align-items: center; font-size: 11px; }
+    .sbar.on-dark { color: white; }
+    .sbar.on-dark .sbar-time,
+    .sbar.on-dark .sbar-icons { color: rgba(255,255,255,.9); }
+
+    /* Screen area */
+    .scr { flex: 1; overflow: hidden; position: relative; display: flex; flex-direction: column; }
+
+    /* Nav bar */
+    .nav-bar {
+      height: 38px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: space-around;
+      padding: 0 40px; background: #111; border-top: 1px solid #222;
+    }
+    .nav-btn {
+      width: 22px; height: 22px;
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,.7); font-size: 13px;
+    }
+    /* nav-bar light (for gallery screens) */
+    .nav-bar.light {
+      background: #f7f7f7; border-top: 1px solid #EBEBEB;
+    }
+    .nav-bar.light .nav-btn { color: #555; }
+
+    /* ── Home screen ──────────────────────────────────────────────── */
+    .s-home {
+      flex: 1;
+      background: linear-gradient(160deg, #1a237e 0%, #1565C0 100%);
+      padding: 4px 8px 0;
+      display: flex; flex-direction: column;
+    }
+    .home-clock { text-align: center; color: white; font-size: 34px; font-weight: 300; margin: 4px 0 2px; }
+    .home-date  { text-align: center; color: rgba(255,255,255,.75); font-size: 13px; margin-bottom: 14px; }
+    .apps-grid  {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 10px; padding: 0 4px;
+    }
+    .app-item {
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      padding: 4px; border-radius: 12px;
+    }
+    .app-icon-box {
+      width: 50px; height: 50px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,.25); overflow: hidden;
+    }
+    .app-svg   { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .app-label { font-size: 11px; color: white; text-align: center; line-height: 1.2; }
+    /* target element: yellow glow, static (no animation) */
+    .app-item.is-target .app-icon-box {
+      border-radius: 50%;
+      box-shadow: 0 0 0 4px var(--cs-yellow), 0 4px 16px rgba(0,0,0,.35);
+    }
+
+    /* ── Camera Viewfinder ─────────────────────────────────────────── */
+    .cam-vf {
+      flex: 1; position: relative;
+      background: linear-gradient(180deg, #2c3a52 0%, #18202e 100%);
+      display: flex; flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* Simulated scene (abstract landscape + person shape) */
+    .cam-scene {
+      position: absolute; inset: 0; overflow: hidden; pointer-events: none;
+    }
+    /* Sky gradient */
+    .cam-scene::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 55%;
+      background: linear-gradient(180deg, #3a5a8c 0%, #5c8ab8 60%, #a8c4d8 100%);
+    }
+    /* Ground */
+    .cam-scene::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0; height: 45%;
+      background: linear-gradient(180deg, #4a6741 0%, #3a5233 100%);
+    }
+    /* Sun */
+    .cam-scene .sun {
+      position: absolute; top: 18%; left: 68%;
+      width: 28px; height: 28px; border-radius: 50%;
+      background: radial-gradient(circle, #ffe57a 0%, #ffb300 70%);
+      box-shadow: 0 0 18px rgba(255,179,0,.5);
+    }
+    /* Person silhouette */
+    .cam-scene .person {
+      position: absolute; bottom: 40%; left: 50%; transform: translateX(-50%);
+      width: 28px; height: 60px;
+    }
+    .cam-scene .person .p-head {
+      width: 18px; height: 18px; border-radius: 50%;
+      background: #2d3748; margin: 0 auto;
+    }
+    .cam-scene .person .p-body {
+      width: 22px; height: 30px; border-radius: 4px 4px 0 0;
+      background: #374151; margin: 2px auto 0;
+    }
+    .cam-scene .person .p-legs {
+      width: 22px; height: 14px;
+      background: #374151; margin: 0 auto;
+      border-radius: 0 0 3px 3px;
+    }
+    /* Tree */
+    .cam-scene .tree {
+      position: absolute; bottom: 40%; left: 20%;
+    }
+    .cam-scene .tree .t-trunk {
+      width: 8px; height: 20px; background: #5c4033;
+      margin: 0 auto;
+    }
+    .cam-scene .tree .t-top {
+      width: 32px; height: 36px;
+      background: #2d5a27; border-radius: 50% 50% 30% 30%;
+      margin: 0 auto; margin-bottom: -4px;
+    }
+    /* Horizon line */
+    .cam-scene .horizon {
+      position: absolute; bottom: 40%; left: 0; right: 0;
+      height: 1px; background: rgba(255,255,255,.08);
+    }
+
+    /* Background image layer for camera viewfinder (Genially screens) */
+    .cam-bg {
+      position: absolute; inset: 0;
+      background-size: cover; background-position: center;
+      pointer-events: none;
+    }
+
+    /* Top bar of camera */
+    .cam-top-bar {
+      position: relative; z-index: 10;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 16px; flex-shrink: 0;
+    }
+    .cam-top-icon {
+      width: 30px; height: 30px;
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,.85);
+    }
+    .cam-top-icon .material-symbols-rounded { font-size: 20px; }
+
+    /* Mode tabs */
+    .cam-mode-tabs {
+      position: relative; z-index: 10;
+      display: flex; justify-content: center; gap: 0;
+      flex-shrink: 0; padding: 0 0 8px;
+    }
+    .cam-tab {
+      padding: 4px 12px;
+      font-size: 11px; font-weight: 700; letter-spacing: .6px;
+      color: rgba(255,255,255,.45); text-transform: uppercase;
+      border-bottom: 2px solid transparent;
+    }
+    .cam-tab.active {
+      color: white;
+      border-bottom: 2px solid white;
+    }
+    .cam-tab.is-target {
+      color: var(--cs-yellow);
+      border-bottom: 2px solid var(--cs-yellow);
+      text-shadow: 0 0 8px rgba(255,197,36,.5);
+    }
+
+    /* Controls bar */
+    .cam-controls {
+      position: relative; z-index: 10;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 24px 14px;
+      flex-shrink: 0;
+    }
+
+    /* Gallery thumbnail */
+    .gallery-thumb {
+      width: 44px; height: 44px; border-radius: 10px;
+      background: #333 url('img/thumb-1to5.jpg') center/cover no-repeat;
+      border: 2px solid rgba(255,255,255,.3);
+      flex-shrink: 0; position: relative; overflow: hidden;
+    }
+    .gallery-thumb::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0; height: 40%;
+      background: linear-gradient(0deg, rgba(0,0,0,.35) 0%, transparent 100%);
+    }
+    .gallery-thumb.is-target {
+      border: 2px solid var(--cs-yellow);
+      box-shadow: 0 0 0 3px var(--cs-yellow);
+    }
+
+    /* Shutter button */
+    .shutter-btn {
+      width: 68px; height: 68px; border-radius: 50%;
+      background: white;
+      border: 4px solid rgba(255,255,255,.5);
+      box-shadow: 0 2px 10px rgba(0,0,0,.4);
+      flex-shrink: 0;
+    }
+    .shutter-btn.is-target {
+      box-shadow: 0 0 0 4px var(--cs-yellow), 0 2px 14px rgba(255,197,36,.4);
+    }
+
+    /* Video / record button */
+    .record-btn {
+      width: 68px; height: 68px; border-radius: 50%;
+      background: var(--and-red);
+      border: 4px solid rgba(255,255,255,.35);
+      box-shadow: 0 2px 10px rgba(255,23,68,.35);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .record-btn .material-symbols-rounded { font-size: 28px; color: white; }
+    /* Stop square inside record-btn */
+    .record-btn .rec-stop {
+      width: 22px; height: 22px; border-radius: 4px; background: white;
+    }
+
+    /* Flip camera button */
+    .flip-btn {
+      width: 44px; height: 44px; border-radius: 50%;
+      background: rgba(255,255,255,.15);
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .flip-btn .material-symbols-rounded { font-size: 22px; color: white; }
+    .flip-btn.is-target {
+      background: rgba(255,255,255,.25);
+      box-shadow: 0 0 0 3px var(--cs-yellow);
+    }
+
+    /* Focus ring */
+    .focus-ring {
+      position: absolute; z-index: 15;
+      width: 64px; height: 64px;
+      border: 2px solid var(--cs-yellow);
+      border-radius: 4px;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .focus-ring::before,
+    .focus-ring::after {
+      content: ''; position: absolute;
+      width: 10px; height: 10px;
+    }
+    /* Corner accents */
+    .focus-ring .fc { position: absolute; width: 10px; height: 10px; border-color: var(--cs-yellow); border-style: solid; }
+    .focus-ring .fc.tl { top: -2px; left: -2px; border-width: 2px 0 0 2px; }
+    .focus-ring .fc.tr { top: -2px; right: -2px; border-width: 2px 2px 0 0; }
+    .focus-ring .fc.bl { bottom: -2px; left: -2px; border-width: 0 0 2px 2px; }
+    .focus-ring .fc.br { bottom: -2px; right: -2px; border-width: 0 2px 2px 0; }
+
+    /* Tap ripple indicator */
+    .tap-ripple {
+      position: absolute; z-index: 14;
+      width: 44px; height: 44px; border-radius: 50%;
+      border: 1.5px solid rgba(255,255,255,.6);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    /* REC bar */
+    .rec-bar {
+      position: relative; z-index: 10; flex-shrink: 0;
+      display: flex; align-items: center; gap: 8px;
+      padding: 6px 16px;
+      background: rgba(220,38,38,.18);
+      border-bottom: 1px solid rgba(220,38,38,.25);
+    }
+    .rec-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--and-red); flex-shrink: 0;
+    }
+    .rec-label { font-size: 12px; font-weight: 700; color: #fca5a5; letter-spacing: 1px; }
+    .rec-timer { font-size: 12px; color: #fca5a5; margin-left: auto; }
+
+    /* ── Gallery grid ──────────────────────────────────────────────── */
+    .gallery-bg {
+      flex: 1; background: #000;
+      display: flex; flex-direction: column;
+    }
+    .gallery-app-bar {
+      display: flex; align-items: center;
+      height: 48px; padding: 0 8px;
+      background: #1a1a1a; flex-shrink: 0;
+    }
+    .gal-title { flex: 1; font-size: 16px; font-weight: 700; color: white; padding-left: 4px; }
+    .gal-icon {
+      width: 34px; height: 34px;
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,.7);
+    }
+    .gal-icon .material-symbols-rounded { font-size: 22px; }
+    .gal-icon.is-target {
+      color: var(--cs-yellow);
+      background: rgba(255,197,36,.12);
+      border-radius: 50%;
+      box-shadow: 0 0 0 3px var(--cs-yellow);
+    }
+
+    /* Single photo view */
+    .gallery-photo {
+      flex: 1; position: relative;
+      background: linear-gradient(145deg, #2d4a7a 0%, #1a3552 35%, #2a5c3a 70%, #1c3d28 100%);
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    /* Simulated photo content */
+    .gallery-photo .photo-scene {
+      position: absolute; inset: 0;
+    }
+    .gallery-photo .photo-scene::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0; height: 50%;
+      background: linear-gradient(180deg, #3a6fad 0%, #5a94c8 100%);
+    }
+    .gallery-photo .photo-scene::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0; height: 50%;
+      background: linear-gradient(180deg, #4a7041 0%, #2d4e28 100%);
+    }
+    .gallery-photo .photo-sun {
+      position: absolute; top: 22%; left: 65%;
+      width: 24px; height: 24px; border-radius: 50%;
+      background: radial-gradient(circle, #ffe57a, #ffb300);
+    }
+    .gallery-photo .photo-person {
+      position: absolute; bottom: 44%; left: 50%; transform: translateX(-50%);
+    }
+    .gallery-photo .photo-person .pp-head {
+      width: 20px; height: 20px; border-radius: 50%;
+      background: #4a3728; margin: 0 auto;
+    }
+    .gallery-photo .photo-person .pp-body {
+      width: 26px; height: 28px;
+      background: #7c5545; border-radius: 4px 4px 0 0; margin: 2px auto 0;
+    }
+
+    .gallery-bottom-bar {
+      display: flex; align-items: center; justify-content: space-around;
+      padding: 10px 16px; background: #1a1a1a; flex-shrink: 0;
+    }
+    .gal-action {
+      display: flex; flex-direction: column; align-items: center; gap: 3px;
+    }
+    .gal-action-ico {
+      width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: rgba(255,255,255,.7);
+    }
+    .gal-action-ico .material-symbols-rounded { font-size: 22px; }
+    .gal-action-ico.is-target {
+      color: var(--cs-yellow);
+      background: rgba(255,197,36,.12);
+      box-shadow: 0 0 0 3px var(--cs-yellow);
+    }
+    .gal-action-lbl { font-size: 10px; color: rgba(255,255,255,.5); }
+    .gal-action-lbl.is-target { color: var(--cs-yellow); }
+
+    /* ── Tip photo effects ─────────────────────────────────────────── */
+    .effect-blur   { filter: blur(4px); }
+    .effect-tilt   { transform: rotate(3deg) scale(1.04); }
+    .effect-blur-s { filter: blur(1.5px); }
+    /* Backlit scene: darken the person */
+    .backlit .photo-scene::before {
+      background: linear-gradient(180deg, #e8c97a 0%, #f5d87a 100%); /* bright sky behind */
+    }
+    .backlit .photo-person .pp-head,
+    .backlit .photo-person .pp-body { background: #111; }
+
+    /* ── Tip section header ────────────────────────────────────────── */
+    .tip-hdr {
+      display: flex; align-items: center; gap: 10px;
+      width: 100%; max-width: 720px; margin: 0 auto 16px;
+      padding: 0 4px;
+    }
+    .tip-num {
+      background: var(--cs-blue-dk); color: white;
+      font-size: 12px; font-weight: 700;
+      width: 26px; height: 26px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .tip-title { font-size: 14px; font-weight: 700; color: var(--cs-dark); }
+    .tip-desc  { font-size: 12px; color: var(--cs-gray); }
+    .tip-pair-row {
+      display: flex; gap: 32px; justify-content: center;
+      flex-wrap: wrap; margin-bottom: 48px;
+    }
+
+  </style>
+</head>
+<body>
+
+  <div class="page-header">
+    <div class="page-title">Mockups M4 — Cámara</div>
+    <div class="page-subtitle">Pantallas estáticas para captura · Módulo 4 · Conexión Social</div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECCIÓN 1 — PARA EL GENIALLY
+       ═══════════════════════════════════════════════════════════════ -->
+  <div class="section-hdr">
+    <h2>Para el Genially</h2>
+    <span class="section-tag">9 pantallas</span>
+    <div class="section-divider"></div>
+  </div>
+
+  <div class="phones-row">
+
+    <!-- ── G1: Pantalla de inicio — ícono Cámara resaltado ── -->
+    <div class="phone-unit">
+      <div class="screen-badge">G1</div>
+      <div class="screen-name">Pantalla de inicio</div>
+      <div class="screen-caption">Toca el ícono de la Cámara</div>
+      <div class="phone-outer">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="sbar on-dark">
+              <span class="sbar-time">9:41</span>
+              <div class="sbar-icons"><span>▲▲</span><span>🔋</span></div>
+            </div>
+            <div class="scr">
+              <div class="s-home">
+                <div class="home-clock">9:41</div>
+                <div class="home-date">Sábado, 24 de mayo</div>
+                <div class="apps-grid">
+                  <div class="app-item">
+                    <div class="app-icon-box" style="background:transparent">
+                      <img src="../m2/img/ico_Phone.svg" class="app-svg" alt="Teléfono">
+                    </div>
+                    <span class="app-label">Teléfono</span>
+                  </div>
+                  <div class="app-item is-target">
+                    <div class="app-icon-box" style="background:transparent">
+                      <img src="../m2/img/ico_Camera.svg" class="app-svg" alt="Cámara">
+                    </div>
+                    <span class="app-label">Cámara</span>
+                  </div>
+                  <div class="app-item">
+                    <div class="app-icon-box" style="background:transparent">
+                      <img src="../m2/img/ico_Messages.svg" class="app-svg" alt="Mensajes">
+                    </div>
+                    <span class="app-label">Mensajes</span>
+                  </div>
+                  <div class="app-item">
+                    <div class="app-icon-box" style="background:transparent">
+                      <img src="../m2/img/ico_Chrome.svg" class="app-svg" alt="Navegador">
+                    </div>
+                    <span class="app-label">Navegador</span>
+                  </div>
+                  <div class="app-item">
+                    <div class="app-icon-box" style="background:transparent">
+                      <img src="../m2/img/ico_Contacts.svg" class="app-svg" alt="Contactos">
+                    </div>
+                    <span class="app-label">Contactos</span>
+                  </div>
+                  <div class="app-item">
+                    <div class="app-icon-box" style="background:transparent">
+                      <img src="../m2/img/ico_Clock.svg" class="app-svg" alt="Reloj">
+                    </div>
+                    <span class="app-label">Reloj</span>
+                  </div>
+                  <div class="app-item">
+                    <div class="app-icon-box" style="background:transparent">
+                      <img src="../m2/img/ico_Calculator.svg" class="app-svg" alt="Calculadora">
+                    </div>
+                    <span class="app-label">Calculadora</span>
+                  </div>
+                  <div class="app-item">
+                    <div class="app-icon-box" style="background:transparent">
+                      <img src="../m2/img/ico_Settings.svg" class="app-svg" alt="Ajustes">
+                    </div>
+                    <span class="app-label">Ajustes</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="nav-bar light">
+              <div class="nav-btn">◀</div>
+              <div class="nav-btn">⬤</div>
+              <div class="nav-btn">▣</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /G1 -->
+
+    <!-- ── G2: Visor de cámara — shutter visible, sin resaltar ── -->
+    <div class="phone-unit">
+      <div class="screen-badge">G2</div>
+      <div class="screen-name">El visor</div>
+      <div class="screen-caption">Lo que ves es lo que quedará en la foto</div>
+      <div class="phone-outer">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="sbar on-dark">
+              <span class="sbar-time">9:41</span>
+              <div class="sbar-icons"><span>▲▲</span><span>🔋</span></div>
+            </div>
+            <div class="scr">
+              <div class="cam-vf">
+                <div class="cam-bg" style="background-image:url('img/pantalla-2.jpg')"></div>
+                <div class="cam-top-bar">
+                  <div class="cam-top-icon"><span class="material-symbols-rounded">flash_auto</span></div>
+                  <div class="cam-top-icon"><span class="material-symbols-rounded">timer</span></div>
+                  <div class="cam-top-icon"><span class="material-symbols-rounded">tune</span></div>
+                </div>
+                <div style="flex:1"></div>
+                <div class="cam-mode-tabs">
+                  <div class="cam-tab">Video</div>
+                  <div class="cam-tab active">Foto</div>
+                  <div class="cam-tab">Retrato</div>
+                </div>
+                <div class="cam-controls">
+                  <div class="gallery-thumb"></div>
+                  <div class="shutter-btn"></div>
+                  <div class="flip-btn"><span class="material-symbols-rounded">flip_camera_android</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="nav-bar">
+              <div class="nav-btn">◀</div>
+              <div class="nav-btn">⬤</div>
+              <div class="nav-btn">▣</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /G2 -->
+
+    <!-- ── G3: Toca para enfocar — círculo de enfoque + ripple ── -->
+    <div class="phone-unit">
+      <div class="screen-badge">G3</div>
+      <div class="screen-name">Toca para enfocar</div>
+      <div class="screen-caption">Toca sobre lo que quieres que quede nítido</div>
+      <div class="phone-outer">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="sbar on-dark">
+              <span class="sbar-time">9:41</span>
+              <div class="sbar-icons"><span>▲▲</span><span>🔋</span></div>
+            </div>
+            <div class="scr">
+              <div class="cam-vf">
+                <div class="cam-bg" style="background-image:url('img/pantalla-3-pantalla-4-pantalla-7.jpg')"></div>
+                <!-- Focus ring and tap indicator centered on person -->
+                <div class="focus-ring">
+                  <div class="fc tl"></div><div class="fc tr"></div>
+                  <div class="fc bl"></div><div class="fc br"></div>
+                </div>
+                <div class="tap-ripple"></div>
+                <div class="cam-top-bar">
+                  <div class="cam-top-icon"><span class="material-symbols-rounded">flash_auto</span></div>
+                  <div class="cam-top-icon"><span class="material-symbols-rounded">timer</span></div>
+                  <div class="cam-top-icon"><span class="material-symbols-rounded">tune</span></div>
+                </div>
+                <div style="flex:1"></div>
+                <div class="cam-mode-tabs">
+                  <div class="cam-tab">Video</div>
+                  <div class="cam-tab active">Foto</div>
+                  <div class="cam-tab">Retrato</div>
+                </div>
+                <div class="cam-controls">
+                  <div class="gallery-thumb"></div>
+                  <div class="shutter-btn"></div>
+                  <div class="flip-btn"><span class="material-symbols-rounded">flip_camera_android</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="nav-bar">
+              <div class="nav-btn">◀</div>
+              <div class="nav-btn">⬤</div>
+              <div class="nav-btn">▣</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /G3 -->
+
+    <!-- ── G4: Tomar la foto — shutter resaltado ── -->
+    <div class="phone-unit">
+      <div class="screen-badge">G4</div>
+      <div class="screen-name">Tomar la foto</div>
+      <div class="screen-caption">Toca el botón blanco para tomar la foto</div>
+      <div class="phone-outer">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="sbar on-dark">
+              <span class="sbar-time">9:41</span>
+              <div class="sbar-icons"><span>▲▲</span><span>🔋</span></div>
+            </div>
+            <div class="scr">
+              <div class="cam-vf">
+                <div class="cam-bg" style="background-image:url('img/pantalla-3-pantalla-4-pantalla-7.jpg')"></div>
+                <div class="focus-ring">
+                  <div class="fc tl"></div><div class="fc tr"></div>
+                  <div class="fc bl"></div><div class="fc br"></div>
+                </div>
+                <div class="cam-top-bar">
+                  <div class="cam-top-icon"><span class="material-symbols-rounded">flash_auto</span></div>
+                  <div class="cam-top-icon"><span class="material-symbols-rounded">timer</span></div>
+                  <div class="cam-top-icon"><span class="material-symbols-rounded">tune</span></div>
+                </div>
+                <div style="flex:1"></div>
+                <div class="cam-mode-tabs">
+                  <div class="cam-tab">Video</div>
+                  <div class="cam-tab active">Foto</div>
+                  <div class="cam-tab">Retrato</div>
+                </div>
+                <div class="cam-controls">
+                  <div class="gallery-thumb"></div>
+                  <div class="shutter-btn is-target"></div>
+                  <div class="flip-btn"><span class="material-symbols-rounded">flip_camera_android</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="nav-bar">
+              <div class="nav-btn">◀</div>
+              <div class="nav-btn">⬤</div>
+              <div class="nav-btn">▣</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /G4 -->
+
+    <!-- ── G5a: Modo video — tab Video resaltado, botón rojo ── -->
+    <div class="phone-unit">
+      <div class="screen-badge">G5a</div>
+      <div class="screen-name">Cambiar a video</div>
+      <div class="screen-caption">Toca "Video" — el botón cambia a rojo</div>
+      <div class="phone-outer">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="sbar on-dark">
+              <span class="sbar-time">9:41</span>
+              <div class="sbar-icons"><span>▲▲</span><span>🔋</span></div>
+            </div>
+            <div class="scr">
+              <div class="cam-vf">
+                <div class="cam-bg" style="background-image:url('img/pantalla-5.jpg')"></div>
+                <div class="cam-top-bar">
+                  <div class="cam-top-icon"><span class="material-symbols-rounded">flash_auto</span></div>
+                  <div class="cam-top-icon"><span class="material-symbols-rounded">timer</span></div>
+                  <div class="cam-top-icon"><span class="material-symbols-rounded">tune</span></div>
+                </div>
+                <div style="flex:1"></div>
+                <div class="cam-mode-tabs">
+                  <div class="cam-tab is-target">Video</div>
+                  <div class="cam-tab">Foto</div>
+                  <div class="cam-tab">Retrato</div>
+                </div>
+                <div class="cam-controls">
+                  <div class="gallery-thumb"></div>
+                  <div class="record-btn">
+                    <span class="material-symbols-rounded">fiber_manual_record</span>
+                  </div>
+                  <div class="flip-btn"><span class="material-symbols-rounded">flip_camera_android</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="nav-bar">
+              <div class="nav-btn">◀</div>
+              <div class="nav-btn">⬤</div>
+              <div class="nav-btn">▣</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /G5a -->
+
+    <!-- ── G5b: Grabando video — botón stop, barra REC ── -->
+    <div class="phone-unit">
+      <div class="screen-badge">G5b</div>
+      <div class="screen-name">Grabando video</div>
+      <div class="screen-caption">Toca el botón rojo para detener la grabación</div>
+      <div class="phone-outer">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="sbar on-dark">
+              <span class="sbar-time">9:41</span>
+              <div class="sbar-icons"><span>▲▲</span><span>🔋</span></div>
+            </div>
+            <div class="scr">
+              <div class="cam-vf">
+                <div class="cam-bg" style="background-image:url('img/pantalla-5.jpg')"></div>
+                <div class="rec-bar">
+                  <div class="rec-dot"></div>
+                  <span class="rec-label">REC</span>
+                  <span class="rec-timer">0:08</span>
+                </div>
+                <div class="cam-top-bar">
+                  <div class="cam-top-icon"><span class="material-symbols-rounded">flash_off</span></div>
+                  <div style="flex:1"></div>
+                </div>
+                <div style="flex:1"></div>
+                <div class="cam-mode-tabs">
+                  <div class="cam-tab active" style="color:var(--and-red); border-color:var(--and-red);">Video</div>
+                  <div class="cam-tab">Foto</div>
+                  <div class="cam-tab">Retrato</div>
+                </div>
+                <div class="cam-controls">
+                  <div class="gallery-thumb"></div>
+                  <div class="record-btn">
+                    <div class="rec-stop"></div>
+                  </div>
+                  <div class="flip-btn"><span class="material-symbols-rounded">flip_camera_android</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="nav-bar">
+              <div class="nav-btn">◀</div>
+              <div class="nav-btn">⬤</div>
+              <div class="nav-btn">▣</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /G5b -->
+
+    <!-- ── G6: Ver galería — thumbnail resaltado ── -->
+    <div class="phone-unit">
+      <div class="screen-badge">G6</div>
+      <div class="screen-name">Ver galería</div>
+      <div class="screen-caption">Toca el cuadrado de la esquina para ver tus fotos</div>
+      <div class="phone-outer">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="sbar on-dark">
+              <span class="sbar-time">9:41</span>
+              <div class="sbar-icons"><span>▲▲</span><span>🔋</span></div>
+            </div>
+            <div class="scr">
+              <div class="cam-vf">
+                <div class="cam-bg" style="background-image:url('img/pantalla-6.jpg')"></div>
+                <div class="cam-top-bar">
+                  <div class="cam-top-icon"><span class="material-symbols-rounded">flash_auto</span></div>
+                  <div class="cam-top-icon"><span class="material-symbols-rounded">timer</span></div>
+                  <div class="cam-top-icon"><span class="material-symbols-rounded">tune</span></div>
+                </div>
+                <div style="flex:1"></div>
+                <div class="cam-mode-tabs">
+                  <div class="cam-tab">Video</div>
+                  <div class="cam-tab active">Foto</div>
+                  <div class="cam-tab">Retrato</div>
+                </div>
+                <div class="cam-controls">
+                  <div class="gallery-thumb is-target" style="background-image:url('img/thumb-6to8.jpg')"></div>
+                  <div class="shutter-btn"></div>
+                  <div class="flip-btn"><span class="material-symbols-rounded">flip_camera_android</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="nav-bar">
+              <div class="nav-btn">◀</div>
+              <div class="nav-btn">⬤</div>
+              <div class="nav-btn">▣</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /G6 -->
+
+    <!-- ── G7: Compartir foto — botón share resaltado ── -->
+    <div class="phone-unit">
+      <div class="screen-badge">G7</div>
+      <div class="screen-name">Compartir la foto</div>
+      <div class="screen-caption">Toca el botón compartir (flecha) para enviarla</div>
+      <div class="phone-outer">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="sbar on-dark">
+              <span class="sbar-time">9:41</span>
+              <div class="sbar-icons"><span>▲▲</span><span>🔋</span></div>
+            </div>
+            <div class="scr">
+              <div class="gallery-bg">
+                <div class="gallery-app-bar">
+                  <div class="gal-icon"><span class="material-symbols-rounded">arrow_back</span></div>
+                  <span class="gal-title">Galería</span>
+                  <div class="gal-icon"><span class="material-symbols-rounded">more_vert</span></div>
+                </div>
+                <div class="gallery-photo" style="background-image:url('img/pantalla-3-pantalla-4-pantalla-7.jpg');background-size:cover;background-position:center;"></div>
+                <div class="gallery-bottom-bar">
+                  <div class="gal-action">
+                    <div class="gal-action-ico"><span class="material-symbols-rounded">edit</span></div>
+                    <span class="gal-action-lbl">Editar</span>
+                  </div>
+                  <div class="gal-action">
+                    <div class="gal-action-ico is-target"><span class="material-symbols-rounded">share</span></div>
+                    <span class="gal-action-lbl is-target">Compartir</span>
+                  </div>
+                  <div class="gal-action">
+                    <div class="gal-action-ico"><span class="material-symbols-rounded">delete</span></div>
+                    <span class="gal-action-lbl">Eliminar</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="nav-bar">
+              <div class="nav-btn" style="color:rgba(255,255,255,.6)">◀</div>
+              <div class="nav-btn" style="color:rgba(255,255,255,.6)">⬤</div>
+              <div class="nav-btn" style="color:rgba(255,255,255,.6)">▣</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /G7 -->
+
+    <!-- ── G8: Cámara frontal — flip resaltado ── -->
+    <div class="phone-unit">
+      <div class="screen-badge">G8</div>
+      <div class="screen-name">Cámara frontal</div>
+      <div class="screen-caption">Toca las flechas circulares para hacer selfies</div>
+      <div class="phone-outer">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="sbar on-dark">
+              <span class="sbar-time">9:41</span>
+              <div class="sbar-icons"><span>▲▲</span><span>🔋</span></div>
+            </div>
+            <div class="scr">
+              <div class="cam-vf">
+                <div class="cam-bg" style="background-image:url('img/pantalla-8.png')"></div>
+                <div class="cam-top-bar">
+                  <div class="cam-top-icon"><span class="material-symbols-rounded">flash_off</span></div>
+                  <div class="cam-top-icon"><span class="material-symbols-rounded">timer</span></div>
+                  <div class="cam-top-icon"><span class="material-symbols-rounded">tune</span></div>
+                </div>
+                <div style="flex:1"></div>
+                <div class="cam-mode-tabs">
+                  <div class="cam-tab">Video</div>
+                  <div class="cam-tab active">Foto</div>
+                  <div class="cam-tab">Retrato</div>
+                </div>
+                <div class="cam-controls">
+                  <div class="gallery-thumb" style="background-image:url('img/thumb-6to8.jpg')"></div>
+                  <div class="shutter-btn"></div>
+                  <div class="flip-btn is-target"><span class="material-symbols-rounded">flip_camera_android</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="nav-bar">
+              <div class="nav-btn">◀</div>
+              <div class="nav-btn">⬤</div>
+              <div class="nav-btn">▣</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div><!-- /G8 -->
+
+  </div><!-- /phones-row genially -->
+
+
+  <!-- ═══════════════════════════════════════════════════════════════
+       SECCIÓN 2 — INFOGRAFÍA: 5 TIPS (ANTES / DESPUÉS)
+       ═══════════════════════════════════════════════════════════════ -->
+  <div class="section-hdr">
+    <h2>Infografía — Tips de fotografía</h2>
+    <span class="section-tag">5 pares antes / después</span>
+    <div class="section-divider"></div>
+  </div>
+
+
+  <!-- ── TIP 1: Limpia el lente ── -->
+  <div class="tip-hdr">
+    <div class="tip-num">1</div>
+    <div>
+      <div class="tip-title">Limpia el lente</div>
+      <div class="tip-desc">Pasa un paño suave por la cámara trasera antes de disparar</div>
+    </div>
+  </div>
+  <div class="tip-pair-row">
+
+    <div class="phone-unit">
+      <div class="screen-badge antes">ANTES</div>
+      <div class="screen-name">Lente sucio</div>
+      <div class="screen-caption">Foto borrosa y con manchas</div>
+      <div class="phone-outer">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="sbar on-dark"><span class="sbar-time">9:41</span><div class="sbar-icons"><span>▲▲</span><span>🔋</span></div></div>
+            <div class="scr">
+              <div class="cam-vf">
+                <div class="cam-bg effect-blur" style="background-image:url('img/info1-mal.jpg')"></div>
+                <!-- Smudge overlay -->
+                <div style="position:absolute;inset:0;z-index:5;background:radial-gradient(ellipse 60% 40% at 45% 40%, rgba(180,160,120,.45) 0%, transparent 80%);pointer-events:none;"></div>
+                <div style="flex:1"></div>
+                <div class="cam-mode-tabs">
+                  <div class="cam-tab">Video</div><div class="cam-tab active">Foto</div><div class="cam-tab">Retrato</div>
+                </div>
+                <div class="cam-controls">
+                  <div class="gallery-thumb"></div>
+                  <div class="shutter-btn"></div>
+                  <div class="flip-btn"><span class="material-symbols-rounded">flip_camera_android</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="nav-bar"><div class="nav-btn">◀</div><div class="nav-btn">⬤</div><div class="nav-btn">▣</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phone-unit">
+      <div class="screen-badge despues">DESPUÉS</div>
+      <div class="screen-name">Lente limpio</div>
+      <div class="screen-caption">Foto nítida y clara</div>
+      <div class="phone-outer">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="sbar on-dark"><span class="sbar-time">9:41</span><div class="sbar-icons"><span>▲▲</span><span>🔋</span></div></div>
+            <div class="scr">
+              <div class="cam-vf">
+                <div class="cam-bg" style="background-image:url('img/info1-bien.jpg')"></div>
+                <div style="flex:1"></div>
+                <div class="cam-mode-tabs">
+                  <div class="cam-tab">Video</div><div class="cam-tab active">Foto</div><div class="cam-tab">Retrato</div>
+                </div>
+                <div class="cam-controls">
+                  <div class="gallery-thumb"></div>
+                  <div class="shutter-btn"></div>
+                  <div class="flip-btn"><span class="material-symbols-rounded">flip_camera_android</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="nav-bar"><div class="nav-btn">◀</div><div class="nav-btn">⬤</div><div class="nav-btn">▣</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /tip 1 -->
+
+
+  <!-- ── TIP 2: Busca la luz ── -->
+  <div class="tip-hdr">
+    <div class="tip-num">2</div>
+    <div>
+      <div class="tip-title">Busca la luz</div>
+      <div class="tip-desc">Que la luz llegue al rostro, no por detrás</div>
+    </div>
+  </div>
+  <div class="tip-pair-row">
+
+    <div class="phone-unit">
+      <div class="screen-badge antes">ANTES</div>
+      <div class="screen-name">Contraluz</div>
+      <div class="screen-caption">Silueta oscura — luz detrás de la persona</div>
+      <div class="phone-outer">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="sbar on-dark"><span class="sbar-time">9:41</span><div class="sbar-icons"><span>▲▲</span><span>🔋</span></div></div>
+            <div class="scr">
+              <div class="cam-vf">
+                <div class="cam-bg" style="background-image:url('img/info2-mal.jpg')"></div>
+                <div style="flex:1"></div>
+                <div class="cam-mode-tabs">
+                  <div class="cam-tab">Video</div><div class="cam-tab active">Foto</div><div class="cam-tab">Retrato</div>
+                </div>
+                <div class="cam-controls">
+                  <div class="gallery-thumb"></div>
+                  <div class="shutter-btn"></div>
+                  <div class="flip-btn"><span class="material-symbols-rounded">flip_camera_android</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="nav-bar"><div class="nav-btn">◀</div><div class="nav-btn">⬤</div><div class="nav-btn">▣</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phone-unit">
+      <div class="screen-badge despues">DESPUÉS</div>
+      <div class="screen-name">Luz frontal</div>
+      <div class="screen-caption">Rostro iluminado — luz llegando de frente</div>
+      <div class="phone-outer">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="sbar on-dark"><span class="sbar-time">9:41</span><div class="sbar-icons"><span>▲▲</span><span>🔋</span></div></div>
+            <div class="scr">
+              <div class="cam-vf">
+                <div class="cam-bg" style="background-image:url('img/info2-bien.jpg')"></div>
+                <div style="flex:1"></div>
+                <div class="cam-mode-tabs">
+                  <div class="cam-tab">Video</div><div class="cam-tab active">Foto</div><div class="cam-tab">Retrato</div>
+                </div>
+                <div class="cam-controls">
+                  <div class="gallery-thumb"></div>
+                  <div class="shutter-btn"></div>
+                  <div class="flip-btn"><span class="material-symbols-rounded">flip_camera_android</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="nav-bar"><div class="nav-btn">◀</div><div class="nav-btn">⬤</div><div class="nav-btn">▣</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /tip 2 -->
+
+
+  <!-- ── TIP 3: Toca para enfocar ── -->
+  <div class="tip-hdr">
+    <div class="tip-num">3</div>
+    <div>
+      <div class="tip-title">Toca para enfocar</div>
+      <div class="tip-desc">Toca en la pantalla el sujeto antes de tomar la foto</div>
+    </div>
+  </div>
+  <div class="tip-pair-row">
+
+    <div class="phone-unit">
+      <div class="screen-badge antes">ANTES</div>
+      <div class="screen-name">Sin enfocar</div>
+      <div class="screen-caption">Foto desenfocada — sin tocar la pantalla</div>
+      <div class="phone-outer">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="sbar on-dark"><span class="sbar-time">9:41</span><div class="sbar-icons"><span>▲▲</span><span>🔋</span></div></div>
+            <div class="scr">
+              <div class="cam-vf">
+                <div class="cam-bg effect-blur-s" style="background-image:url('img/info3-mal.jpg')"></div>
+                <div style="flex:1"></div>
+                <div class="cam-mode-tabs">
+                  <div class="cam-tab">Video</div><div class="cam-tab active">Foto</div><div class="cam-tab">Retrato</div>
+                </div>
+                <div class="cam-controls">
+                  <div class="gallery-thumb"></div>
+                  <div class="shutter-btn"></div>
+                  <div class="flip-btn"><span class="material-symbols-rounded">flip_camera_android</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="nav-bar"><div class="nav-btn">◀</div><div class="nav-btn">⬤</div><div class="nav-btn">▣</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phone-unit">
+      <div class="screen-badge despues">DESPUÉS</div>
+      <div class="screen-name">Con enfoque</div>
+      <div class="screen-caption">Foto nítida — círculo de enfoque visible</div>
+      <div class="phone-outer">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="sbar on-dark"><span class="sbar-time">9:41</span><div class="sbar-icons"><span>▲▲</span><span>🔋</span></div></div>
+            <div class="scr">
+              <div class="cam-vf">
+                <div class="cam-bg" style="background-image:url('img/info3-bien.jpg')"></div>
+                <div class="focus-ring">
+                  <div class="fc tl"></div><div class="fc tr"></div>
+                  <div class="fc bl"></div><div class="fc br"></div>
+                </div>
+                <div style="flex:1"></div>
+                <div class="cam-mode-tabs">
+                  <div class="cam-tab">Video</div><div class="cam-tab active">Foto</div><div class="cam-tab">Retrato</div>
+                </div>
+                <div class="cam-controls">
+                  <div class="gallery-thumb"></div>
+                  <div class="shutter-btn"></div>
+                  <div class="flip-btn"><span class="material-symbols-rounded">flip_camera_android</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="nav-bar"><div class="nav-btn">◀</div><div class="nav-btn">⬤</div><div class="nav-btn">▣</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /tip 3 -->
+
+
+  <!-- ── TIP 4: Sujeta con firmeza ── -->
+  <div class="tip-hdr">
+    <div class="tip-num">4</div>
+    <div>
+      <div class="tip-title">Sujeta con firmeza</div>
+      <div class="tip-desc">Usa ambas manos y pega los codos al cuerpo</div>
+    </div>
+  </div>
+  <div class="tip-pair-row">
+
+    <div class="phone-unit">
+      <div class="screen-badge antes">ANTES</div>
+      <div class="screen-name">Foto movida</div>
+      <div class="screen-caption">Imagen torcida y con blur de movimiento</div>
+      <div class="phone-outer">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="sbar on-dark"><span class="sbar-time">9:41</span><div class="sbar-icons"><span>▲▲</span><span>🔋</span></div></div>
+            <div class="scr">
+              <div class="cam-vf">
+                <div class="cam-bg effect-tilt effect-blur-s" style="background-image:url('img/info4-mal.jpg')"></div>
+                <!-- Motion blur overlay -->
+                <div style="position:absolute;inset:0;z-index:5;background:repeating-linear-gradient(80deg,transparent 0px,transparent 6px,rgba(255,255,255,.04) 6px,rgba(255,255,255,.04) 7px);pointer-events:none;"></div>
+                <div style="flex:1"></div>
+                <div class="cam-mode-tabs">
+                  <div class="cam-tab">Video</div><div class="cam-tab active">Foto</div><div class="cam-tab">Retrato</div>
+                </div>
+                <div class="cam-controls">
+                  <div class="gallery-thumb"></div>
+                  <div class="shutter-btn"></div>
+                  <div class="flip-btn"><span class="material-symbols-rounded">flip_camera_android</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="nav-bar"><div class="nav-btn">◀</div><div class="nav-btn">⬤</div><div class="nav-btn">▣</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phone-unit">
+      <div class="screen-badge despues">DESPUÉS</div>
+      <div class="screen-name">Foto estable</div>
+      <div class="screen-caption">Imagen recta y nítida — manos firmes</div>
+      <div class="phone-outer">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="sbar on-dark"><span class="sbar-time">9:41</span><div class="sbar-icons"><span>▲▲</span><span>🔋</span></div></div>
+            <div class="scr">
+              <div class="cam-vf">
+                <div class="cam-bg" style="background-image:url('img/info4-bien.jpg')"></div>
+                <div style="flex:1"></div>
+                <div class="cam-mode-tabs">
+                  <div class="cam-tab">Video</div><div class="cam-tab active">Foto</div><div class="cam-tab">Retrato</div>
+                </div>
+                <div class="cam-controls">
+                  <div class="gallery-thumb"></div>
+                  <div class="shutter-btn"></div>
+                  <div class="flip-btn"><span class="material-symbols-rounded">flip_camera_android</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="nav-bar"><div class="nav-btn">◀</div><div class="nav-btn">⬤</div><div class="nav-btn">▣</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /tip 4 -->
+
+
+  <!-- ── TIP 5: Comparte desde la galería ── -->
+  <div class="tip-hdr">
+    <div class="tip-num">5</div>
+    <div>
+      <div class="tip-title">Comparte desde la galería</div>
+      <div class="tip-desc">Galería → abre la foto → botón compartir</div>
+    </div>
+  </div>
+  <div class="tip-pair-row">
+
+    <div class="phone-unit">
+      <div class="screen-badge antes">ANTES</div>
+      <div class="screen-name">Solo en cámara</div>
+      <div class="screen-caption">La foto fue tomada pero no se compartió</div>
+      <div class="phone-outer">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="sbar on-dark"><span class="sbar-time">9:41</span><div class="sbar-icons"><span>▲▲</span><span>🔋</span></div></div>
+            <div class="scr">
+              <div class="cam-vf">
+                <div class="cam-bg" style="background-image:url('img/pantalla-2.jpg')"></div>
+                <div style="flex:1"></div>
+                <div class="cam-mode-tabs">
+                  <div class="cam-tab">Video</div><div class="cam-tab active">Foto</div><div class="cam-tab">Retrato</div>
+                </div>
+                <div class="cam-controls">
+                  <div class="gallery-thumb"></div>
+                  <div class="shutter-btn"></div>
+                  <div class="flip-btn"><span class="material-symbols-rounded">flip_camera_android</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="nav-bar"><div class="nav-btn">◀</div><div class="nav-btn">⬤</div><div class="nav-btn">▣</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="phone-unit">
+      <div class="screen-badge despues">DESPUÉS</div>
+      <div class="screen-name">Compartir desde galería</div>
+      <div class="screen-caption">Foto abierta — botón compartir resaltado</div>
+      <div class="phone-outer">
+        <div class="phone-frame">
+          <div class="phone-screen">
+            <div class="sbar on-dark"><span class="sbar-time">9:41</span><div class="sbar-icons"><span>▲▲</span><span>🔋</span></div></div>
+            <div class="scr">
+              <div class="gallery-bg">
+                <div class="gallery-app-bar">
+                  <div class="gal-icon"><span class="material-symbols-rounded">arrow_back</span></div>
+                  <span class="gal-title">Galería</span>
+                  <div class="gal-icon"><span class="material-symbols-rounded">more_vert</span></div>
+                </div>
+                <div class="gallery-photo" style="background-image:url('img/pantalla-2.jpg');background-size:cover;background-position:center;"></div>
+                <div class="gallery-bottom-bar">
+                  <div class="gal-action">
+                    <div class="gal-action-ico"><span class="material-symbols-rounded">edit</span></div>
+                    <span class="gal-action-lbl">Editar</span>
+                  </div>
+                  <div class="gal-action">
+                    <div class="gal-action-ico is-target"><span class="material-symbols-rounded">share</span></div>
+                    <span class="gal-action-lbl is-target">Compartir</span>
+                  </div>
+                  <div class="gal-action">
+                    <div class="gal-action-ico"><span class="material-symbols-rounded">delete</span></div>
+                    <span class="gal-action-lbl">Eliminar</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="nav-bar">
+              <div class="nav-btn" style="color:rgba(255,255,255,.6)">◀</div>
+              <div class="nav-btn" style="color:rgba(255,255,255,.6)">⬤</div>
+              <div class="nav-btn" style="color:rgba(255,255,255,.6)">▣</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /tip 5 -->
+
+</body>
+</html>
