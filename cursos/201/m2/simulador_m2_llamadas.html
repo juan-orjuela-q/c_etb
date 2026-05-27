@@ -518,11 +518,12 @@
 
     /* ── Hand pointer ──────────────────────────────────────────────── */
     .hand {
-      position: absolute; font-size: 30px;
+      position: absolute; width: 38px; height: 38px;
       pointer-events: none; z-index: 200;
-      display: none; transform-origin: 40% 10%;
+      display: none; transform-origin: 30% 10%;
       filter: drop-shadow(0 3px 5px rgba(0,0,0,.35));
     }
+    .hand img { width: 100%; height: 100%; object-fit: contain; display: block; }
     .hand.on { display: block; animation: tap 1.4s infinite ease-in-out; }
     @keyframes tap {
       0%,100% { transform: scale(1) rotate(-10deg); }
@@ -612,7 +613,7 @@
       </div>
     </div>
     <!-- Animated hand -->
-    <div class="hand" id="hand">👆</div>
+    <div class="hand" id="hand"><img src="img/ico_Pointer.png" alt=""></div>
     <!-- Feedback -->
     <div class="fb-bar" id="fb-bar">
       <button class="fb-close" onclick="clearFb()" aria-label="Cerrar">✕</button>
@@ -634,6 +635,13 @@ const FULL_NUM = '3105550001';
 let incomingPhase = 'ringing'; // 'ringing' | 'active'
 let nameOk = false;
 let autoTypeTimer = null;
+let autoNextTimer = null;
+let nextTimer = null;
+
+function scheduleNext(delay) {
+  if (nextTimer) { clearTimeout(nextTimer); nextTimer = null; }
+  nextTimer = setTimeout(() => { nextTimer = null; next(); }, delay);
+}
 
 /* Step metadata */
 const STEPS = [
@@ -647,7 +655,7 @@ const STEPS = [
 
   { label: 'PASO 3 DE 9', pct: 33,
     instr: 'Marca el número <strong>310 555 0001</strong> en el teclado.',
-    dj: 'Mira la mano: te muestra qué tocar. Solo toca el 3, 1 y 0, el resto aparece solo.' },
+    dj: 'Mira la mano: te muestra qué tocar. Solo toca el 3 y el resto aparece solo.' },
 
   { label: 'PASO 4 DE 9', pct: 44,
     instr: 'El número ya está marcado: <strong>310 555 0001</strong>. Ahora toca el <strong>botón verde</strong> para llamar.',
@@ -680,6 +688,7 @@ const STEPS = [
 function go(n) {
   clearAuto();
   clearTimer();
+  if (nextTimer) { clearTimeout(nextTimer); nextTimer = null; }
   step = n;
   if (!_backNav) history.pushState({ step: n }, '');
   const s = STEPS[n - 1];
@@ -744,7 +753,10 @@ function drawWelcome(el) {
       <div class="big-icon"><img src="img/ico_Phone.svg" alt="Teléfono"></div>
       <h2>Simulador de Llamadas</h2>
       <p>Practica cómo hacer llamadas,<br>contestar y guardar contactos.<br>¡Sin gastar ni un minuto real!</p>
-      <button class="btn-start" onclick="next()">Empezar <span class="material-symbols-rounded">arrow_forward</span></button>
+      <div style="position:relative;display:inline-block;">
+        <button class="btn-start" onclick="next()">Empezar <span class="material-symbols-rounded">arrow_forward</span></button>
+        <img src="img/ico_Pointer.png" alt="" style="position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);width:35px;height:35px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.3));pointer-events:none;">
+      </div>
     </div>`;
 }
 
@@ -783,7 +795,7 @@ function drawHome(el) {
 function tapApp(id) {
   if (id === 'phone') {
     ok('¡Correcto! Abriste la app de llamadas.');
-    setTimeout(next, 1300);
+    scheduleNext(2500);
   } else {
     err('Ese no es el teléfono. Busca el auricular azul que tiene el borde amarillo.');
     shake('app-' + id);
@@ -847,8 +859,8 @@ function lightDigit(i) {
 }
 
 function tapKey(d) {
-  /* accept only the guided digit for first 3 */
-  if (guideIdx < 3) {
+  /* accept only the first guided digit */
+  if (guideIdx < 1) {
     const expected = FULL_NUM[guideIdx];
     if (d !== expected) {
       err(`Toca el número ${expected} (el que tiene el borde azul).`);
@@ -860,26 +872,22 @@ function tapKey(d) {
     updateDialDisp();
     clearFb();
     guideIdx++;
-    if (guideIdx < 3) {
-      lightDigit(guideIdx);
-    } else {
-      /* auto-fill rest */
-      hideHand();
-      document.querySelectorAll('.key.lit').forEach(k => k.classList.remove('lit'));
-      autoFillRest();
-    }
+    /* auto-fill rest */
+    hideHand();
+    document.querySelectorAll('.key.lit').forEach(k => k.classList.remove('lit'));
+    autoFillRest();
   } else {
     /* auto-fill already done — ignore extra taps */
   }
 }
 
 function autoFillRest() {
-  const rest = FULL_NUM.slice(3).split('');
+  const rest = FULL_NUM.slice(1).split('');
   let i = 0;
   autoTypeTimer = setInterval(() => {
     if (i >= rest.length) {
       clearInterval(autoTypeTimer);
-      setTimeout(next, 500);
+      autoNextTimer = setTimeout(next, 500);
       return;
     }
     const d = rest[i];
@@ -946,7 +954,7 @@ function drawDialerFull(el) {
 
 function tapGreenCall() {
   ok('¡Llamando! La línea está conectando...');
-  setTimeout(next, 1300);
+  scheduleNext(2500);
 }
 
 /* ════════════════════════════════════════════════════════════════════
@@ -985,7 +993,7 @@ function drawCalling(el) {
 function tapHangup() {
   clearTimer();
   ok('¡Llamada terminada! Tocaste el botón rojo para colgar.');
-  setTimeout(next, 1400);
+  scheduleNext(2500);
 }
 
 /* ════════════════════════════════════════════════════════════════════
@@ -1061,7 +1069,7 @@ function tapAnswer() {
 function tapHangupMaria() {
   clearTimer();
   ok('¡Perfecto! Contestaste y colgaste correctamente.');
-  setTimeout(next, 1400);
+  scheduleNext(2500);
 }
 
 /* ════════════════════════════════════════════════════════════════════
@@ -1092,7 +1100,7 @@ function tapTabRecientes() {
   hideHand();
   clearFb();
   ok('¡Muy bien! Abriste la pantalla de Recientes.');
-  setTimeout(next, 1300);
+  scheduleNext(2500);
 }
 
 /* ════════════════════════════════════════════════════════════════════
@@ -1118,7 +1126,7 @@ function drawRecents(el) {
           <div class="rec-name" style="color:#374151">310 555 0001</div>
           <div class="rec-det">📞 Hoy · saliente</div>
         </div>
-        <button class="btn-save-rec" onclick="tapSaveRec()">Guardar</button>
+        <button class="btn-save-rec" id="btn-save-rec" onclick="tapSaveRec()">Guardar</button>
       </div>
 
       <div class="rec-item">
@@ -1131,7 +1139,7 @@ function drawRecents(el) {
       </div>
 
     </div>`;
-  setTimeout(() => placeHand('rec-unknown', 160, 10), 500);
+  setTimeout(() => placeHand('btn-save-rec'), 500);
 }
 
 function tapSaveRec() {
@@ -1171,6 +1179,7 @@ function drawForm(el) {
       </button>
     </div>`;
   setTimeout(() => document.getElementById('name-inp').focus(), 200);
+  setTimeout(() => placeHand('btn-form-save'), 700);
 }
 
 function autoFillName() {
@@ -1193,7 +1202,7 @@ function tapFormSave() {
   if (!nameOk) { err('Escribe el nombre del contacto antes de guardar.'); return; }
   const name = document.getElementById('name-inp').value.trim();
   ok(`¡Contacto "${name}" guardado! Ahora lo encontrarás por nombre en tus contactos.`);
-  setTimeout(next, 1800);
+  scheduleNext(2500);
 }
 
 /* ════════════════════════════════════════════════════════════════════
@@ -1217,7 +1226,7 @@ function drawAchieve(el) {
 /* ════════════════════════════════════════════════════════════════════
    HAND POINTER
    ════════════════════════════════════════════════════════════════════ */
-function placeHand(targetId, offsetX = 0, offsetY = 0) {
+function placeHand(targetId, offsetX = 8, offsetY = 8) {
   const hand   = document.getElementById('hand');
   const target = document.getElementById(targetId);
   const outer  = document.querySelector('.phone-outer');
@@ -1277,6 +1286,7 @@ function clearTimer() {
 }
 function clearAuto() {
   if (autoTypeTimer) { clearInterval(autoTypeTimer); autoTypeTimer = null; }
+  if (autoNextTimer) { clearTimeout(autoNextTimer); autoNextTimer = null; }
 }
 
 /* ════════════════════════════════════════════════════════════════════
