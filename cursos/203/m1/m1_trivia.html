@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M1 — Trivia: ¿Qué harías en esta situación?</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #1a1a2e;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Segoe UI', sans-serif;
+    padding: 24px 16px;
+  }
+
+  .trivia-card {
+    width: 680px;
+    max-width: 98vw;
+    background: #0f2040;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  }
+
+  /* Header */
+  .card-header {
+    background: #005c4b;
+    padding: 20px 24px 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border-bottom: 3px solid #00a884;
+  }
+  .wa-icon-small {
+    width: 44px; height: 44px; flex-shrink: 0;
+  }
+  .header-titles { flex: 1; }
+  .header-label { font-size: 13px; font-weight: 700; color: #00a884; letter-spacing: 1px; text-transform: uppercase; }
+  .header-title { font-size: 20px; font-weight: 800; color: #fff; margin-top: 2px; }
+
+  /* Progress bar */
+  .progress-row {
+    padding: 14px 24px 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .progress-bar-wrap {
+    flex: 1;
+    background: #1a3050;
+    border-radius: 999px;
+    height: 8px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: #00a884;
+    border-radius: 999px;
+    transition: width 0.4s ease;
+  }
+  .progress-label {
+    font-size: 13px;
+    color: #a8c4e0;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  /* Don Julio avatar + question */
+  .question-area {
+    padding: 20px 24px 0;
+  }
+  .don-julio-row {
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+  .dj-avatar {
+    width: 52px; height: 52px;
+    border-radius: 50%;
+    background: #25d366;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; flex-shrink: 0;
+    border: 3px solid #00a884;
+  }
+  .dj-bubble {
+    background: #fff;
+    border-radius: 12px 12px 12px 4px;
+    padding: 14px 16px;
+    flex: 1;
+    position: relative;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .dj-bubble::before {
+    content: '';
+    position: absolute;
+    left: -10px; top: 14px;
+    border: 8px solid transparent;
+    border-right: 10px solid #fff;
+    border-left: none;
+  }
+  .dj-name { font-size: 13px; font-weight: 700; color: #00a884; margin-bottom: 6px; }
+  .dj-question { font-size: 16px; color: #111b21; line-height: 1.5; }
+  .dj-situation { font-size: 14px; color: #667781; line-height: 1.5; margin-bottom: 8px; font-style: italic; }
+
+  /* Options */
+  .options-area {
+    padding: 0 24px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .option-btn {
+    background: #1e3a5f;
+    border: 2px solid #2a4d72;
+    border-radius: 12px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    transition: all 0.18s;
+    text-align: left;
+  }
+  .option-btn:hover:not(.answered) {
+    background: #24466e;
+    border-color: #3a6080;
+    transform: translateY(-1px);
+  }
+  .option-letter {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    background: #2a4d72;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px; font-weight: 800; color: #a8c4e0;
+    flex-shrink: 0;
+    transition: all 0.18s;
+  }
+  .option-text {
+    font-size: 15px; color: #d0e8ff; line-height: 1.4; flex: 1;
+  }
+
+  /* States after answer */
+  .option-btn.correct {
+    background: #0d3320;
+    border-color: #25d366;
+  }
+  .option-btn.correct .option-letter {
+    background: #25d366; color: #fff;
+  }
+  .option-btn.correct .option-text { color: #fff; }
+
+  .option-btn.wrong {
+    background: #3d1a1a;
+    border-color: #ef5350;
+  }
+  .option-btn.wrong .option-letter {
+    background: #ef5350; color: #fff;
+  }
+  .option-btn.wrong .option-text { color: #ffb3b3; }
+
+  .option-btn.neutral-reveal {
+    border-color: #2a4d72;
+    opacity: 0.6;
+  }
+
+  /* Feedback box */
+  .feedback-box {
+    margin: 0 24px 20px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    display: none;
+    gap: 12px;
+    align-items: flex-start;
+    animation: fadeIn 0.3s ease;
+  }
+  .feedback-box.show { display: flex; }
+  .feedback-box.correct-fb { background: #0d3320; border: 2px solid #25d366; }
+  .feedback-box.wrong-fb { background: #3d1a1a; border: 2px solid #ef5350; }
+  .fb-icon { font-size: 24px; flex-shrink: 0; }
+  .fb-text { font-size: 14px; line-height: 1.55; color: #fff; }
+  .fb-text strong { display: block; margin-bottom: 4px; font-size: 15px; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Nav */
+  .card-nav {
+    padding: 12px 24px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid #1e3a5f;
+  }
+  .dots { display: flex; gap: 8px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: #2a4d72; transition: background 0.2s; }
+  .dot.active { background: #00a884; }
+  .dot.done { background: #005c4b; }
+
+  .nav-btn {
+    background: #e8b800;
+    color: #1a1a2e;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .nav-btn:hover { background: #ffd000; }
+  .nav-btn:disabled { background: #2a4d72; color: #667781; cursor: default; }
+  .nav-btn.finish { background: #25d366; color: #fff; }
+  .nav-btn.finish:hover { background: #1db954; }
+
+  /* Completion screen */
+  .completion-screen {
+    display: none;
+    padding: 40px 24px;
+    text-align: center;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .completion-screen.show { display: flex; }
+  .completion-icon { font-size: 72px; animation: bounce 0.6s ease; }
+  @keyframes bounce {
+    0% { transform: scale(0); }
+    60% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+  .completion-title { font-size: 26px; font-weight: 800; color: #25d366; }
+  .completion-sub { font-size: 16px; color: #a8c4e0; line-height: 1.6; }
+  .score-display {
+    background: #0d3320;
+    border: 2px solid #25d366;
+    border-radius: 16px;
+    padding: 16px 32px;
+    font-size: 32px;
+    font-weight: 800;
+    color: #25d366;
+  }
+  .score-label { font-size: 14px; color: #667781; margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<div class="trivia-card">
+
+  <!-- HEADER -->
+  <div class="card-header">
+    <img class="wa-icon-small" src="../../img/ico_Whatsapp.svg" alt="WhatsApp">
+    <div class="header-titles">
+      <div class="header-label">🎯 Trivia de cierre — Módulo 1</div>
+      <div class="header-title">¿Qué harías en esta situación?</div>
+    </div>
+  </div>
+
+  <!-- PROGRESS -->
+  <div class="progress-row">
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="progress-fill" style="width:20%"></div>
+    </div>
+    <div class="progress-label" id="progress-label">1 / 5</div>
+  </div>
+
+  <!-- QUESTIONS -->
+  <div id="question-container">
+
+    <!-- Q1 -->
+    <div class="question-slide" id="q1">
+      <div class="question-area">
+        <div class="don-julio-row">
+          <div class="dj-avatar">👨🏽</div>
+          <div class="dj-bubble">
+            <div class="dj-name">Don Julio pregunta:</div>
+            <div class="dj-situation">Quiero enviarle el pedido semanal a mi proveedor. ¿Qué toco para empezar un chat nuevo?</div>
+            <div class="dj-question">¿Cuál es la opción correcta?</div>
+          </div>
+        </div>
+      </div>
+      <div class="options-area">
+        <div class="option-btn" onclick="answer(1,'A','A')">
+          <div class="option-letter">A</div>
+          <div class="option-text">El ícono del lápiz ✏️ o el símbolo +</div>
+        </div>
+        <div class="option-btn" onclick="answer(1,'B','A')">
+          <div class="option-letter">B</div>
+          <div class="option-text">El ícono de la lupa 🔍</div>
+        </div>
+      </div>
+      <div class="feedback-box" id="fb1">
+        <div class="fb-icon" id="fb1-icon"></div>
+        <div class="fb-text" id="fb1-text"></div>
+      </div>
+    </div>
+
+    <!-- Q2 -->
+    <div class="question-slide" id="q2" style="display:none">
+      <div class="question-area">
+        <div class="don-julio-row">
+          <div class="dj-avatar">👨🏽</div>
+          <div class="dj-bubble">
+            <div class="dj-name">Don Julio pregunta:</div>
+            <div class="dj-situation">Le llegó un mensaje de voz de Valentina. Le respondí. ¿Cómo sé que ella ya leyó mi respuesta?</div>
+            <div class="dj-question">¿Cuál es la señal correcta?</div>
+          </div>
+        </div>
+      </div>
+      <div class="options-area">
+        <div class="option-btn" onclick="answer(2,'A','A')">
+          <div class="option-letter">A</div>
+          <div class="option-text">Los ticks se vuelven azules ✓✓</div>
+        </div>
+        <div class="option-btn" onclick="answer(2,'B','A')">
+          <div class="option-letter">B</div>
+          <div class="option-text">La pantalla parpadea</div>
+        </div>
+      </div>
+      <div class="feedback-box" id="fb2">
+        <div class="fb-icon" id="fb2-icon"></div>
+        <div class="fb-text" id="fb2-text"></div>
+      </div>
+    </div>
+
+    <!-- Q3 -->
+    <div class="question-slide" id="q3" style="display:none">
+      <div class="question-area">
+        <div class="don-julio-row">
+          <div class="dj-avatar">👨🏽</div>
+          <div class="dj-bubble">
+            <div class="dj-name">Don Julio pregunta:</div>
+            <div class="dj-situation">Alguien que dice ser de WhatsApp me pide el código de 6 dígitos que me llegó al celular. ¿Qué hago?</div>
+            <div class="dj-question">¿Cuál es la decisión correcta?</div>
+          </div>
+        </div>
+      </div>
+      <div class="options-area">
+        <div class="option-btn" onclick="answer(3,'A','B')">
+          <div class="option-letter">A</div>
+          <div class="option-text">Lo envío porque dice ser de WhatsApp</div>
+        </div>
+        <div class="option-btn" onclick="answer(3,'B','B')">
+          <div class="option-letter">B</div>
+          <div class="option-text">No lo envío — WhatsApp nunca pide ese código por mensaje</div>
+        </div>
+      </div>
+      <div class="feedback-box" id="fb3">
+        <div class="fb-icon" id="fb3-icon"></div>
+        <div class="fb-text" id="fb3-text"></div>
+      </div>
+    </div>
+
+    <!-- Q4 -->
+    <div class="question-slide" id="q4" style="display:none">
+      <div class="question-area">
+        <div class="don-julio-row">
+          <div class="dj-avatar">👨🏽</div>
+          <div class="dj-bubble">
+            <div class="dj-name">Don Julio pregunta:</div>
+            <div class="dj-situation">WhatsApp me pide permiso para el micrófono cuando intento enviar un audio. ¿Qué hago?</div>
+            <div class="dj-question">¿Cuál es la acción correcta?</div>
+          </div>
+        </div>
+      </div>
+      <div class="options-area">
+        <div class="option-btn" onclick="answer(4,'A','A')">
+          <div class="option-letter">A</div>
+          <div class="option-text">Toco PERMITIR ✅</div>
+        </div>
+        <div class="option-btn" onclick="answer(4,'B','A')">
+          <div class="option-letter">B</div>
+          <div class="option-text">Cierro la app — puede ser peligroso</div>
+        </div>
+      </div>
+      <div class="feedback-box" id="fb4">
+        <div class="fb-icon" id="fb4-icon"></div>
+        <div class="fb-text" id="fb4-text"></div>
+      </div>
+    </div>
+
+    <!-- Q5 -->
+    <div class="question-slide" id="q5" style="display:none">
+      <div class="question-area">
+        <div class="don-julio-row">
+          <div class="dj-avatar">👨🏽</div>
+          <div class="dj-bubble">
+            <div class="dj-name">Don Julio pregunta:</div>
+            <div class="dj-situation">¿Cuál de estos datos NO debo poner en la descripción de mi perfil de WhatsApp?</div>
+            <div class="dj-question">¿Cuál es la opción incorrecta?</div>
+          </div>
+        </div>
+      </div>
+      <div class="options-area">
+        <div class="option-btn" onclick="answer(5,'A','B')">
+          <div class="option-letter">A</div>
+          <div class="option-text">Mi nombre o el nombre del negocio</div>
+        </div>
+        <div class="option-btn" onclick="answer(5,'B','B')">
+          <div class="option-letter">B</div>
+          <div class="option-text">Mi número de cédula</div>
+        </div>
+      </div>
+      <div class="feedback-box" id="fb5">
+        <div class="fb-icon" id="fb5-icon"></div>
+        <div class="fb-text" id="fb5-text"></div>
+      </div>
+    </div>
+
+    <!-- Completion -->
+    <div class="completion-screen" id="completion">
+      <div class="completion-icon">🏆</div>
+      <div class="completion-title">¡Muy bien, Don Julio!</div>
+      <div class="score-display" id="score-display">— / 5</div>
+      <div class="score-label">respuestas correctas</div>
+      <div class="completion-sub" id="score-msg">Ha terminado la trivia del Módulo 1.<br>Ya sabe usar WhatsApp de forma segura.</div>
+    </div>
+
+  </div>
+
+  <!-- NAV -->
+  <div class="card-nav" id="card-nav">
+    <div class="dots" id="dots">
+      <div class="dot active" id="dot-1"></div>
+      <div class="dot" id="dot-2"></div>
+      <div class="dot" id="dot-3"></div>
+      <div class="dot" id="dot-4"></div>
+      <div class="dot" id="dot-5"></div>
+    </div>
+    <button class="nav-btn" id="next-btn" disabled onclick="nextQuestion()">SIGUIENTE →</button>
+  </div>
+
+</div>
+
+<script>
+  const feedbacks = {
+    1: {
+      A: { ok: true,  icon: '✅', text: '<strong>¡Correcto!</strong> El lápiz o + abre la lista de contactos para iniciar un chat nuevo.' },
+      B: { ok: false, icon: '❌', text: '<strong>No es la opción correcta.</strong> La lupa sirve para buscar dentro de conversaciones que ya existen, no para crear una nueva. Usa el lápiz ✏️ o el símbolo +.' }
+    },
+    2: {
+      A: { ok: true,  icon: '✅', text: '<strong>¡Correcto!</strong> Dos ticks azules ✓✓ significan que la persona leyó o escuchó su mensaje.' },
+      B: { ok: false, icon: '❌', text: '<strong>No es la opción correcta.</strong> La pantalla no le avisa. Los ticks son la única señal dentro del chat: gris=enviado, doble gris=entregado, doble azul=leído.' }
+    },
+    3: {
+      A: { ok: false, icon: '❌', text: '<strong>¡Cuidado!</strong> Ese código es para verificar la cuenta. Si lo comparte, otra persona puede robarle el WhatsApp. WhatsApp NUNCA pide ese código por mensaje.' },
+      B: { ok: true,  icon: '✅', text: '<strong>¡Correcto!</strong> WhatsApp nunca pide ese código por mensaje. Es una estafa clásica. No lo comparta con nadie.' }
+    },
+    4: {
+      A: { ok: true,  icon: '✅', text: '<strong>¡Correcto!</strong> WhatsApp necesita ese permiso para grabar audios. Es normal y necesario. La app solo usará el micrófono cuando usted toque el ícono de grabar.' },
+      B: { ok: false, icon: '❌', text: '<strong>No es la opción correcta.</strong> No es peligroso. Toque PERMITIR. La app solo usará el micrófono cuando usted lo active deliberadamente.' }
+    },
+    5: {
+      A: { ok: false, icon: '❌', text: '<strong>El nombre sí está bien.</strong> La opción incorrecta es el número de cédula. En el perfil solo ponga su nombre o algo general del negocio, nunca datos personales sensibles.' },
+      B: { ok: true,  icon: '✅', text: '<strong>¡Correcto!</strong> La cédula es un dato sensible. En el perfil solo ponga su nombre o algo general del negocio. La cédula y la dirección NUNCA deben estar en el perfil.' }
+    }
+  };
+
+  let current = 1;
+  let score = 0;
+  let answered = {};
+
+  function answer(q, chosen, correct) {
+    if (answered[q]) return;
+    answered[q] = true;
+
+    const fb = feedbacks[q][chosen];
+    const fbBox = document.getElementById('fb' + q);
+    document.getElementById('fb' + q + '-icon').textContent = fb.icon;
+    document.getElementById('fb' + q + '-text').innerHTML = fb.text;
+    fbBox.className = 'feedback-box show ' + (fb.ok ? 'correct-fb' : 'wrong-fb');
+
+    // Style all buttons
+    const slide = document.getElementById('q' + q);
+    slide.querySelectorAll('.option-btn').forEach(btn => {
+      const btnLetter = btn.querySelector('.option-letter').textContent.trim();
+      if (btnLetter === chosen) {
+        btn.classList.add(fb.ok ? 'correct' : 'wrong');
+      } else if (btnLetter === correct && !fb.ok) {
+        btn.classList.add('correct');
+      } else {
+        btn.classList.add('neutral-reveal');
+      }
+      btn.style.pointerEvents = 'none';
+    });
+
+    if (fb.ok) score++;
+
+    document.getElementById('next-btn').disabled = false;
+  }
+
+  function nextQuestion() {
+    if (current < 5) {
+      document.getElementById('q' + current).style.display = 'none';
+      document.getElementById('dot-' + current).classList.remove('active');
+      document.getElementById('dot-' + current).classList.add('done');
+      current++;
+      document.getElementById('q' + current).style.display = 'block';
+      document.getElementById('dot-' + current).classList.add('active');
+
+      // Update progress
+      const pct = (current / 5) * 100;
+      document.getElementById('progress-fill').style.width = pct + '%';
+      document.getElementById('progress-label').textContent = current + ' / 5';
+
+      document.getElementById('next-btn').disabled = true;
+      if (!answered[current]) {
+        document.getElementById('next-btn').textContent = 'SIGUIENTE →';
+      }
+    } else {
+      // Show completion
+      document.getElementById('q5').style.display = 'none';
+      document.getElementById('card-nav').style.display = 'none';
+      const comp = document.getElementById('completion');
+      comp.classList.add('show');
+      document.getElementById('score-display').textContent = score + ' / 5';
+      document.getElementById('progress-fill').style.width = '100%';
+      document.getElementById('progress-label').textContent = '✓ Completado';
+      document.querySelectorAll('.dot').forEach(d => { d.classList.remove('active'); d.classList.add('done'); });
+
+      let msg = '';
+      if (score === 5) msg = '¡Perfecto! Tiene todo claro para usar WhatsApp de forma segura. 🎉';
+      else if (score >= 3) msg = `Muy bien. Puede repasar las preguntas que no acertó antes de continuar.`;
+      else msg = `Revise el Genially del módulo para repasar los puntos clave.`;
+      document.getElementById('score-msg').textContent = msg;
+    }
+  }
+</script>
+
+</body>
+</html>

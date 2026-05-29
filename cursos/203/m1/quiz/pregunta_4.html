@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Pregunta 4</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: transparent;
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; padding: 24px;
+    }
+    .quiz-wrapper { width: 100%; max-width: 640px; }
+    @keyframes slideInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .enunciado { font-size: 24px; font-weight: 700; line-height: 1.3; color: #0e2d5c; margin-bottom: 24px; }
+    .opciones { display: flex; flex-direction: column; gap: 12px; }
+    .opcion {
+      background: #ffffff; border: 2px solid transparent; border-radius: 12px;
+      padding: 16px 20px; font-size: 20px; font-weight: 400; line-height: 1.3;
+      color: #0e2d5c; cursor: pointer; display: flex; align-items: center; gap: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      transition: background 0.35s ease, border-color 0.35s ease, box-shadow 0.15s ease, transform 0.1s ease;
+      user-select: none; opacity: 0;
+    }
+    .opcion:hover:not(.respondida) { box-shadow: 0 4px 16px rgba(0,0,0,0.12); transform: translateY(-1px); }
+    .opcion.correcta  { background: #e8f5e9; border-color: #4caf50; }
+    .opcion.incorrecta{ background: #fdecea; border-color: #e53935; }
+    .icono {
+      flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 700; opacity: 0; transition: opacity 0.2s ease;
+    }
+    .opcion.correcta  .icono { background: #4caf50; color: #fff; opacity: 1; }
+    .opcion.incorrecta .icono{ background: #e53935; color: #fff; opacity: 1; }
+    .feedback {
+      margin-top: 20px; padding: 16px 20px; border-radius: 12px;
+      font-size: 18px; font-weight: 400; line-height: 1.4; display: none; opacity: 0;
+    }
+    .feedback.correcto  { background: #e8f5e9; color: #2e7d32; border-left: 4px solid #4caf50; }
+    .feedback.incorrecto{ background: #fdecea; color: #c62828; border-left: 4px solid #e53935; }
+    .feedback.visible { display: block; animation: fadeInDown 0.35s ease forwards; }
+  </style>
+</head>
+<body>
+  <div class="quiz-wrapper">
+    <p class="enunciado">WhatsApp le pide permiso para el micrófono cuando intenta enviar un audio. ¿Qué hace?</p>
+    <div class="opciones" id="opciones">
+      <div class="opcion" data-correcto="true" onclick="seleccionar(this)">
+        <span class="icono">✓</span>
+        <span>Toca PERMITIR</span>
+      </div>
+      <div class="opcion" data-correcto="false" onclick="seleccionar(this)">
+        <span class="icono">✕</span>
+        <span>Cierra la App — es peligroso</span>
+      </div>
+    </div>
+    <div class="feedback correcto"   id="feedback-correcto">WhatsApp necesita ese permiso para grabar audios. Es normal y necesario.</div>
+    <div class="feedback incorrecto" id="feedback-incorrecto">No es peligroso. La App solo usará el micrófono cuando usted toque el ícono de grabar.</div>
+  </div>
+  <script>
+    var respondido = false;
+    (function shuffle() {
+      var c = document.getElementById('opciones');
+      var items = Array.from(c.querySelectorAll('.opcion'));
+      for (var i = items.length - 1; i > 0; i--) {
+        var j = Math.floor(Math.random() * (i + 1));
+        var t = items[i]; items[i] = items[j]; items[j] = t;
+      }
+      items.forEach(function(el, idx) {
+        c.appendChild(el);
+        el.style.animationDelay = (idx * 0.14) + 's';
+        el.style.animation = 'slideInUp 0.4s ease forwards';
+      });
+    })();
+    function seleccionar(el) {
+      if (respondido) return;
+      respondido = true;
+      document.querySelectorAll('.opcion').forEach(function(o) { o.classList.add('respondida'); o.style.cursor = 'default'; });
+      if (el.dataset.correcto === 'true') {
+        el.classList.add('correcta');
+        document.getElementById('feedback-correcto').classList.add('visible');
+      } else {
+        el.classList.add('incorrecta');
+        document.querySelectorAll('.opcion').forEach(function(o) { if (o.dataset.correcto === 'true') o.classList.add('correcta'); });
+        document.getElementById('feedback-incorrecto').classList.add('visible');
+      }
+    }
+  </script>
+</body>
+</html>

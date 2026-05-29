@@ -1,0 +1,1410 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>M1 — Genially: WhatsApp paso a paso</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,1,0">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap">
+<style>
+  .material-symbols-rounded {
+    font-family: 'Material Symbols Rounded';
+    font-weight: normal; font-style: normal;
+    font-size: 24px; line-height: 1;
+    letter-spacing: normal; text-transform: none;
+    display: inline-block; white-space: nowrap;
+    word-wrap: normal; direction: ltr;
+    -webkit-font-smoothing: antialiased;
+    user-select: none;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: transparent;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Segoe UI', sans-serif;
+    padding: 20px;
+  }
+
+  /* Roboto para todo el contenido dentro del dispositivo Android/WhatsApp */
+  .screen {
+    font-family: 'Roboto', sans-serif;
+  }
+
+  /* ── Instruction bar ── */
+  .instruction-bar {
+    width: 660px;
+    background: #0f3460;
+    border-radius: 12px 12px 0 0;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    border-bottom: 2px solid #e8b800;
+  }
+  .step-badge {
+    background: #e8b800;
+    color: #1a1a2e;
+    font-weight: 800;
+    font-size: 14px;
+    border-radius: 50%;
+    width: 30px; height: 30px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .instruction-text { color: #fff; font-size: 17px; line-height: 1.4; }
+  .instruction-text strong { color: #e8b800; }
+
+  /* ── Note bar ── */
+  .note-bar {
+    width: 660px;
+    background: #0a2540;
+    border-radius: 0 0 12px 12px;
+    padding: 10px 20px;
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    border-top: 1px solid #1e4080;
+    min-height: 46px;
+  }
+  .note-icon { font-size: 17px; flex-shrink: 0; margin-top: 1px; }
+  .note-text { color: #a8c4e0; font-size: 15px; line-height: 1.45; }
+  .note-text .alert { color: #f5a623; font-weight: 600; }
+
+  /* ── Scene ── */
+  .scene { display: none; flex-direction: column; align-items: center; gap: 0; }
+  .scene.active { display: flex; }
+
+  /* ── Device ── */
+  .device-wrap {
+    position: relative;
+    width: 598px; height: 1203px;
+    flex-shrink: 0;
+    /*transform: scale(0.52);
+    transform-origin: top center;
+    margin-bottom: calc((1203px * 0.52 - 1203px));*/
+  }
+  .device-frame {
+    position: absolute; top: 0; left: 0;
+    width: 598px; height: 1203px;
+    z-index: 10; pointer-events: none;
+  }
+  /* Screen: top=115 left=26 w=541 h=961 */
+  .screen {
+    position: absolute;
+    top: 115px; left: 26px;
+    width: 541px; height: 961px;
+    overflow: hidden; background: #fff;
+    z-index: 1; border-radius: 4px;
+  }
+
+  /* ── Nav ── */
+  .nav-row {
+    width: 660px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 0 0;
+  }
+  .nav-btn {
+    background: #e8b800; color: #1a1a2e;
+    border: none; padding: 12px 28px;
+    border-radius: 8px; font-size: 15px; font-weight: 700;
+    cursor: pointer; transition: background 0.2s;
+  }
+  .nav-btn:hover { background: #ffd000; }
+  .nav-btn:disabled { background: #444; color: #888; cursor: default; }
+  .nav-btn.final { background: #25d366; color: #fff; }
+  .nav-btn.final:hover { background: #1db954; }
+
+  .dots { display: flex; gap: 8px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: #444; transition: background 0.2s; }
+  .dot.active { background: #e8b800; }
+
+  /* ══════════════════════════════════════
+     WhatsApp UI — tamaños para escala 0.52
+     (todo el texto dentro de .screen debe
+      estar en px ~2× del tamaño visual deseado)
+  ══════════════════════════════════════ */
+
+  /* Status bar */
+  .wa-statusbar {
+    height: 38px; background: #fff;
+    display: flex; align-items: center;
+    justify-content: space-between;
+    padding: 0 18px;
+  }
+  .statusbar-time { color: #111; font-size: 22px; font-weight: 700; }
+  .statusbar-icons { display: flex; align-items: center; gap: 4px; color: #111; }
+  .statusbar-icons .material-symbols-rounded { font-size: 22px; }
+
+  /* Top bar — BLANCO con logo verde */
+  .wa-topbar {
+    height: 70px; background: #fff;
+    display: flex; align-items: center;
+    padding: 0 10px 0 18px; gap: 6px;
+    border-bottom: 1px solid #e9edef;
+  }
+  .wa-logo { font-size: 36px; font-weight: 700; color: #00a884; flex: 1; letter-spacing: -0.5px; }
+  .wa-icon-btn {
+    width: 48px; height: 48px;
+    display: flex; align-items: center; justify-content: center;
+    color: #54656f; border-radius: 50%; cursor: pointer;
+    position: relative;
+  }
+  .wa-icon-btn .material-symbols-rounded { font-size: 30px; }
+
+  /* Search bar */
+  .wa-search {
+    height: 58px; background: #f0f2f5;
+    margin: 8px 12px; border-radius: 12px;
+    display: flex; align-items: center; padding: 0 16px; gap: 12px;
+  }
+  .wa-search .material-symbols-rounded { font-size: 28px; color: #54656f; }
+  .wa-search-text { font-size: 24px; color: #8696a0; flex: 1; }
+
+  /* Filter chips */
+  .wa-chips {
+    display: flex; gap: 8px; padding: 4px 12px 12px; overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .wa-chips::-webkit-scrollbar { display: none; }
+  .wa-chip {
+    padding: 8px 18px; border-radius: 20px;
+    background: #e9edef; font-size: 22px; font-weight: 500;
+    color: #111b21; white-space: nowrap; display: flex; align-items: center; gap: 6px;
+  }
+  .wa-chip.active { background: #d9fdd3; color: #025c4b; font-weight: 700; }
+  .chip-badge {
+    background: #00a884; color: #fff;
+    font-size: 18px; font-weight: 700;
+    border-radius: 50%; min-width: 26px; height: 26px;
+    display: flex; align-items: center; justify-content: center;
+    padding: 0 4px;
+  }
+
+  /* Archived row */
+  .wa-archived {
+    display: flex; align-items: center; gap: 14px;
+    padding: 14px 18px; background: #fff; border-bottom: 1px solid #e9edef;
+  }
+  .wa-archived .material-symbols-rounded { font-size: 28px; color: #54656f; }
+  .wa-archived-text { flex: 1; font-size: 26px; color: #111b21; }
+  .wa-archived-count { font-size: 22px; color: #54656f; }
+
+  /* Chat list */
+  .wa-chat-list { flex: 1; overflow: hidden; }
+  .wa-chat-item {
+    display: flex; align-items: center;
+    padding: 14px 18px; gap: 14px;
+    border-bottom: 1px solid #e9edef;
+    background: #fff;
+  }
+  .wa-avatar {
+    width: 60px; height: 60px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px; color: #fff; font-weight: 700;
+  }
+  .wa-chat-info { flex: 1; min-width: 0; }
+  .wa-chat-name { font-size: 28px; font-weight: 600; color: #111b21; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .wa-chat-preview { font-size: 24px; color: #667781; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; margin-top: 4px; display: flex; align-items: center; gap: 4px; }
+  .wa-chat-meta { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+  .wa-chat-time { font-size: 20px; color: #667781; }
+  .wa-badge { background: #00a884; color: #fff; font-size: 20px; font-weight: 700; border-radius: 50%; min-width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; padding: 0 4px; }
+
+  /* FAB */
+  .wa-fab {
+    position: absolute; bottom: 100px; right: 18px;
+    width: 68px; height: 68px; background: #00a884;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+    cursor: pointer; z-index: 5; color: #fff;
+  }
+  .wa-fab .material-symbols-rounded { font-size: 32px; }
+
+  /* Bottom nav */
+  .wa-bottom-nav {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 88px; background: #fff;
+    display: flex; border-top: 1px solid #e9edef; z-index: 5;
+  }
+  .wa-nav-item {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    gap: 2px; color: #667781; font-size: 19px; font-weight: 600;
+    cursor: pointer;
+  }
+  .wa-nav-item.active { color: #00a884; }
+  .wa-nav-item .material-symbols-rounded { font-size: 30px; }
+
+  /* Chat header — BLANCO */
+  .wa-chat-header {
+    height: 70px; background: #fff;
+    display: flex; align-items: center; padding: 0 8px; gap: 4px;
+    border-bottom: 1px solid #e9edef;
+  }
+  .wa-back { color: #54656f; padding: 8px; cursor: pointer; }
+  .wa-back .material-symbols-rounded { font-size: 30px; }
+  .wa-contact-info { flex: 1; }
+  .wa-contact-name { font-size: 30px; font-weight: 600; color: #111b21; }
+  .wa-contact-status { font-size: 22px; color: #667781; }
+  .wa-header-btn { color: #54656f; padding: 8px; cursor: pointer; }
+  .wa-header-btn .material-symbols-rounded { font-size: 28px; }
+
+  /* Messages */
+  .wa-messages {
+    background: #efeae2;
+    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c9b99a' fill-opacity='0.08'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    flex: 1; overflow-y: auto;
+    padding: 12px;
+    display: flex; flex-direction: column; gap: 6px;
+  }
+  .wa-bubble {
+    max-width: 80%; padding: 10px 14px 8px;
+    border-radius: 10px; font-size: 26px; line-height: 1.4; color: #111b21;
+  }
+  .wa-bubble.sent { background: #d9fdd3; align-self: flex-end; border-bottom-right-radius: 2px; }
+  .wa-bubble.received { background: #fff; align-self: flex-start; border-bottom-left-radius: 2px; }
+  .bubble-time {
+    font-size: 20px; color: #667781;
+    text-align: right; margin-top: 4px;
+    display: flex; align-items: center; justify-content: flex-end; gap: 2px;
+  }
+  .ticks { display: flex; }
+  .ticks .material-symbols-rounded { font-size: 20px; }
+  .ticks.blue .material-symbols-rounded { color: #53bdeb; }
+  .ticks.grey .material-symbols-rounded { color: #667781; }
+
+  /* Input area */
+  .wa-input-area {
+    height: 80px; background: #f0f2f5;
+    display: flex; align-items: center; padding: 10px; gap: 10px;
+  }
+  .wa-input-wrap {
+    flex: 1; background: #fff; border-radius: 28px;
+    display: flex; align-items: center;
+    padding: 8px 14px; gap: 10px; min-height: 56px;
+  }
+  .wa-input-wrap .material-symbols-rounded { font-size: 30px; color: #8696a0; }
+  .wa-input-placeholder { flex: 1; font-size: 26px; color: #8696a0; }
+  .wa-round-btn {
+    width: 60px; height: 60px; background: #00a884; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.2); flex-shrink: 0;
+  }
+  .wa-round-btn .material-symbols-rounded { font-size: 30px; color: #fff; }
+
+  /* Recording state — 2 filas */
+  .wa-recording-wrap {
+    background: #fff; border-top: 1px solid #e9edef;
+  }
+  .wa-recording-bar1 {
+    height: 56px; background: #fff;
+    display: flex; align-items: center; padding: 0 16px; gap: 12px;
+  }
+  .rec-dot { width: 14px; height: 14px; border-radius: 50%; background: #ff5252; animation: blink 1s ease infinite; flex-shrink: 0; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .rec-time { color: #111; font-size: 26px; font-weight: 600; min-width: 50px; }
+  .rec-wave { display: flex; align-items: center; gap: 3px; flex: 1; height: 36px; }
+  .wave-bar { width: 4px; background: #00a884; border-radius: 2px; animation: wave 0.7s ease-in-out infinite; }
+  @keyframes wave { 0%,100%{height:6px} 50%{height:28px} }
+  .rec-lock { color: #54656f; }
+  .rec-lock .material-symbols-rounded { font-size: 28px; }
+  .wa-recording-bar2 {
+    height: 80px; background: #f0f2f5;
+    display: flex; align-items: center; padding: 0 16px; gap: 10px;
+  }
+  .rec-delete { color: #54656f; padding: 8px; }
+  .rec-delete .material-symbols-rounded { font-size: 32px; }
+  .rec-pause { flex: 1; display: flex; justify-content: center; }
+  .rec-pause .material-symbols-rounded { font-size: 32px; color: #54656f; }
+  .rec-send { position: relative; }
+
+  /* Settings */
+  .wa-settings-header {
+    height: 70px; background: #fff;
+    display: flex; align-items: center; padding: 0 10px; gap: 8px;
+    border-bottom: 1px solid #e9edef;
+  }
+  .wa-settings-title { font-size: 32px; font-weight: 700; color: #111b21; flex: 1; }
+  .wa-settings-item {
+    background: #fff; display: flex; align-items: center;
+    padding: 18px 18px; gap: 16px; border-bottom: 1px solid #e9edef;
+  }
+  .settings-icon-wrap {
+    width: 50px; height: 50px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .settings-icon-wrap .material-symbols-rounded { font-size: 26px; }
+  .item-content { flex: 1; }
+  .item-label { font-size: 28px; color: #111b21; }
+  .item-sub { font-size: 22px; color: #667781; margin-top: 3px; }
+  .item-chevron { color: #8696a0; }
+  .item-chevron .material-symbols-rounded { font-size: 26px; }
+
+  /* Profile — BLANCO, centrado */
+  .wa-perfil-topbar {
+    height: 70px; background: #fff;
+    display: flex; align-items: center; padding: 0 10px; gap: 8px;
+    border-bottom: 1px solid #e9edef;
+  }
+  .wa-perfil-title { font-size: 32px; font-weight: 700; color: #111b21; flex: 1; }
+  .wa-perfil-avatar-section {
+    background: #fff; padding: 30px 0 20px;
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+  }
+  .wa-perfil-avatar {
+    width: 120px; height: 120px; border-radius: 50%; background: #dfe5e7;
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .wa-perfil-avatar .material-symbols-rounded { font-size: 68px; color: #adb5bd; }
+  .wa-perfil-edit-label { font-size: 26px; color: #00a884; font-weight: 600; }
+  .wa-perfil-field {
+    background: #fff; padding: 18px 20px;
+    border-bottom: 1px solid #e9edef;
+  }
+  .perfil-field-label { font-size: 22px; color: #00a884; font-weight: 600; margin-bottom: 4px; }
+  .perfil-field-value { font-size: 28px; color: #111b21; }
+
+  /* Highlights */
+  .highlight-ring {
+    position: absolute; border: 4px solid #e8b800;
+    border-radius: 50%; pointer-events: none;
+    animation: pulse 1.5s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { box-shadow: 0 0 0 3px rgba(232,184,0,0.3), 0 0 20px rgba(232,184,0,0.35); }
+    50% { box-shadow: 0 0 0 6px rgba(232,184,0,0.15), 0 0 28px rgba(232,184,0,0.5); }
+  }
+  .highlight-rect {
+    position: absolute; border: 3px solid #e8b800;
+    border-radius: 10px; pointer-events: none;
+    animation: pulse-r 1.5s ease-in-out infinite;
+  }
+  @keyframes pulse-r {
+    0%,100% { box-shadow: 0 0 0 2px rgba(232,184,0,0.2), 0 0 16px rgba(232,184,0,0.3); }
+    50% { box-shadow: 0 0 0 5px rgba(232,184,0,0.1), 0 0 24px rgba(232,184,0,0.45); }
+  }
+
+  /* Android home */
+  .android-home {
+    width: 100%; height: 100%;
+    background: linear-gradient(155deg, #1a237e 0%, #0d47a1 55%, #1565c0 100%);
+    display: flex; flex-direction: column; position: relative;
+  }
+  .android-statusbar {
+    height: 36px; background: rgba(0,0,0,0.18);
+    display: flex; align-items: center;
+    justify-content: space-between; padding: 0 18px;
+  }
+  .android-statusbar .time { color: #fff; font-size: 22px; font-weight: 700; }
+  .android-statusbar .sys-icons { display: flex; align-items: center; gap: 3px; color: #fff; }
+  .android-statusbar .sys-icons .material-symbols-rounded { font-size: 22px; }
+  .android-clock { text-align: center; font-size: 96px; font-weight: 200; color: #fff; margin-top: 20px; letter-spacing: -4px; }
+  .android-date { text-align: center; font-size: 28px; color: rgba(255,255,255,0.85); margin-top: 6px; }
+  .app-grid {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 18px; padding: 24px 24px 0; margin-top: 24px;
+  }
+  .app-icon { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+  .app-icon-img {
+    width: 80px; height: 80px; border-radius: 20px;
+    overflow: visible; display: flex; align-items: center; justify-content: center;
+    position: relative;
+  }
+  .app-icon-img img { width: 80px; height: 80px; border-radius: 20px; }
+  .app-icon-label { font-size: 22px; color: #fff; text-align: center; text-shadow: 0 1px 3px rgba(0,0,0,0.6); }
+  .android-dock {
+    position: absolute; bottom: 18px; left: 18px; right: 18px;
+    background: rgba(255,255,255,0.15); border-radius: 28px;
+    display: flex; justify-content: space-around;
+    padding: 12px 8px; backdrop-filter: blur(12px);
+  }
+
+  /* Audio bubble */
+  .wa-audio-bubble {
+    border-radius: 10px; padding: 12px 14px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .audio-play-btn {
+    width: 50px; height: 50px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .audio-play-btn .material-symbols-rounded { font-size: 28px; color: #fff; }
+  .audio-waveform { display: flex; align-items: center; gap: 3px; height: 34px; }
+  .audio-bar { width: 4px; border-radius: 2px; }
+  .audio-duration { font-size: 20px; color: #667781; margin-top: 4px; }
+
+  /* Date separator */
+  .wa-date-sep { text-align: center; margin: 10px 0; }
+  .wa-date-chip {
+    background: #fff; padding: 6px 14px; border-radius: 8px;
+    display: inline-block; font-size: 22px; color: #667781;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  }
+
+  /* 2-step panel */
+  .twostep-panel {
+    margin: 16px; border-radius: 14px; overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+  }
+  .twostep-body {
+    background: #e7f8ee; padding: 24px 18px 18px;
+    display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center;
+  }
+  .twostep-icon .material-symbols-rounded { font-size: 64px; color: #00a884; }
+  .twostep-title { font-size: 28px; font-weight: 700; color: #111b21; }
+  .twostep-sub { font-size: 24px; color: #667781; line-height: 1.5; }
+  .twostep-btn {
+    background: #00a884; color: #fff; border: none;
+    width: 100%; padding: 20px;
+    font-size: 26px; font-weight: 700; cursor: pointer;
+  }
+  .instruction-bar {
+    margin-bottom: 35vh;
+  }
+  .note-bar {
+    margin-top: 20vh;
+  }
+</style>
+</head>
+<body>
+
+<!-- ═══ PANTALLA 1: Home screen ═══ -->
+<div class="scene active" id="scene-1">
+  <div class="instruction-bar">
+    <div class="step-badge">1</div>
+    <div class="instruction-text">
+      Toca el <strong>ícono verde de WhatsApp</strong> para abrirlo.
+      Si no lo tienes, búscalo en Play Store o App Store.
+    </div>
+  </div>
+
+  <div class="device-wrap">
+    <img class="device-frame" src="../img/device-frame-nexus5x.png" alt="frame">
+    <div class="screen">
+      <div class="android-home">
+        <div class="android-statusbar">
+          <span class="time">9:41</span>
+          <div class="sys-icons">
+            <span class="material-symbols-rounded">signal_cellular_alt</span>
+            <span class="material-symbols-rounded">wifi</span>
+            <span class="material-symbols-rounded">battery_full</span>
+          </div>
+        </div>
+        <div class="android-clock">9:41</div>
+        <div class="android-date">Martes, 14 de enero</div>
+
+        <div class="app-grid">
+          <div class="app-icon">
+            <div class="app-icon-img"><img src="../img/ico_Facebook.svg" alt="Facebook"></div>
+            <div class="app-icon-label">Facebook</div>
+          </div>
+          <!-- WhatsApp con highlight — anillo DENTRO de app-icon-img -->
+          <div class="app-icon">
+            <div class="app-icon-img" style="position:relative;">
+              <img src="../img/ico_Whatsapp.svg" alt="WhatsApp">
+              <div class="highlight-ring" style="width:104px;height:104px;top:-12px;left:-12px;border-radius:26px;"></div>
+            </div>
+            <div class="app-icon-label">WhatsApp</div>
+          </div>
+          <div class="app-icon">
+            <div class="app-icon-img"><img src="../img/ico_Instagram.svg" alt="Instagram"></div>
+            <div class="app-icon-label">Instagram</div>
+          </div>
+          <div class="app-icon">
+            <div class="app-icon-img"><img src="../img/ico_TikTok.svg" alt="TikTok"></div>
+            <div class="app-icon-label">TikTok</div>
+          </div>
+          <div class="app-icon">
+            <div class="app-icon-img"><img src="../img/ico_Gmail.svg" alt="Gmail"></div>
+            <div class="app-icon-label">Gmail</div>
+          </div>
+          <div class="app-icon">
+            <div class="app-icon-img"><img src="../img/ico_Camera.svg" alt="Cámara"></div>
+            <div class="app-icon-label">Cámara</div>
+          </div>
+          <div class="app-icon">
+            <div class="app-icon-img"><img src="../img/ico_Spotify.svg" alt="Spotify"></div>
+            <div class="app-icon-label">Spotify</div>
+          </div>
+          <div class="app-icon">
+            <div class="app-icon-img"><img src="../img/ico_Settings.svg" alt="Ajustes"></div>
+            <div class="app-icon-label">Ajustes</div>
+          </div>
+        </div>
+
+        <div class="android-dock">
+          <div class="app-icon"><div class="app-icon-img"><img src="../img/ico_Phone.svg" alt="Teléfono"></div></div>
+          <div class="app-icon"><div class="app-icon-img"><img src="../img/ico_Chrome.svg" alt="Chrome"></div></div>
+          <div class="app-icon"><div class="app-icon-img"><img src="../img/ico_Messages.svg" alt="Mensajes"></div></div>
+          <div class="app-icon"><div class="app-icon-img"><img src="../img/ico_Playstore.svg" alt="Play Store"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note-bar">
+    <span class="note-icon">💡</span>
+    <div class="note-text">Si WhatsApp no aparece en la pantalla principal, desliza hacia la izquierda para buscarlo en otras páginas.</div>
+  </div>
+  <div class="nav-row">
+    <button class="nav-btn" disabled>← ANTERIOR</button>
+    <div class="dots">
+      <div class="dot active"></div><div class="dot"></div><div class="dot"></div>
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    </div>
+    <button class="nav-btn" onclick="showScene(2)">SIGUIENTE →</button>
+  </div>
+</div>
+
+<!-- ═══ PANTALLA 2: Lista de chats ═══ -->
+<div class="scene" id="scene-2">
+  <div class="instruction-bar">
+    <div class="step-badge">2</div>
+    <div class="instruction-text">
+      Toca el ícono del <strong>lápiz</strong> (esquina inferior derecha) para empezar un chat nuevo.
+    </div>
+  </div>
+
+  <div class="device-wrap">
+    <img class="device-frame" src="../img/device-frame-nexus5x.png" alt="frame">
+    <div class="screen" style="display:flex;flex-direction:column;">
+      <!-- Status bar blanca -->
+      <div class="wa-statusbar">
+        <span class="statusbar-time">9:41</span>
+        <div class="statusbar-icons">
+          <span class="material-symbols-rounded">signal_cellular_alt</span>
+          <span class="material-symbols-rounded">wifi</span>
+          <span class="material-symbols-rounded">battery_full</span>
+        </div>
+      </div>
+      <!-- Top bar BLANCO con logo verde -->
+      <div class="wa-topbar">
+        <div class="wa-logo">WhatsApp</div>
+        <div class="wa-icon-btn"><span class="material-symbols-rounded">photo_camera</span></div>
+        <div class="wa-icon-btn"><span class="material-symbols-rounded">more_vert</span></div>
+      </div>
+      <!-- Barra de búsqueda -->
+      <div class="wa-search">
+        <span class="material-symbols-rounded">search</span>
+        <div class="wa-search-text">Preguntar a Meta AI o buscar</div>
+      </div>
+      <!-- Chips de filtro -->
+      <div class="wa-chips">
+        <div class="wa-chip active">Todos</div>
+        <div class="wa-chip">No leídos <span class="chip-badge">1</span></div>
+        <div class="wa-chip">Favoritos</div>
+        <div class="wa-chip">Grupos <span class="chip-badge">1</span></div>
+      </div>
+      <!-- Fila de archivados -->
+      <div class="wa-archived">
+        <span class="material-symbols-rounded">archive</span>
+        <div class="wa-archived-text">Archivados</div>
+        <div class="wa-archived-count">1</div>
+      </div>
+      <!-- Lista de chats -->
+      <div style="flex:1;position:relative;overflow:hidden;">
+        <div class="wa-chat-item">
+          <div class="wa-avatar" style="background:#e91e63">V</div>
+          <div class="wa-chat-info">
+            <div class="wa-chat-name">Valentina ❤️</div>
+            <div class="wa-chat-preview">
+              <span class="material-symbols-rounded" style="font-size:22px;color:#667781">mic</span>
+              Nota de voz · 0:08
+            </div>
+          </div>
+          <div class="wa-chat-meta">
+            <div class="wa-chat-time">9:32</div>
+          </div>
+        </div>
+        <div class="wa-chat-item">
+          <div class="wa-avatar" style="background:#1565c0">P</div>
+          <div class="wa-chat-info">
+            <div class="wa-chat-name">Proveedor Leche Fresca</div>
+            <div class="wa-chat-preview">¿El pedido de mañana sigue igual?</div>
+          </div>
+          <div class="wa-chat-meta">
+            <div class="wa-chat-time">8:15</div>
+            <div class="wa-badge">2</div>
+          </div>
+        </div>
+        <div class="wa-chat-item">
+          <div class="wa-avatar" style="background:#2e7d32">G</div>
+          <div class="wa-chat-info">
+            <div class="wa-chat-name">Vecinos Barrio La Paz</div>
+            <div class="wa-chat-preview">Juana: Aquí el mapa de la reunión 📍</div>
+          </div>
+          <div class="wa-chat-meta">
+            <div class="wa-chat-time">Ayer</div>
+          </div>
+        </div>
+        <div class="wa-chat-item">
+          <div class="wa-avatar" style="background:#e65100">M</div>
+          <div class="wa-chat-info">
+            <div class="wa-chat-name">Martha (cuñada)</div>
+            <div class="wa-chat-preview">Listo, mañana paso por la tienda</div>
+          </div>
+          <div class="wa-chat-meta"><div class="wa-chat-time">Lun</div></div>
+        </div>
+        <!-- FAB con highlight -->
+        <div class="wa-fab" style="position:absolute;">
+          <span class="material-symbols-rounded">edit</span>
+          <div class="highlight-ring" style="width:94px;height:94px;top:-13px;left:-13px;"></div>
+        </div>
+      </div>
+      <!-- Bottom nav actualizado: Novedades en vez de Estados -->
+      <div class="wa-bottom-nav">
+        <div class="wa-nav-item active">
+          <span class="material-symbols-rounded">chat</span><span>Chats</span>
+        </div>
+        <div class="wa-nav-item">
+          <span class="material-symbols-rounded">fiber_new</span><span>Novedades</span>
+        </div>
+        <div class="wa-nav-item">
+          <span class="material-symbols-rounded">groups</span><span>Comunidades</span>
+        </div>
+        <div class="wa-nav-item">
+          <span class="material-symbols-rounded">call</span><span>Llamadas</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note-bar">
+    <span class="note-icon">💬</span>
+    <div class="note-text">Don Julio dice: <em>"Aquí aparecen todas sus conversaciones. La primera vez estará vacío — eso es normal."</em></div>
+  </div>
+  <div class="nav-row">
+    <button class="nav-btn" onclick="showScene(1)">← ANTERIOR</button>
+    <div class="dots">
+      <div class="dot"></div><div class="dot active"></div><div class="dot"></div>
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    </div>
+    <button class="nav-btn" onclick="showScene(3)">SIGUIENTE →</button>
+  </div>
+</div>
+
+<!-- ═══ PANTALLA 3: Chat + campo de texto ═══ -->
+<div class="scene" id="scene-3">
+  <div class="instruction-bar">
+    <div class="step-badge">3</div>
+    <div class="instruction-text">
+      Toca el <strong>campo de texto</strong>, escribe el mensaje y toca la
+      <strong>flecha de enviar</strong> para mandarlo.
+    </div>
+  </div>
+
+  <div class="device-wrap">
+    <img class="device-frame" src="../img/device-frame-nexus5x.png" alt="frame">
+    <div class="screen" style="display:flex;flex-direction:column;">
+      <div class="wa-statusbar">
+        <span class="statusbar-time">9:41</span>
+        <div class="statusbar-icons">
+          <span class="material-symbols-rounded">signal_cellular_alt</span>
+          <span class="material-symbols-rounded">wifi</span>
+          <span class="material-symbols-rounded">battery_full</span>
+        </div>
+      </div>
+      <!-- Header blanco -->
+      <div class="wa-chat-header">
+        <div class="wa-back"><span class="material-symbols-rounded">arrow_back</span></div>
+        <div class="wa-avatar" style="background:#e91e63;width:48px;height:48px;font-size:22px;flex-shrink:0">V</div>
+        <div class="wa-contact-info">
+          <div class="wa-contact-name">Valentina ❤️</div>
+          <div class="wa-contact-status">en línea</div>
+        </div>
+        <div class="wa-header-btn"><span class="material-symbols-rounded">videocam</span></div>
+        <div class="wa-header-btn"><span class="material-symbols-rounded">call</span></div>
+        <div class="wa-header-btn"><span class="material-symbols-rounded">more_vert</span></div>
+      </div>
+      <div class="wa-messages">
+        <div class="wa-date-sep"><span class="wa-date-chip">Hoy</span></div>
+        <div class="wa-bubble received">
+          Papá, ¿llegaron los plátanos que pediste?
+          <div class="bubble-time">9:28</div>
+        </div>
+        <div class="wa-bubble sent">
+          Sí hija, llegaron esta mañana todos frescos
+          <div class="bubble-time">9:30 <span class="ticks blue"><span class="material-symbols-rounded">done_all</span></span></div>
+        </div>
+        <div class="wa-bubble received">
+          Qué bueno 😊 ¿Me manda la lista del mercado?
+          <div class="bubble-time">9:31</div>
+        </div>
+        <!-- Audio recibido -->
+        <div class="wa-audio-bubble" style="background:#fff;align-self:flex-start;border-radius:10px;border-bottom-left-radius:2px;max-width:85%;">
+          <div class="audio-play-btn" style="background:#00a884">
+            <span class="material-symbols-rounded">play_arrow</span>
+          </div>
+          <div style="flex:1">
+            <div class="audio-waveform">
+              <div class="audio-bar" style="height:8px;background:#00a884"></div>
+              <div class="audio-bar" style="height:22px;background:#00a884"></div>
+              <div class="audio-bar" style="height:14px;background:#00a884"></div>
+              <div class="audio-bar" style="height:28px;background:#00a884"></div>
+              <div class="audio-bar" style="height:10px;background:#00a884"></div>
+              <div class="audio-bar" style="height:20px;background:#00a884"></div>
+              <div class="audio-bar" style="height:8px;background:#00a884"></div>
+              <div class="audio-bar" style="height:24px;background:#00a884"></div>
+              <div class="audio-bar" style="height:15px;background:#00a884"></div>
+              <div class="audio-bar" style="height:7px;background:#00a884"></div>
+            </div>
+            <div class="audio-duration">0:08</div>
+          </div>
+        </div>
+      </div>
+      <!-- Input con highlight en el campo -->
+      <div class="wa-input-area">
+        <div class="wa-input-wrap" style="border:3px solid #e8b800;box-shadow:0 0 0 3px rgba(232,184,0,0.2);">
+          <span class="material-symbols-rounded">sentiment_satisfied</span>
+          <div class="wa-input-placeholder">Mensaje</div>
+          <span class="material-symbols-rounded">attach_file</span>
+          <span class="material-symbols-rounded">photo_camera</span>
+        </div>
+        <div class="wa-round-btn" style="position:relative;">
+          <span class="material-symbols-rounded">mic</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note-bar">
+    <span class="note-icon">ℹ️</span>
+    <div class="note-text">
+      <span class="material-symbols-rounded" style="font-size:16px;color:#667781;vertical-align:middle">done</span> gris = enviado ·
+      <span class="material-symbols-rounded" style="font-size:16px;color:#667781;vertical-align:middle">done_all</span> gris = entregado ·
+      <span class="material-symbols-rounded" style="font-size:16px;color:#53bdeb;vertical-align:middle">done_all</span> <span class="alert">azul = leído</span>
+    </div>
+  </div>
+  <div class="nav-row">
+    <button class="nav-btn" onclick="showScene(2)">← ANTERIOR</button>
+    <div class="dots">
+      <div class="dot"></div><div class="dot"></div><div class="dot active"></div>
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    </div>
+    <button class="nav-btn" onclick="showScene(4)">SIGUIENTE →</button>
+  </div>
+</div>
+
+<!-- ═══ PANTALLA 4: Nota de voz ═══ -->
+<div class="scene" id="scene-4">
+  <div class="instruction-bar">
+    <div class="step-badge">4</div>
+    <div class="instruction-text">
+      <strong>Mantenga presionado el micrófono</strong> y hable.
+      Cuando suelte, el mensaje se envía automáticamente.
+    </div>
+  </div>
+
+  <div class="device-wrap">
+    <img class="device-frame" src="../img/device-frame-nexus5x.png" alt="frame">
+    <div class="screen" style="display:flex;flex-direction:column;">
+      <div class="wa-statusbar">
+        <span class="statusbar-time">9:41</span>
+        <div class="statusbar-icons">
+          <span class="material-symbols-rounded">signal_cellular_alt</span>
+          <span class="material-symbols-rounded">wifi</span>
+          <span class="material-symbols-rounded">battery_full</span>
+        </div>
+      </div>
+      <!-- Header blanco -->
+      <div class="wa-chat-header">
+        <div class="wa-back"><span class="material-symbols-rounded">arrow_back</span></div>
+        <div class="wa-avatar" style="background:#e91e63;width:48px;height:48px;font-size:22px;flex-shrink:0">V</div>
+        <div class="wa-contact-info">
+          <div class="wa-contact-name">Valentina ❤️</div>
+          <div class="wa-contact-status">grabando audio...</div>
+        </div>
+        <div class="wa-header-btn"><span class="material-symbols-rounded">videocam</span></div>
+        <div class="wa-header-btn"><span class="material-symbols-rounded">call</span></div>
+        <div class="wa-header-btn"><span class="material-symbols-rounded">more_vert</span></div>
+      </div>
+      <div class="wa-messages">
+        <div class="wa-date-sep"><span class="wa-date-chip">Hoy</span></div>
+        <div class="wa-bubble received">
+          Papá, con WhatsApp me manda una nota de voz en 5 segundos 😊
+          <div class="bubble-time">9:31</div>
+        </div>
+        <div class="wa-bubble sent">
+          ¿Y eso me lo puedo aprender hoy?
+          <div class="bubble-time">9:33 <span class="ticks blue"><span class="material-symbols-rounded">done_all</span></span></div>
+        </div>
+        <div class="wa-bubble received">
+          ¡Claro que sí! Solo mantenga presionado el micrófono 👇
+          <div class="bubble-time">9:33</div>
+        </div>
+        <!-- Audio enviado de ejemplo -->
+        <div class="wa-audio-bubble" style="background:#d9fdd3;align-self:flex-end;border-radius:10px;border-bottom-right-radius:2px;max-width:85%;margin-top:8px;">
+          <div class="audio-play-btn" style="background:#00a884">
+            <span class="material-symbols-rounded">play_arrow</span>
+          </div>
+          <div style="flex:1">
+            <div class="audio-waveform">
+              <div class="audio-bar" style="height:7px;background:#00a884"></div>
+              <div class="audio-bar" style="height:24px;background:#00a884"></div>
+              <div class="audio-bar" style="height:16px;background:#00a884"></div>
+              <div class="audio-bar" style="height:30px;background:#00a884"></div>
+              <div class="audio-bar" style="height:12px;background:#00a884"></div>
+              <div class="audio-bar" style="height:22px;background:#00a884"></div>
+              <div class="audio-bar" style="height:9px;background:#00a884"></div>
+              <div class="audio-bar" style="height:20px;background:#00a884"></div>
+              <div class="audio-bar" style="height:14px;background:#00a884"></div>
+              <div class="audio-bar" style="height:6px;background:#00a884"></div>
+            </div>
+            <div class="audio-duration">0:06 <span class="ticks blue" style="float:right"><span class="material-symbols-rounded" style="font-size:18px">done_all</span></span></div>
+          </div>
+        </div>
+      </div>
+      <!-- Recording UI: 2 filas (fila timer+onda+lock / fila delete+pause+send) -->
+      <div class="wa-recording-wrap">
+        <!-- Fila 1: timer, onda, lock -->
+        <div class="wa-recording-bar1">
+          <div class="rec-dot"></div>
+          <div class="rec-time">0:04</div>
+          <div class="rec-wave">
+            <div class="wave-bar" style="animation-delay:0s"></div>
+            <div class="wave-bar" style="animation-delay:0.08s"></div>
+            <div class="wave-bar" style="animation-delay:0.16s"></div>
+            <div class="wave-bar" style="animation-delay:0.24s"></div>
+            <div class="wave-bar" style="animation-delay:0.12s"></div>
+            <div class="wave-bar" style="animation-delay:0.04s"></div>
+            <div class="wave-bar" style="animation-delay:0.20s"></div>
+            <div class="wave-bar" style="animation-delay:0.10s"></div>
+            <div class="wave-bar" style="animation-delay:0.18s"></div>
+            <div class="wave-bar" style="animation-delay:0.06s"></div>
+          </div>
+          <div class="rec-lock"><span class="material-symbols-rounded">lock</span></div>
+        </div>
+        <!-- Fila 2: delete | pause | send (con highlight) -->
+        <div class="wa-recording-bar2">
+          <div class="rec-delete"><span class="material-symbols-rounded">delete</span></div>
+          <div class="rec-pause"><span class="material-symbols-rounded">pause</span></div>
+          <div class="rec-send" style="position:relative;">
+            <div class="wa-round-btn">
+              <span class="material-symbols-rounded">send</span>
+            </div>
+            <div class="highlight-ring" style="width:86px;height:86px;top:-13px;left:-13px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note-bar">
+    <span class="note-icon">⚠️</span>
+    <div class="note-text">
+      Si el audio no sale, WhatsApp le pedirá permiso para el micrófono.
+      Toque <span class="alert">PERMITIR</span> — es normal y necesario.
+    </div>
+  </div>
+  <div class="nav-row">
+    <button class="nav-btn" onclick="showScene(3)">← ANTERIOR</button>
+    <div class="dots">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      <div class="dot active"></div><div class="dot"></div><div class="dot"></div>
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    </div>
+    <button class="nav-btn" onclick="showScene(5)">SIGUIENTE →</button>
+  </div>
+</div>
+
+<!-- ═══ PANTALLA 5: Perfil ═══ -->
+<div class="scene" id="scene-5">
+  <div class="instruction-bar">
+    <div class="step-badge">5</div>
+    <div class="instruction-text">
+      Vaya a <strong>Ajustes → su nombre</strong> → toque <strong>Editar</strong> para cambiar el nombre y agregar una foto.
+    </div>
+  </div>
+
+  <div class="device-wrap">
+    <img class="device-frame" src="../img/device-frame-nexus5x.png" alt="frame">
+    <div class="screen" style="display:flex;flex-direction:column;background:#f0f2f5;">
+      <div class="wa-statusbar">
+        <span class="statusbar-time">9:41</span>
+        <div class="statusbar-icons">
+          <span class="material-symbols-rounded">signal_cellular_alt</span>
+          <span class="material-symbols-rounded">wifi</span>
+          <span class="material-symbols-rounded">battery_full</span>
+        </div>
+      </div>
+      <!-- Topbar blanco -->
+      <div class="wa-perfil-topbar">
+        <div class="wa-back"><span class="material-symbols-rounded" style="color:#54656f">arrow_back</span></div>
+        <div class="wa-perfil-title">Perfil</div>
+        <div class="wa-icon-btn"><span class="material-symbols-rounded">more_vert</span></div>
+      </div>
+      <!-- Avatar centrado + Editar (con highlight) -->
+      <div class="wa-perfil-avatar-section">
+        <div class="wa-perfil-avatar" style="position:relative;">
+          <span class="material-symbols-rounded">person</span>
+          <!-- Cámara pequeña en el avatar -->
+          <div style="position:absolute;bottom:0;right:0;width:36px;height:36px;background:#00a884;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+            <span class="material-symbols-rounded" style="font-size:20px;color:#fff">photo_camera</span>
+          </div>
+        </div>
+        <!-- "Editar" con highlight -->
+        <div style="position:relative;display:inline-block;">
+          <div class="wa-perfil-edit-label">Editar</div>
+          <div class="highlight-rect" style="inset:-8px 0px;border-radius:6px;"></div>
+        </div>
+      </div>
+      <!-- Campos simples sin iconos de edición -->
+      <div style="height:12px;"></div>
+      <div class="wa-perfil-field">
+        <div class="perfil-field-label">Nombre</div>
+        <div class="perfil-field-value">Julio Rincón</div>
+      </div>
+      <div class="wa-perfil-field">
+        <div class="perfil-field-label">Info.</div>
+        <div class="perfil-field-value">¡Hola! Estoy usando WhatsApp.</div>
+      </div>
+      <div class="wa-perfil-field">
+        <div class="perfil-field-label">Teléfono</div>
+        <div class="perfil-field-value">+57 300 000 0000</div>
+      </div>
+      <div class="wa-perfil-field">
+        <div class="perfil-field-label">Enlaces</div>
+        <div class="perfil-field-value" style="color:#8696a0">Agregar enlace</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note-bar">
+    <span class="note-icon">⚠️</span>
+    <div class="note-text">
+      <span class="alert">ADVERTENCIA:</span> No ponga su número de cédula ni dirección como nombre o descripción. Solo su nombre o el del negocio.
+    </div>
+  </div>
+  <div class="nav-row">
+    <button class="nav-btn" onclick="showScene(4)">← ANTERIOR</button>
+    <div class="dots">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      <div class="dot"></div><div class="dot active"></div><div class="dot"></div>
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    </div>
+    <button class="nav-btn" onclick="showScene(6)">SIGUIENTE →</button>
+  </div>
+</div>
+
+<!-- ═══ PANTALLA 6: Menú 3 puntos ═══ -->
+<div class="scene" id="scene-6">
+  <div class="instruction-bar">
+    <div class="step-badge">6</div>
+    <div class="instruction-text">
+      Toca los <strong>tres puntos</strong> en la esquina superior derecha
+      y selecciona <strong>Ajustes</strong>.
+    </div>
+  </div>
+
+  <div class="device-wrap">
+    <img class="device-frame" src="../img/device-frame-nexus5x.png" alt="frame">
+    <div class="screen" style="display:flex;flex-direction:column;">
+      <div class="wa-statusbar">
+        <span class="statusbar-time">9:41</span>
+        <div class="statusbar-icons">
+          <span class="material-symbols-rounded">signal_cellular_alt</span>
+          <span class="material-symbols-rounded">wifi</span>
+          <span class="material-symbols-rounded">battery_full</span>
+        </div>
+      </div>
+      <div class="wa-topbar">
+        <div class="wa-logo">WhatsApp</div>
+        <div class="wa-icon-btn"><span class="material-symbols-rounded">photo_camera</span></div>
+        <!-- Tres puntos con highlight -->
+        <div class="wa-icon-btn" style="position:relative;">
+          <span class="material-symbols-rounded">more_vert</span>
+          <div class="highlight-ring" style="width:62px;height:62px;top:-11px;left:-11px;"></div>
+        </div>
+      </div>
+      <div class="wa-search">
+        <span class="material-symbols-rounded">search</span>
+        <div class="wa-search-text">Preguntar a Meta AI o buscar</div>
+      </div>
+      <div class="wa-chips">
+        <div class="wa-chip active">Todos</div>
+        <div class="wa-chip">No leídos <span class="chip-badge">1</span></div>
+        <div class="wa-chip">Favoritos</div>
+        <div class="wa-chip">Grupos <span class="chip-badge">1</span></div>
+      </div>
+      <div class="wa-archived">
+        <span class="material-symbols-rounded">archive</span>
+        <div class="wa-archived-text">Archivados</div>
+        <div class="wa-archived-count">1</div>
+      </div>
+      <!-- Chat list (fondo, semi-visible) -->
+      <div style="flex:1;position:relative;overflow:hidden;">
+        <div class="wa-chat-item" style="opacity:0.4;">
+          <div class="wa-avatar" style="background:#e91e63">V</div>
+          <div class="wa-chat-info">
+            <div class="wa-chat-name">Valentina ❤️</div>
+            <div class="wa-chat-preview">Nota de voz · 0:08</div>
+          </div>
+          <div class="wa-chat-meta"><div class="wa-chat-time">9:32</div></div>
+        </div>
+        <div class="wa-chat-item" style="opacity:0.4;">
+          <div class="wa-avatar" style="background:#1565c0">P</div>
+          <div class="wa-chat-info">
+            <div class="wa-chat-name">Proveedor Leche Fresca</div>
+            <div class="wa-chat-preview">¿El pedido de mañana sigue igual?</div>
+          </div>
+          <div class="wa-chat-meta"><div class="wa-chat-time">8:15</div></div>
+        </div>
+
+        <!-- Dropdown menu superpuesto -->
+        <div style="position:absolute;top:0;right:0;width:320px;
+                    background:#fff;border-radius:4px;
+                    box-shadow:0 4px 20px rgba(0,0,0,0.25);z-index:20;">
+          <div style="padding:16px 24px;font-size:26px;color:#111b21;border-bottom:1px solid #f0f2f5;">Nuevo grupo</div>
+          <div style="padding:16px 24px;font-size:26px;color:#111b21;border-bottom:1px solid #f0f2f5;">Nueva comunidad</div>
+          <div style="padding:16px 24px;font-size:26px;color:#111b21;border-bottom:1px solid #f0f2f5;">Listas de difusión</div>
+          <div style="padding:16px 24px;font-size:26px;color:#111b21;border-bottom:1px solid #f0f2f5;">Dispositivos vinculados</div>
+          <div style="padding:16px 24px;font-size:26px;color:#111b21;border-bottom:1px solid #f0f2f5;">Destacado</div>
+          <div style="padding:16px 24px;font-size:26px;color:#111b21;border-bottom:1px solid #f0f2f5;">Marcar todos como leídos</div>
+          <!-- Ajustes resaltado -->
+          <div style="position:relative;padding:16px 24px;font-size:26px;font-weight:700;color:#00a884;background:#f0faf6;">
+            Ajustes
+            <div class="highlight-rect" style="inset:2px;border-radius:4px;"></div>
+          </div>
+        </div>
+      </div>
+      <div class="wa-bottom-nav">
+        <div class="wa-nav-item active">
+          <span class="material-symbols-rounded">chat</span><span>Chats</span>
+        </div>
+        <div class="wa-nav-item">
+          <span class="material-symbols-rounded">fiber_new</span><span>Novedades</span>
+        </div>
+        <div class="wa-nav-item">
+          <span class="material-symbols-rounded">groups</span><span>Comunidades</span>
+        </div>
+        <div class="wa-nav-item">
+          <span class="material-symbols-rounded">call</span><span>Llamadas</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note-bar">
+    <span class="note-icon">💡</span>
+    <div class="note-text">Los tres puntos también sirven para crear grupos y ver dispositivos vinculados a su cuenta.</div>
+  </div>
+  <div class="nav-row">
+    <button class="nav-btn" onclick="showScene(5)">← ANTERIOR</button>
+    <div class="dots">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      <div class="dot"></div><div class="dot"></div><div class="dot active"></div>
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    </div>
+    <button class="nav-btn" onclick="showScene(7)">SIGUIENTE →</button>
+  </div>
+</div>
+
+<!-- ═══ PANTALLA 7: Ajustes ═══ -->
+<div class="scene" id="scene-7">
+  <div class="instruction-bar">
+    <div class="step-badge">7</div>
+    <div class="instruction-text">
+      En Ajustes toca <strong>Cuenta</strong> para ver las opciones de seguridad.
+    </div>
+  </div>
+
+  <div class="device-wrap">
+    <img class="device-frame" src="../img/device-frame-nexus5x.png" alt="frame">
+    <div class="screen" style="display:flex;flex-direction:column;background:#f0f2f5;">
+      <div class="wa-statusbar">
+        <span class="statusbar-time">9:41</span>
+        <div class="statusbar-icons">
+          <span class="material-symbols-rounded">signal_cellular_alt</span>
+          <span class="material-symbols-rounded">wifi</span>
+          <span class="material-symbols-rounded">battery_full</span>
+        </div>
+      </div>
+      <div class="wa-settings-header">
+        <div class="wa-back"><span class="material-symbols-rounded" style="color:#54656f">arrow_back</span></div>
+        <div class="wa-settings-title">Ajustes</div>
+        <div class="wa-icon-btn"><span class="material-symbols-rounded">search</span></div>
+      </div>
+      <!-- Tarjeta de perfil -->
+      <div style="background:#fff;display:flex;align-items:center;padding:20px 18px;gap:16px;border-bottom:1px solid #e9edef;margin-bottom:8px;">
+        <div style="width:80px;height:80px;border-radius:50%;background:#dfe5e7;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <span class="material-symbols-rounded" style="font-size:46px;color:#adb5bd">person</span>
+        </div>
+        <div style="flex:1;">
+          <div style="font-size:30px;font-weight:600;color:#111b21;">Julio Rincón</div>
+          <div style="margin-top:6px;">
+            <span style="background:#e9edef;padding:6px 14px;border-radius:16px;font-size:22px;color:#54656f;">Disponible</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;">
+          <div style="width:44px;height:44px;border:2px solid #e9edef;border-radius:8px;display:flex;align-items:center;justify-content:center;">
+            <span class="material-symbols-rounded" style="font-size:24px;color:#54656f">qr_code</span>
+          </div>
+          <div style="width:44px;height:44px;border:2px solid #e9edef;border-radius:50%;display:flex;align-items:center;justify-content:center;">
+            <span class="material-symbols-rounded" style="font-size:24px;color:#54656f">add</span>
+          </div>
+        </div>
+      </div>
+      <!-- Lista de ajustes -->
+      <div style="flex:1;overflow:hidden;">
+        <!-- Cuenta — resaltada -->
+        <div class="wa-settings-item" style="position:relative;background:#f0faf6;">
+          <div class="settings-icon-wrap" style="background:#e8f5e9">
+            <span class="material-symbols-rounded" style="color:#2e7d32">key</span>
+          </div>
+          <div class="item-content">
+            <div class="item-label" style="font-weight:700;color:#00a884">Cuenta</div>
+            <div class="item-sub">Notificaciones de seguridad, cambiar número</div>
+          </div>
+          <div class="item-chevron"><span class="material-symbols-rounded" style="color:#00a884">chevron_right</span></div>
+          <div class="highlight-rect" style="inset:-2px;border-radius:4px;"></div>
+        </div>
+        <div class="wa-settings-item">
+          <div class="settings-icon-wrap" style="background:#e3f2fd">
+            <span class="material-symbols-rounded" style="color:#1565c0">lock</span>
+          </div>
+          <div class="item-content">
+            <div class="item-label">Privacidad</div>
+            <div class="item-sub">Cuentas bloqueadas, mensajes temporales</div>
+          </div>
+          <div class="item-chevron"><span class="material-symbols-rounded">chevron_right</span></div>
+        </div>
+        <div class="wa-settings-item">
+          <div class="settings-icon-wrap" style="background:#f3e5f5">
+            <span class="material-symbols-rounded" style="color:#7b1fa2">list</span>
+          </div>
+          <div class="item-content">
+            <div class="item-label">Listas</div>
+            <div class="item-sub">Administrar personas y grupos</div>
+          </div>
+          <div class="item-chevron"><span class="material-symbols-rounded">chevron_right</span></div>
+        </div>
+        <div class="wa-settings-item">
+          <div class="settings-icon-wrap" style="background:#fff8e1">
+            <span class="material-symbols-rounded" style="color:#f57f17">chat</span>
+          </div>
+          <div class="item-content">
+            <div class="item-label">Chats</div>
+            <div class="item-sub">Tema, fondos de pantalla, historial de chat</div>
+          </div>
+          <div class="item-chevron"><span class="material-symbols-rounded">chevron_right</span></div>
+        </div>
+        <div class="wa-settings-item">
+          <div class="settings-icon-wrap" style="background:#e8f5e9">
+            <span class="material-symbols-rounded" style="color:#2e7d32">notifications</span>
+          </div>
+          <div class="item-content">
+            <div class="item-label">Notificaciones</div>
+            <div class="item-sub">Tonos de mensajes, grupos y llamadas</div>
+          </div>
+          <div class="item-chevron"><span class="material-symbols-rounded">chevron_right</span></div>
+        </div>
+        <div class="wa-settings-item">
+          <div class="settings-icon-wrap" style="background:#e3f2fd">
+            <span class="material-symbols-rounded" style="color:#1565c0">storage</span>
+          </div>
+          <div class="item-content">
+            <div class="item-label">Almacenamiento y datos</div>
+            <div class="item-sub">Uso de red, descarga automática</div>
+          </div>
+          <div class="item-chevron"><span class="material-symbols-rounded">chevron_right</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note-bar">
+    <span class="note-icon">💡</span>
+    <div class="note-text">Desde Ajustes también puede cambiar el fondo de sus chats, el idioma de la app y gestionar cuánto espacio usa WhatsApp en el teléfono.</div>
+  </div>
+  <div class="nav-row">
+    <button class="nav-btn" onclick="showScene(6)">← ANTERIOR</button>
+    <div class="dots">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      <div class="dot active"></div><div class="dot"></div><div class="dot"></div>
+    </div>
+    <button class="nav-btn" onclick="showScene(8)">SIGUIENTE →</button>
+  </div>
+</div>
+
+<!-- ═══ PANTALLA 8: Cuenta ═══ -->
+<div class="scene" id="scene-8">
+  <div class="instruction-bar">
+    <div class="step-badge">8</div>
+    <div class="instruction-text">
+      Dentro de Cuenta toca <strong>Verificación en dos pasos</strong> para activarla.
+    </div>
+  </div>
+
+  <div class="device-wrap">
+    <img class="device-frame" src="../img/device-frame-nexus5x.png" alt="frame">
+    <div class="screen" style="display:flex;flex-direction:column;background:#f0f2f5;">
+      <div class="wa-statusbar">
+        <span class="statusbar-time">9:41</span>
+        <div class="statusbar-icons">
+          <span class="material-symbols-rounded">signal_cellular_alt</span>
+          <span class="material-symbols-rounded">wifi</span>
+          <span class="material-symbols-rounded">battery_full</span>
+        </div>
+      </div>
+      <div class="wa-settings-header">
+        <div class="wa-back"><span class="material-symbols-rounded" style="color:#54656f">arrow_back</span></div>
+        <div class="wa-settings-title">Cuenta</div>
+      </div>
+      <div style="flex:1;overflow:hidden;">
+        <div class="wa-settings-item">
+          <div class="settings-icon-wrap" style="background:#e8f5e9">
+            <span class="material-symbols-rounded" style="color:#2e7d32">lock</span>
+          </div>
+          <div class="item-content">
+            <div class="item-label">Privacidad</div>
+            <div class="item-sub">Foto de perfil, estado, ubicación</div>
+          </div>
+          <div class="item-chevron"><span class="material-symbols-rounded">chevron_right</span></div>
+        </div>
+        <div class="wa-settings-item">
+          <div class="settings-icon-wrap" style="background:#e3f2fd">
+            <span class="material-symbols-rounded" style="color:#1565c0">security</span>
+          </div>
+          <div class="item-content">
+            <div class="item-label">Seguridad</div>
+            <div class="item-sub">Mostrar notificaciones de seguridad</div>
+          </div>
+          <div class="item-chevron"><span class="material-symbols-rounded">chevron_right</span></div>
+        </div>
+        <!-- Verificación resaltada -->
+        <div class="wa-settings-item" style="position:relative;background:#f0faf6;">
+          <div class="settings-icon-wrap" style="background:#00a884">
+            <span class="material-symbols-rounded" style="color:#fff">key</span>
+          </div>
+          <div class="item-content">
+            <div class="item-label" style="font-weight:700;color:#00a884">Verificación en dos pasos</div>
+            <div class="item-sub" style="color:#54656f">Activar protección extra</div>
+          </div>
+          <div class="item-chevron"><span class="material-symbols-rounded" style="color:#00a884">chevron_right</span></div>
+          <div class="highlight-rect" style="inset:-2px;border-radius:4px;"></div>
+        </div>
+        <div class="wa-settings-item">
+          <div class="settings-icon-wrap" style="background:#fce4ec">
+            <span class="material-symbols-rounded" style="color:#c62828">email</span>
+          </div>
+          <div class="item-content">
+            <div class="item-label">Correo electrónico</div>
+            <div class="item-sub">Sin dirección de correo</div>
+          </div>
+          <div class="item-chevron"><span class="material-symbols-rounded">chevron_right</span></div>
+        </div>
+        <div class="wa-settings-item">
+          <div class="settings-icon-wrap" style="background:#f3e5f5">
+            <span class="material-symbols-rounded" style="color:#6a1b9a">smartphone</span>
+          </div>
+          <div class="item-content"><div class="item-label">Cambiar número</div></div>
+          <div class="item-chevron"><span class="material-symbols-rounded">chevron_right</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note-bar">
+    <span class="note-icon">🔐</span>
+    <div class="note-text">La verificación en dos pasos añade una capa extra: aunque alguien tenga su SIM, no podrá entrar a su WhatsApp sin el PIN.</div>
+  </div>
+  <div class="nav-row">
+    <button class="nav-btn" onclick="showScene(7)">← ANTERIOR</button>
+    <div class="dots">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      <div class="dot"></div><div class="dot active"></div><div class="dot"></div>
+    </div>
+    <button class="nav-btn" onclick="showScene(9)">SIGUIENTE →</button>
+  </div>
+</div>
+
+<!-- ═══ PANTALLA 9: Verificación en dos pasos ═══ -->
+<div class="scene" id="scene-9">
+  <div class="instruction-bar">
+    <div class="step-badge">9</div>
+    <div class="instruction-text">
+      Toca <strong>Activar</strong> y crea un PIN de 6 dígitos que recuerde bien. Este PIN protegerá su cuenta.
+    </div>
+  </div>
+
+  <div class="device-wrap">
+    <img class="device-frame" src="../img/device-frame-nexus5x.png" alt="frame">
+    <div class="screen" style="display:flex;flex-direction:column;background:#fff;">
+      <div class="wa-statusbar">
+        <span class="statusbar-time">9:41</span>
+        <div class="statusbar-icons">
+          <span class="material-symbols-rounded">signal_cellular_alt</span>
+          <span class="material-symbols-rounded">wifi</span>
+          <span class="material-symbols-rounded">battery_full</span>
+        </div>
+      </div>
+      <div class="wa-settings-header">
+        <div class="wa-back"><span class="material-symbols-rounded" style="color:#54656f">arrow_back</span></div>
+        <div class="wa-settings-title">Verificación en dos pasos</div>
+      </div>
+      <!-- Contenido centrado -->
+      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 40px 0;text-align:center;gap:32px;">
+        <!-- Estrellas en caja verde -->
+        <div style="background:#25d366;padding:18px 36px;border-radius:40px;">
+          <span style="font-size:44px;color:#fff;letter-spacing:8px;">★ ★ ★</span>
+        </div>
+        <!-- Texto explicativo -->
+        <div style="font-size:26px;color:#54656f;line-height:1.6;">
+          Para mayor seguridad, activa la verificación en dos pasos. Si lo haces, deberás ingresar un PIN cuando vuelvas a registrar tu número de teléfono en WhatsApp.
+          <span style="color:#00a884;font-weight:600;display:block;margin-top:14px;">Más información</span>
+        </div>
+      </div>
+      <!-- Botón Activar abajo -->
+      <div style="padding:28px 40px 40px;display:flex;justify-content:center;">
+        <div style="position:relative;">
+          <div style="background:#25d366;padding:22px 80px;border-radius:40px;font-size:30px;font-weight:600;color:#fff;cursor:pointer;">
+            Activar
+          </div>
+          <div class="highlight-ring" style="width:calc(100% + 28px);height:calc(100% + 28px);top:-14px;left:-14px;border-radius:44px;"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note-bar">
+    <span class="note-icon">🚨</span>
+    <div class="note-text">
+      <span class="alert">REGLA DE ORO:</span> Si alguien le pide el código de verificación de WhatsApp por mensaje, es una estafa. WhatsApp <strong>nunca</strong> lo pide por chat.
+    </div>
+  </div>
+  <div class="nav-row">
+    <button class="nav-btn" onclick="showScene(8)">← ANTERIOR</button>
+    <div class="dots">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      <div class="dot"></div><div class="dot"></div><div class="dot active"></div>
+    </div>
+    <button class="nav-btn final" onclick="goToTrivia()">IR A LA TRIVIA →</button>
+  </div>
+</div>
+
+<script>
+  function showScene(n) {
+    document.querySelectorAll('.scene').forEach(s => s.classList.remove('active'));
+    document.getElementById('scene-' + n).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function goToTrivia() {
+    window.location.href = 'm1_trivia.html';
+  }
+</script>
+</body>
+</html>
