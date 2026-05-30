@@ -208,7 +208,14 @@
     .tarjeta.incorrecta .resultado-icono { display: flex; }
 
     /* ── Botones de acción ── */
-    .acciones { display: flex; gap: 10px; flex-wrap: wrap; }
+    .acciones {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      margin-top: 18px;
+    }
     .btn {
       border: none;
       border-radius: 1000px;
@@ -241,6 +248,12 @@
     .feedback.ok  { background: #e8f5e9; border-left: 4px solid #4caf50; color: #2e7d32; }
     .feedback.ok strong { color: #1b5e20; font-size: 18px; }
     .feedback.err { background: #fdecea; border-left: 4px solid #e53935; color: #c62828; }
+
+    #btn-reintentar-overlay {
+      display: none;
+      margin-top: 8px;
+      align-self: center;
+    }
   </style>
 </head>
 <body>

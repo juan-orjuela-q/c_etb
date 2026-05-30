@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Las 4 redes</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 24px;
+    }
+
+    .tabla-wrap {
+      width: 100%;
+      max-width: 960px;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 2px 16px rgba(14, 45, 92, 0.09);
+      border: 1.5px solid #e4eaf2;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    /* Encabezado */
+    thead th {
+      background: #0e2d5c;
+      color: #fff;
+      font-size: 18px;
+      font-weight: 700;
+      padding: 14px 18px;
+      text-align: left;
+      letter-spacing: 0.3px;
+    }
+    thead th:first-child { width: 72px; text-align: center; }
+
+    /* Filas */
+    tbody tr {
+      border-top: 1.5px solid #e8eef5;
+      transition: background 0.18s;
+    }
+      /* Animación de entrada */
+      tbody tr {
+        opacity: 0;
+        transform: translateY(30px);
+        animation: fadeInUp 0.7s ease forwards;
+        animation-delay: var(--delay, 0s);
+      }
+      @keyframes fadeInUp {
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+    tbody tr:hover { background: #f5f8ff; }
+
+    tbody td {
+      padding: 16px 18px;
+      font-size: 16px;
+      color: #1e3a5f;
+      line-height: 1.4;
+      vertical-align: middle;
+    }
+
+    /* Columna de logo */
+    .td-logo {
+      text-align: center;
+      padding: 14px 10px;
+      width: 72px;
+    }
+    .logo-wrap {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      overflow: hidden;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 1px 6px rgba(0,0,0,0.10);
+    }
+    .logo-wrap img {
+      width: 48px;
+      height: 48px;
+      display: block;
+    }
+
+    /* Nombre de la red */
+    .red-nombre {
+      font-weight: 700;
+      font-size: 15px;
+      color: #0e2d5c;
+      margin-bottom: 2px;
+    }
+
+    /* Bandas de color alternado por fila */
+    .fila-wa   { background: #f9fffc; }
+    .fila-fb   { background: #f6f9ff; }
+    .fila-ig   { background: #fff6fb; }
+    .fila-tt   { background: #f7f7f7; }
+
+    .fila-wa:hover { background: #edfaf4; }
+    .fila-fb:hover { background: #eaf1ff; }
+    .fila-ig:hover { background: #fcedf7; }
+    .fila-tt:hover { background: #efefef; }
+  </style>
+</head>
+<body>
+<div class="tabla-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th></th>
+        <th>¿Para qué sirve?</th>
+        <th>¿Qué se publica?</th>
+        <th>¿Quién la usa más?</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="fila-wa">
+        <td class="td-logo">
+          <div class="logo-wrap">
+            <img src="../img/ico_Whatsapp.svg" alt="WhatsApp">
+          </div>
+          <div class="red-nombre" style="margin-top:5px">WhatsApp</div>
+        </td>
+        <td>Mensajes directos y privados</td>
+        <td>Texto y audios</td>
+        <td>Familia y clientes cercanos</td>
+      </tr>
+      <tr class="fila-fb">
+        <td class="td-logo">
+          <div class="logo-wrap">
+            <img src="../img/ico_Facebook.svg" alt="Facebook">
+          </div>
+          <div class="red-nombre" style="margin-top:5px">Facebook</div>
+        </td>
+        <td>Conectar y publicar para una audiencia amplia</td>
+        <td>Fotos y textos</td>
+        <td>Adultos y negocios</td>
+      </tr>
+      <tr class="fila-ig">
+        <td class="td-logo">
+          <div class="logo-wrap">
+            <img src="../img/ico_Instagram.svg" alt="Instagram">
+          </div>
+          <div class="red-nombre" style="margin-top:5px">Instagram</div>
+        </td>
+        <td>Mostrar imágenes y construir una marca visual</td>
+        <td>Fotos y videos</td>
+        <td>Emprendedores y negocios visuales</td>
+      </tr>
+      <tr class="fila-tt">
+        <td class="td-logo">
+          <div class="logo-wrap">
+            <img src="../img/ico_TikTok.svg" alt="TikTok">
+          </div>
+          <div class="red-nombre" style="margin-top:5px">TikTok</div>
+        </td>
+        <td>Videos cortos de entretenimiento y aprendizaje</td>
+        <td>Tutoriales y entretenimiento</td>
+        <td>Todos los públicos</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+</div>
+<script>
+  // Animar filas de la tabla con un pequeño delay escalonado
+  document.addEventListener('DOMContentLoaded', function() {
+    const filas = document.querySelectorAll('tbody tr');
+    filas.forEach((fila, i) => {
+      fila.style.setProperty('--delay', (i * 0.12) + 's');
+    });
+  });
+</script>
+</body>
+</html>
