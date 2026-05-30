@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ordenar pasos — Privacidad en Facebook</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: transparent;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 28px 20px 40px;
+    }
+
+    .wrapper { width: 100%; max-width: 680px; }
+
+    /* ── Encabezado ── */
+    .label-actividad {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: #4b97fb;
+      margin-bottom: 6px;
+    }
+    .titulo {
+      font-size: 22px;
+      font-weight: 700;
+      color: #0e2d5c;
+      line-height: 1.3;
+      margin-bottom: 10px;
+    }
+
+    /* Caja de instrucción de uso */
+    .como-usar {
+      background: #fff8e1;
+      border-left: 4px solid #ffc524;
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 22px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .como-usar .icono-info {
+      font-size: 24px;
+      flex-shrink: 0;
+      line-height: 1;
+      margin-top: 1px;
+    }
+    .como-usar p {
+      font-size: 16px;
+      color: #0e2d5c;
+      line-height: 1.45;
+    }
+    .como-usar p strong { color: #b07d00; }
+
+    /* ── Lista de tarjetas ── */
+    #lista {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .tarjeta {
+      background: #fff;
+      border: 2px solid #e4eaf2;
+      border-radius: 14px;
+      display: flex;
+      align-items: stretch;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+      cursor: grab;
+      transition: border-color 0.2s, box-shadow 0.2s, opacity 0.2s;
+      animation: slideIn 0.35s ease both;
+      touch-action: none; /* para touch drag */
+    }
+    .tarjeta:active { cursor: grabbing; }
+    .tarjeta.arrastrando {
+      opacity: 0.45;
+      border-color: #4b97fb;
+      box-shadow: 0 6px 20px rgba(75,151,251,0.2);
+    }
+    .tarjeta.sobre {
+      border-color: #ffc524;
+      box-shadow: 0 0 0 3px rgba(255,197,36,0.25);
+    }
+    .tarjeta.correcta { border-color: #4caf50; background: #f1faf2; }
+    .tarjeta.incorrecta { border-color: #e53935; background: #fdf2f2; }
+
+    /* Mango de arrastre */
+    .mango {
+      width: 44px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      padding: 0 8px;
+      border-right: 1px solid #eef2f7;
+      cursor: grab;
+    }
+    .mango span {
+      display: block;
+      width: 18px;
+      height: 3px;
+      background: #c8d3e0;
+      border-radius: 2px;
+      transition: background 0.2s;
+    }
+    .tarjeta:hover .mango span { background: #4b97fb; }
+    .tarjeta.correcta  .mango span { background: #4caf50; }
+    .tarjeta.incorrecta .mango span { background: #e53935; }
+
+    /* Número de posición */
+    .num {
+      flex-shrink: 0;
+      width: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: 700;
+      color: #6b7280;
+      padding: 0 4px;
+      transition: color 0.2s;
+    }
+    .tarjeta.correcta  .num { color: #4caf50; }
+    .tarjeta.incorrecta .num { color: #e53935; }
+
+    /* Contenido */
+    .contenido {
+      flex: 1;
+      padding: 14px 14px 14px 4px;
+    }
+    .instruccion-texto {
+      font-size: 16px;
+      font-weight: 500;
+      color: #0e2d5c;
+      line-height: 1.4;
+      margin-bottom: 7px;
+    }
+    .donde {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #f0f4f9;
+      border-radius: 8px;
+      padding: 6px 10px;
+    }
+    .donde-icono { font-size: 14px; flex-shrink: 0; }
+    .donde-texto {
+      font-size: 16px;
+      color: #0e2d5c;
+      font-weight: 500;
+    }
+
+    /* Botones de flecha (accesibilidad táctil) */
+    .flechas {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 2px;
+      padding: 8px 10px 8px 4px;
+    }
+    .flecha-btn {
+      width: 30px;
+      height: 30px;
+      border: none;
+      background: #eef2f7;
+      border-radius: 8px;
+      font-size: 15px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, transform 0.1s;
+      color: #5a6b82;
+    }
+    .flecha-btn:hover { background: #4b97fb; color: #fff; transform: scale(1.08); }
+    .flecha-btn:disabled { opacity: 0.25; cursor: default; transform: none; background: #eef2f7; color: #5a6b82; }
+
+    /* Indicador de resultado */
+    .resultado-icono {
+      flex-shrink: 0;
+      width: 32px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      padding-right: 8px;
+    }
+    .tarjeta.correcta  .resultado-icono { display: flex; }
+    .tarjeta.incorrecta .resultado-icono { display: flex; }
+
+    /* ── Botones de acción ── */
+    .acciones { display: flex; gap: 10px; flex-wrap: wrap; }
+    .btn {
+      border: none;
+      border-radius: 1000px;
+      padding: 14px 28px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 17px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+    .btn:hover:not(:disabled) { opacity: 0.88; transform: translateY(-1px); }
+    .btn:disabled { opacity: 0.3; cursor: default; transform: none; }
+    .btn-verificar  { background: #ffc524; color: #0e2d5c; }
+    .btn-reintentar { background: #eef2f7; color: #0e2d5c; display: none; }
+
+    /* ── Feedback ── */
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .feedback {
+      margin-top: 18px;
+      padding: 16px 20px;
+      border-radius: 12px;
+      font-size: 17px;
+      line-height: 1.5;
+      display: none;
+    }
+    .feedback.visible { display: block; animation: fadeInDown 0.35s ease forwards; }
+    .feedback.ok  { background: #e8f5e9; border-left: 4px solid #4caf50; color: #2e7d32; }
+    .feedback.ok strong { color: #1b5e20; font-size: 18px; }
+    .feedback.err { background: #fdecea; border-left: 4px solid #e53935; color: #c62828; }
+  </style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!--<div class="label-actividad">Actividad — Módulo 2 · Facebook</div>
+  <h1 class="titulo">Ordena los pasos para proteger la privacidad de Don Julio</h1>
+
+  <div class="como-usar">
+    <span class="icono-info">☝️</span>
+    <p>
+      <strong>¿Cómo hacerlo?</strong> Arrastra cada tarjeta hacia arriba o hacia abajo para ordenarlas.
+      También puede usar los botones <strong>▲ ▼</strong> de cada tarjeta.
+      Cuando estén en el orden correcto, toca <strong>Verificar</strong>.
+    </p>
+  </div>-->
+
+  <div id="lista"></div>
+
+  <div class="acciones">
+    <button class="btn btn-verificar"  id="btn-verificar"  onclick="verificar()">Verificar orden</button>
+    <button class="btn btn-reintentar" id="btn-reintentar" onclick="reiniciar()">Intentar de nuevo</button>
+  </div>
+
+  <div class="feedback ok"  id="fb-ok">
+    <strong>¡Perfecto!</strong><br>
+    Don Julio ahora controla quién ve su información. Eso es usar Facebook con cabeza.
+  </div>
+  <div class="feedback err" id="fb-err">
+    Algunos pasos no están en el orden correcto — los marcamos en rojo. Revísalos y vuelve a intentarlo.
+  </div>
+
+</div>
+<script>
+  // ── Datos ──────────────────────────────────────────────
+  var PASOS = [
+    {
+      id: 1,
+      texto: 'Toque las tres líneas del menú (esquina inferior o superior derecha según su celular).',
+      donde: 'Facebook → Menú (tres líneas)',
+      icono: '☰'
+    },
+    {
+      id: 2,
+      texto: 'Toque Configuración y privacidad → Configuración.',
+      donde: 'Facebook → Configuración y privacidad',
+      icono: '⚙️'
+    },
+    {
+      id: 3,
+      texto: 'En Privacidad, cambie "¿Quién puede ver tu lista de amigos?" a Solo amigos.',
+      donde: 'Configuración → Privacidad',
+      icono: '🔒'
+    },
+    {
+      id: 4,
+      texto: 'Cambie "¿Quién puede ver tu número de teléfono?" a Solo yo.',
+      donde: 'Configuración → Privacidad',
+      icono: '📵'
+    },
+    {
+      id: 5,
+      texto: 'Revise la información del perfil y cambie la dirección exacta de casa a Solo yo.',
+      donde: 'Perfil → Editar perfil → Información',
+      icono: '🏠'
+    }
+  ];
+
+  var lista = document.getElementById('lista');
+  var bloqueado = false;
+  var dragSrc = null;
+
+  // ── Barajar ──────────────────────────────────────────
+  function barajar(arr) {
+    var a = arr.slice();
+    for (var i = a.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var t = a[i]; a[i] = a[j]; a[j] = t;
+    }
+    // Asegurar que el resultado barajado difiera del orden original
+    var igualAlOriginal = a.every(function(p, i) { return p.id === i + 1; });
+    return igualAlOriginal ? barajar(arr) : a;
+  }
+
+  // ── Crear tarjeta ─────────────────────────────────────
+  function crearTarjeta(paso, idx) {
+    var div = document.createElement('div');
+    div.className = 'tarjeta';
+    div.draggable = true;
+    div.dataset.id = paso.id;
+    div.style.animationDelay = (idx * 0.08) + 's';
+
+    div.innerHTML =
+      '<div class="mango" title="Arrastra para mover">' +
+        '<span></span><span></span><span></span>' +
+      '</div>' +
+      '<div class="num">' + (idx + 1) + '</div>' +
+      '<div class="contenido">' +
+        '<div class="instruccion-texto">' + paso.texto + '</div>' +
+        '<div class="donde">' +
+          '<span class="donde-texto">' + paso.donde + '</span>' +
+        '</div>' +
+      '</div>' +
+      '<div class="flechas">' +
+        '<button class="flecha-btn" onclick="moverArriba(this)" title="Mover arriba">▲</button>' +
+        '<button class="flecha-btn" onclick="moverAbajo(this)" title="Mover abajo">▼</button>' +
+      '</div>' +
+      '<div class="resultado-icono" id="ri-' + paso.id + '"></div>';
+
+    // ── Drag & Drop (ratón) ───────────────────────────
+    div.addEventListener('dragstart', function(e) {
+      if (bloqueado) return;
+      dragSrc = this;
+      this.classList.add('arrastrando');
+      e.dataTransfer.effectAllowed = 'move';
+    });
+    div.addEventListener('dragend', function() {
+      this.classList.remove('arrastrando');
+      document.querySelectorAll('.tarjeta').forEach(function(t) { t.classList.remove('sobre'); });
+      actualizarNums();
+    });
+    div.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      if (bloqueado || !dragSrc || dragSrc === this) return;
+      e.dataTransfer.dropEffect = 'move';
+      document.querySelectorAll('.tarjeta').forEach(function(t) { t.classList.remove('sobre'); });
+      this.classList.add('sobre');
+    });
+    div.addEventListener('dragleave', function() { this.classList.remove('sobre'); });
+    div.addEventListener('drop', function(e) {
+      e.preventDefault();
+      if (bloqueado || !dragSrc || dragSrc === this) return;
+      this.classList.remove('sobre');
+      // Insertar dragSrc antes o después según posición
+      var rect = this.getBoundingClientRect();
+      var mid  = rect.top + rect.height / 2;
+      if (e.clientY < mid) {
+        lista.insertBefore(dragSrc, this);
+      } else {
+        lista.insertBefore(dragSrc, this.nextSibling);
+      }
+      actualizarNums();
+    });
+
+    // ── Touch drag ───────────────────────────────────
+    var touchOffsetY = 0;
+    div.addEventListener('touchstart', function(e) {
+      if (bloqueado) return;
+      dragSrc = this;
+      var t = e.touches[0];
+      var rect = this.getBoundingClientRect();
+      touchOffsetY = t.clientY - rect.top;
+      this.classList.add('arrastrando');
+    }, { passive: true });
+
+    div.addEventListener('touchmove', function(e) {
+      if (bloqueado || !dragSrc) return;
+      e.preventDefault();
+      var t = e.touches[0];
+      var tarjetas = Array.from(lista.querySelectorAll('.tarjeta:not(.arrastrando)'));
+      document.querySelectorAll('.tarjeta').forEach(function(c) { c.classList.remove('sobre'); });
+      tarjetas.forEach(function(card) {
+        var r = card.getBoundingClientRect();
+        if (t.clientY >= r.top && t.clientY <= r.bottom) {
+          card.classList.add('sobre');
+        }
+      });
+    }, { passive: false });
+
+    div.addEventListener('touchend', function(e) {
+      if (bloqueado || !dragSrc) return;
+      var t = e.changedTouches[0];
+      var tarjetas = Array.from(lista.querySelectorAll('.tarjeta:not(.arrastrando)'));
+      tarjetas.forEach(function(card) {
+        card.classList.remove('sobre');
+        var r = card.getBoundingClientRect();
+        if (t.clientY >= r.top && t.clientY <= r.bottom) {
+          var mid = r.top + r.height / 2;
+          if (t.clientY < mid) {
+            lista.insertBefore(dragSrc, card);
+          } else {
+            lista.insertBefore(dragSrc, card.nextSibling);
+          }
+        }
+      });
+      dragSrc.classList.remove('arrastrando');
+      dragSrc = null;
+      actualizarNums();
+    }, { passive: true });
+
+    return div;
+  }
+
+  // ── Actualizar números de posición ───────────────────
+  function actualizarNums() {
+    lista.querySelectorAll('.tarjeta').forEach(function(t, i) {
+      t.querySelector('.num').textContent = i + 1;
+      // Habilitar/deshabilitar flechas
+      var btns = t.querySelectorAll('.flecha-btn');
+      btns[0].disabled = (i === 0);
+      btns[1].disabled = (i === lista.children.length - 1);
+    });
+  }
+
+  // ── Mover con botones ─────────────────────────────────
+  function moverArriba(btn) {
+    if (bloqueado) return;
+    var tarjeta = btn.closest('.tarjeta');
+    var prev = tarjeta.previousElementSibling;
+    if (prev) { lista.insertBefore(tarjeta, prev); actualizarNums(); }
+  }
+  function moverAbajo(btn) {
+    if (bloqueado) return;
+    var tarjeta = btn.closest('.tarjeta');
+    var next = tarjeta.nextElementSibling;
+    if (next) { lista.insertBefore(next, tarjeta); actualizarNums(); }
+  }
+
+  // ── Verificar ────────────────────────────────────────
+  function verificar() {
+    bloqueado = true;
+    document.getElementById('btn-verificar').disabled = true;
+
+    var tarjetas = Array.from(lista.querySelectorAll('.tarjeta'));
+    var todoOk = true;
+
+    tarjetas.forEach(function(t, posActual) {
+      var id = parseInt(t.dataset.id); // id correcto = posición correcta (1-based)
+      var ri = document.getElementById('ri-' + id);
+      t.querySelectorAll('.flecha-btn').forEach(function(b) { b.disabled = true; });
+      if (id === posActual + 1) {
+        t.classList.add('correcta');
+        ri.textContent = '✓';
+      } else {
+        t.classList.add('incorrecta');
+        ri.textContent = '✕';
+        todoOk = false;
+      }
+    });
+
+    if (todoOk) {
+      document.getElementById('fb-ok').classList.add('visible');
+    } else {
+      document.getElementById('fb-err').classList.add('visible');
+      document.getElementById('btn-reintentar').style.display = 'inline-block';
+    }
+  }
+
+  // ── Reiniciar ────────────────────────────────────────
+  function reiniciar() {
+    bloqueado = false;
+    dragSrc = null;
+    document.getElementById('btn-verificar').disabled = false;
+    document.getElementById('btn-reintentar').style.display = 'none';
+    document.getElementById('fb-ok').classList.remove('visible');
+    document.getElementById('fb-err').classList.remove('visible');
+    lista.innerHTML = '';
+    renderizar();
+  }
+
+  // ── Render inicial ───────────────────────────────────
+  function renderizar() {
+    var orden = barajar(PASOS);
+    orden.forEach(function(paso, idx) {
+      lista.appendChild(crearTarjeta(paso, idx));
+    });
+    actualizarNums();
+  }
+
+  renderizar();
+</script>
+</body>
+</html>
