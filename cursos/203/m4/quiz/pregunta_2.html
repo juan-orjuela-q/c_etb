@@ -78,18 +78,22 @@
     .fb-url {
       display: inline-block; background: #eef4ff; border: 1.5px solid #4b97fb;
       border-radius: 8px; padding: 7px 14px;
-      font-size: 15px; font-weight: 700; color: #1a57c4;
+      font-size: 15px; font-weight: 700; color: #0e2d5c;
       text-decoration: none; align-self: flex-start;
     }
     .fb-url:hover { background: #dce9ff; }
     .fb-consecuencia {
-      font-size: 15px; color: #c62828; font-weight: 500; line-height: 1.4;
+      font-size: 17px; color: #c62828; font-weight: 500; line-height: 1.4;
       background: #fdecea; border-radius: 8px; padding: 8px 12px;
     }
     .fb-quote {
-      font-size: 15px; color: #5a6a80; line-height: 1.4;
-      border-left: 3px solid #e4eaf2; padding-left: 12px;
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 17px; color: #5a6a80; line-height: 1.4;
       font-style: italic;
+    }
+    .fb-quote img {
+      width: 36px; height: 36px; border-radius: 50%;
+      object-fit: cover; flex-shrink: 0; margin-top: 2px;
     }
   </style>
 </head>
@@ -117,7 +121,7 @@
       <div class="fb-body">
         <p class="fb-texto">Las decisiones de la Alcaldía se publican en <strong>bogota.gov.co</strong> y en medios oficiales. Si no está ahí, no es verdad.</p>
         <span class="fb-url" style="pointer-events:none; cursor:default; text-decoration:none;">bogota.gov.co ↗</span>
-        <p class="fb-quote">Don Julio: "Una noticia que no está en el sitio oficial no es verdad. Punto."</p>
+        <p class="fb-quote"><img src="../img/don_julio_thumb.jpeg" alt="Don Julio">"Una noticia que no está en el sitio oficial no es verdad. Punto."</p>
       </div>
     </div>
 
@@ -127,7 +131,7 @@
         <p class="fb-texto">Las decisiones de la Alcaldía se publican en <strong>bogota.gov.co</strong> y en medios oficiales. Si no está ahí, no es verdad.</p>
         <span class="fb-url" style="pointer-events:none; cursor:default; text-decoration:none;">bogota.gov.co ↗</span>
         <p class="fb-consecuencia">Consecuencia real: quien no pagó creyendo la noticia falsa recibió un cobro adicional por mora.</p>
-        <p class="fb-quote">Don Julio: "Una noticia que no está en el sitio oficial no es verdad. Punto."</p>
+        <p class="fb-quote"><img src="../img/don_julio_thumb.jpeg" alt="Don Julio">"Una noticia que no está en el sitio oficial no es verdad. Punto."</p>
       </div>
     </div>
   </div>
@@ -142,13 +146,18 @@
     function seleccionar(el) {
       if (respondido) return;
       respondido = true;
-      document.querySelectorAll('.opcion').forEach(function(o) { o.classList.add('respondida'); o.style.cursor = 'default'; });
+      // Ocultar señal de alarma
+      document.querySelector('.alarma').style.display = 'none';
+      // Ocultar la opción NO seleccionada
+      document.querySelectorAll('.opcion').forEach(function(o) {
+        o.classList.add('respondida'); o.style.cursor = 'default';
+        if (o !== el) o.style.display = 'none';
+      });
       if (el.dataset.correcto === 'true') {
         el.classList.add('correcta');
         document.getElementById('feedback-correcto').classList.add('visible');
       } else {
         el.classList.add('incorrecta');
-        document.querySelectorAll('.opcion').forEach(function(o) { if (o.dataset.correcto === 'true') o.classList.add('correcta'); });
         document.getElementById('feedback-incorrecto').classList.add('visible');
       }
     }
