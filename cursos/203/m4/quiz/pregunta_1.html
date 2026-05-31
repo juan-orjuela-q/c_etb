@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Caso 1 — Fake news</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: transparent;
+      display: flex; align-items: center; justify-content: center;
+      min-height: 100vh; padding: 24px;
+    }
+    .wrapper { width: 100%; max-width: 640px; }
+
+    @keyframes slideInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Enunciado */
+    .enunciado {
+      font-size: 24px; font-weight: 700; line-height: 1.3;
+      color: #0e2d5c; margin-bottom: 24px;
+    }
+
+    /* Señal de alarma */
+    .alarma {
+      background: #fff8e1; border-left: 4px solid #ffc524;
+      border-radius: 10px; padding: 12px 16px;
+      font-size: 16px; color: #5a4200; line-height: 1.4;
+      margin-bottom: 20px;
+    }
+    .alarma strong { font-weight: 700; }
+
+    /* Opciones */
+    .opciones { display: flex; flex-direction: column; gap: 12px; }
+    .opcion {
+      background: #fff; border: 2px solid transparent; border-radius: 12px;
+      padding: 16px 20px; font-size: 20px; font-weight: 400; line-height: 1.3;
+      color: #0e2d5c; cursor: pointer; display: flex; align-items: center; gap: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      transition: background 0.3s, border-color 0.3s, box-shadow 0.15s, transform 0.1s;
+      user-select: none; opacity: 0;
+    }
+    .opcion:hover:not(.respondida) { box-shadow: 0 4px 16px rgba(0,0,0,0.12); transform: translateY(-1px); }
+    .opcion.correcta   { background: #e8f5e9; border-color: #4caf50; }
+    .opcion.incorrecta { background: #fdecea; border-color: #e53935; }
+    .icono {
+      flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 700; opacity: 0; transition: opacity 0.2s;
+    }
+    .opcion.correcta   .icono { background: #4caf50; color: #fff; opacity: 1; }
+    .opcion.incorrecta .icono { background: #e53935; color: #fff; opacity: 1; }
+
+    /* Feedback */
+    .feedback {
+      margin-top: 20px; border-radius: 12px; overflow: hidden;
+      display: none; animation: fadeIn 0.35s ease forwards;
+    }
+    .feedback.visible { display: block; }
+
+    .fb-header {
+      padding: 14px 18px; font-size: 17px; font-weight: 700; line-height: 1.3;
+    }
+    .feedback.correcto  .fb-header { background: #e8f5e9; color: #2e7d32; border-left: 4px solid #4caf50; }
+    .feedback.incorrecto .fb-header { background: #fdecea; color: #c62828; border-left: 4px solid #e53935; }
+
+    .fb-body {
+      background: #f8fafc; border: 1.5px solid #e4eaf2;
+      border-top: none; border-radius: 0 0 12px 12px;
+      padding: 14px 18px; display: flex; flex-direction: column; gap: 10px;
+    }
+    .fb-texto { font-size: 16px; color: #1e3a5f; line-height: 1.5; }
+    .fb-url {
+      display: inline-block; background: #eef4ff; border: 1.5px solid #4b97fb;
+      border-radius: 8px; padding: 7px 14px;
+      font-size: 15px; font-weight: 700; color: #1a57c4;
+      text-decoration: none; align-self: flex-start;
+    }
+    .fb-url:hover { background: #dce9ff; }
+    .fb-verificar { font-size: 15px; color: #4b97fb; font-weight: 500; line-height: 1.4; }
+    .fb-quote {
+      font-size: 15px; color: #5a6a80; line-height: 1.4;
+      border-left: 3px solid #e4eaf2; padding-left: 12px;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrapper">
+    <p class="enunciado">"Este mensaje me llegó de mi compadre. Dice que es urgente. ¿Lo reenvío?"</p>
+
+    <div class="alarma">
+      <strong>⚠ Señal de alarma:</strong> El mensaje dice "reenvíe urgente" y "antes de que lo borren". Eso es una táctica clásica de desinformación.
+    </div>
+
+    <div class="opciones" id="opciones">
+      <div class="opcion" data-correcto="false" onclick="seleccionar(this)">
+        <span class="icono">✕</span>
+        <span>Lo reenvío porque viene de alguien de confianza</span>
+      </div>
+      <div class="opcion" data-correcto="true" onclick="seleccionar(this)">
+        <span class="icono">✓</span>
+        <span>Antes de reenviar, busco en una página de salud oficial</span>
+      </div>
+    </div>
+
+    <div class="feedback correcto" id="feedback-correcto">
+      <div class="fb-header">✓ Correcto — siempre verifique antes de reenviar</div>
+      <div class="fb-body">
+        <p class="fb-texto">El Ministerio de Salud ha desmentido este tipo de mensajes. El limón y el bicarbonato no curan el cáncer. Cuando dice "reenvíe urgente" o "lo van a borrar", es una señal de alarma.</p>
+        <a class="fb-url" href="https://www.minsalud.gov.co" target="_blank">minsalud.gov.co ↗</a>
+        <p class="fb-verificar">Cómo verificar: busque en Google "limón bicarbonato cáncer MinSalud Colombia".</p>
+        <p class="fb-quote">Don Julio: "Si hubiera reenviado eso, mis contactos habrían dejado de ir al médico. No vuelvo a reenviar sin verificar."</p>
+      </div>
+    </div>
+
+    <div class="feedback incorrecto" id="feedback-incorrecto">
+      <div class="fb-header">✕ Cuidado — que sea de confianza no lo hace verdad</div>
+      <div class="fb-body">
+        <p class="fb-texto">El Ministerio de Salud ha desmentido este tipo de mensajes. El limón y el bicarbonato no curan el cáncer. Su compadre también fue engañado.</p>
+        <a class="fb-url" href="https://www.minsalud.gov.co" target="_blank">minsalud.gov.co ↗</a>
+        <p class="fb-verificar">Cómo verificar: busque en Google "limón bicarbonato cáncer MinSalud Colombia".</p>
+        <p class="fb-quote">Don Julio: "No vuelvo a reenviar sin verificar primero."</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var respondido = false;
+    // Sin shuffle — las opciones A/B deben mantener su orden para coincidir con las imágenes de Genially
+    document.querySelectorAll('.opcion').forEach(function(el, idx) {
+      el.style.animationDelay = (idx * 0.14) + 's';
+      el.style.animation = 'slideInUp 0.4s ease forwards';
+    });
+    function seleccionar(el) {
+      if (respondido) return;
+      respondido = true;
+      document.querySelectorAll('.opcion').forEach(function(o) { o.classList.add('respondida'); o.style.cursor = 'default'; });
+      if (el.dataset.correcto === 'true') {
+        el.classList.add('correcta');
+        document.getElementById('feedback-correcto').classList.add('visible');
+      } else {
+        el.classList.add('incorrecta');
+        document.querySelectorAll('.opcion').forEach(function(o) { if (o.dataset.correcto === 'true') o.classList.add('correcta'); });
+        document.getElementById('feedback-incorrecto').classList.add('visible');
+      }
+    }
+  </script>
+</body>
+</html>
