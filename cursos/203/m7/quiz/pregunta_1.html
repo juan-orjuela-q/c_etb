@@ -101,6 +101,19 @@
       width: 36px; height: 36px; border-radius: 50%;
       object-fit: cover; flex-shrink: 0; margin-top: 2px;
     }
+    .btn-reintentar {
+      display: inline-block;
+      align-self: flex-start;
+      background: #e53935;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .btn-reintentar:hover { background: #c62828; }
   </style>
 </head>
 <body>
@@ -138,6 +151,7 @@
       <div class="fb-header">✕ Incorrecto</div>
       <div class="fb-body">
         <p class="fb-texto">Antes de enviar dinero, confirma por un canal seguro.</p>
+        <button class="btn-reintentar" type="button" onclick="reintentar()">Reintentar</button>
       </div>
     </div>
   </div>
@@ -166,6 +180,17 @@
         el.classList.add('incorrecta');
         document.getElementById('feedback-incorrecto').classList.add('visible');
       }
+    }
+
+    function reintentar() {
+      respondido = false;
+      document.querySelector('.alarma').style.display = 'block';
+      document.getElementById('feedback-incorrecto').classList.remove('visible');
+      document.querySelectorAll('.opcion').forEach(function(o) {
+        o.classList.remove('respondida', 'correcta', 'incorrecta');
+        o.style.cursor = 'pointer';
+        o.style.display = 'flex';
+      });
     }
   </script>
 </body>
