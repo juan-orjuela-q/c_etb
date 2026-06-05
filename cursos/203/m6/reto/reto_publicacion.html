@@ -197,6 +197,7 @@
     }
     .btn-nav:hover { background: #dde2e9; color: #0e2d5c; }
     .btn-nav:disabled { opacity: 0; pointer-events: none; }
+    .btn-nav.oculto { visibility: hidden; pointer-events: none; }
     .slide-label { font-size: 15px; color: #b0bec5; font-weight: 500; white-space: nowrap; }
 
     /* ── Cierre ──────────────────────────────────── */
@@ -404,6 +405,7 @@
     function irSlide(n) {
       actual = n;
       document.getElementById('track').style.transform = 'translateX(-' + (n * 100) + '%)';
+      var btnNext = document.getElementById('btn-next');
 
       // Botón anterior
       document.getElementById('btn-prev').disabled = (n === 0);
@@ -412,7 +414,9 @@
       var enPaso = (n < total);
       var estaConfirmado = enPaso && confirmados[n];
       var esCierre = (n === total);
-      document.getElementById('btn-next').disabled = !(estaConfirmado || esCierre);
+      var esPasoFinal = (n === total - 1);
+      btnNext.disabled = !(estaConfirmado || esCierre);
+      btnNext.classList.toggle('oculto', esPasoFinal || esCierre);
 
       // Label
       var label = document.getElementById('slide-label');
