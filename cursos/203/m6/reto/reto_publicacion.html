@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reto — La primera publicación de Don Julio</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: transparent;
+      color: #0e2d5c;
+      overflow: hidden;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      padding: 20px 20px 16px;
+    }
+
+    /* ── Barra de progreso ───────────────────────── */
+    .progreso {
+      display: flex; align-items: center;
+      margin-bottom: 18px; flex-shrink: 0;
+    }
+    .paso-dot {
+      width: 34px; height: 34px; border-radius: 50%;
+      background: #e4eaf2; color: #8fa3b8;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; font-weight: 700; flex-shrink: 0;
+      transition: background 0.35s, color 0.35s;
+    }
+    .paso-dot.activo { background: #0e2d5c; color: #fff; }
+    .paso-dot.hecho  { background: #4caf50; color: #fff; font-size: 17px; }
+    .paso-linea {
+      flex: 1; height: 3px; background: #e4eaf2;
+      transition: background 0.4s;
+    }
+    .paso-linea.hecha { background: #4caf50; }
+
+    /* ── Slider ──────────────────────────────────── */
+    .slider-outer { flex: 1; overflow: hidden; position: relative; }
+    .slider-track {
+      display: flex; height: 100%;
+      transition: transform 0.42s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .slide { min-width: 100%; height: 100%; overflow-y: auto; padding-right: 2px; }
+
+    /* ── Tarjeta de paso ──────────────────────────── */
+    .paso-card {
+      background: #fff;
+      border: 1.5px solid #e4eaf2;
+      border-radius: 16px;
+      overflow: hidden;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 2px 12px rgba(14,45,92,0.07);
+      transition: border-color 0.3s;
+    }
+    .paso-card.completo { border-color: #4caf50; }
+
+    .slide-cierre .paso-card {
+      background: #0e2d5c;
+      border-color: #0e2d5c;
+      box-shadow: none;
+    }
+
+    .paso-header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 18px 22px;
+      border-bottom: 1.5px solid #f0f4f8;
+      flex-shrink: 0;
+    }
+    .paso-num {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: #eef4ff; color: #0e2d5c;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; font-weight: 700; flex-shrink: 0;
+    }
+    .paso-card.completo .paso-num { background: #4caf50; color: #fff; }
+    .paso-titulo { font-size: 22px; font-weight: 700; color: #0e2d5c; }
+
+    .paso-body {
+      padding: 18px 22px; flex: 1;
+      display: flex; flex-direction: column; gap: 14px;
+      overflow-y: auto;
+    }
+
+    /* ── Cita de Don Julio ────────────────────────── */
+    .julio-cita {
+      display: flex; align-items: flex-start; gap: 14px;
+      background: #fff; border: 1.5px solid #e4eaf2;
+      border-radius: 14px; padding: 16px;
+      box-shadow: 0 1px 6px rgba(14,45,92,0.06);
+    }
+    .julio-avatar {
+      width: 56px; height: 56px; border-radius: 50%;
+      object-fit: cover; flex-shrink: 0;
+      border: 2px solid #e4eaf2;
+    }
+    .julio-burbuja { font-size: 18px; color: #1e3a5f; line-height: 1.5; }
+
+    /* ── Acción / instrucción ────────────────────── */
+    .accion-texto { font-size: 18px; color: #4a5e78; line-height: 1.55; }
+
+    /* ── Comparativa de fotos ────────────────────── */
+    .fotos-wrap { display: flex; gap: 12px; }
+    .foto-item {
+      flex: 1; border-radius: 12px; overflow: hidden;
+      border: 2.5px solid #e4eaf2; position: relative;
+    }
+    .foto-item img { width: 100%; display: block; object-fit: cover; aspect-ratio: 4/3; }
+    .foto-label {
+      position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+      background: rgba(0,0,0,0.58); color: #fff;
+      font-size: 14px; font-weight: 700; border-radius: 999px;
+      padding: 4px 14px; white-space: nowrap;
+    }
+    .foto-item.mala  { border-color: #e53935; }
+    .foto-item.buena { border-color: #4caf50; }
+
+    /* ── Plantilla de descripción ────────────────── */
+    .plantilla {
+      background: #fff; border: 1.5px solid #e4eaf2;
+      border-radius: 14px; padding: 16px 18px;
+      box-shadow: 0 1px 6px rgba(14,45,92,0.06);
+    }
+    .plantilla-titulo {
+      font-size: 13px; font-weight: 700; color: #4b97fb;
+      letter-spacing: 0.5px; margin-bottom: 12px;
+    }
+    .plantilla-campo {
+      display: flex; align-items: baseline; gap: 10px;
+      margin-bottom: 10px; font-size: 18px;
+    }
+    .plantilla-campo:last-child { margin-bottom: 0; }
+    .campo-label { color: #8fa3b8; font-size: 15px; font-weight: 500; white-space: nowrap; }
+    .campo-valor { color: #0e2d5c; font-weight: 600; }
+
+    /* ── Botón confirmar ─────────────────────────── */
+    .btn-paso {
+      display: flex; align-items: center; justify-content: center; gap: 8px;
+      background: #0e2d5c; color: #fff;
+      border: none; border-radius: 999px;
+      padding: 15px 22px; font-size: 19px; font-weight: 700;
+      cursor: pointer; width: 100%;
+      font-family: 'DM Sans', sans-serif;
+      flex-shrink: 0; margin-top: auto;
+      position: relative; overflow: hidden;
+      transition: background 0.2s;
+    }
+    .btn-paso:hover  { background: #1a4a8a; }
+    .btn-paso:active { opacity: 0.9; }
+
+    /* Animación de relleno al confirmar — duración se inyecta desde JS */
+    .btn-paso.contando::before {
+      content: '';
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 0;
+      background: rgba(255,255,255,0.22);
+      border-radius: 999px;
+      animation: rellenar var(--fill-duration, 4500ms) linear forwards;
+    }
+    @keyframes rellenar {
+      from { width: 0; }
+      to   { width: 100%; }
+    }
+    .btn-paso.hecho {
+      background: #4caf50; cursor: default; pointer-events: none;
+    }
+
+    /* ── Respuesta de confirmación ───────────────── */
+    .respuesta {
+      display: none;
+      background: #e8f5e9; border-left: 4px solid #4caf50;
+      border-radius: 0 12px 12px 0;
+      padding: 13px 16px;
+      font-size: 18px; color: #2e7d32; line-height: 1.45;
+    }
+    .respuesta.visible { display: block; }
+
+    /* ── Navegación inferior ─────────────────────── */
+    .nav-bar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding-top: 14px; flex-shrink: 0; gap: 10px;
+    }
+    .btn-nav {
+      background: #eef0f3; border: none; cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 16px; color: #5a6a80; font-weight: 600;
+      display: flex; align-items: center; gap: 6px;
+      padding: 9px 18px; border-radius: 999px;
+      transition: background 0.2s, color 0.2s;
+    }
+    .btn-nav:hover { background: #dde2e9; color: #0e2d5c; }
+    .btn-nav:disabled { opacity: 0; pointer-events: none; }
+    .slide-label { font-size: 15px; color: #b0bec5; font-weight: 500; white-space: nowrap; }
+
+    /* ── Cierre ──────────────────────────────────── */
+    .cierre-body {
+      padding: 22px 22px; flex: 1; display: flex;
+      flex-direction: column; gap: 16px; overflow-y: auto;
+    }
+    .cierre-trofeo { font-size: 40px; text-align: center; }
+    .cierre-titulo { font-size: 22px; font-weight: 700; color: #ffc524; text-align: center; line-height: 1.3; }
+    .cierre-julio {
+      display: flex; align-items: flex-start; gap: 14px;
+      background: rgba(255,255,255,0.09); border-radius: 14px; padding: 16px;
+    }
+    .cierre-julio img {
+      width: 56px; height: 56px; border-radius: 50%;
+      object-fit: cover; flex-shrink: 0;
+      border: 2px solid rgba(255,255,255,0.2);
+    }
+    .cierre-julio p { font-size: 18px; color: #e8f0fb; line-height: 1.5; }
+
+    .tips-titulo { font-size: 14px; font-weight: 700; color: #7a92b0; }
+    .tip { background: rgba(255,255,255,0.07); border-radius: 12px; overflow: hidden; }
+    .tip-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 14px 16px; cursor: pointer;
+      font-size: 17px; font-weight: 600; color: #c8d8f5;
+    }
+    .tip-header .arrow { font-size: 12px; transition: transform 0.2s; }
+    .tip.abierto .tip-header .arrow { transform: rotate(180deg); }
+    .tip-body { display: none; padding: 0 16px 16px; font-size: 17px; color: #b0c4de; line-height: 1.5; }
+    .tip.abierto .tip-body { display: block; }
+  </style>
+</head>
+<body>
+
+  <!-- Barra de progreso -->
+  <div class="progreso">
+    <div class="paso-dot activo" id="dot-1">1</div>
+    <div class="paso-linea" id="linea-1"></div>
+    <div class="paso-dot" id="dot-2">2</div>
+    <div class="paso-linea" id="linea-2"></div>
+    <div class="paso-dot" id="dot-3">3</div>
+    <div class="paso-linea" id="linea-3"></div>
+    <div class="paso-dot" id="dot-4">4</div>
+  </div>
+
+  <!-- Slider -->
+  <div class="slider-outer">
+    <div class="slider-track" id="track">
+
+      <!-- ── SLIDE 1 ──────────────────────────────── -->
+      <div class="slide">
+        <div class="paso-card" id="paso-1">
+          <div class="paso-header">
+            <div class="paso-num" id="num-1">1</div>
+            <div class="paso-titulo">¿Qué vamos a ofrecer?</div>
+          </div>
+          <div class="paso-body">
+            <p class="accion-texto">Piense en su producto estrella.</p>
+            <div class="julio-cita">
+              <img class="julio-avatar" src="img/julio_perez_avatar.jpg" alt="Don Julio">
+              <p class="julio-burbuja">"¿Ya tiene su producto listo en la mesa?"</p>
+            </div>
+            <div class="respuesta" id="resp-1">¡Eso es! Tener claro qué vendemos es el primer paso para el éxito.</div>
+            <button class="btn-paso" id="btn-1" onclick="confirmar(1)">✅ ¡Listo, ya sé qué vender!</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SLIDE 2 ──────────────────────────────── -->
+      <div class="slide">
+        <div class="paso-card" id="paso-2">
+          <div class="paso-header">
+            <div class="paso-num" id="num-2">2</div>
+            <div class="paso-titulo">El retrato del producto — la foto</div>
+          </div>
+          <div class="paso-body">
+            <p class="accion-texto">Tome la foto con el celular. Busque que salga nítida y bien iluminada.</p>
+            <div class="fotos-wrap">
+              <div class="foto-item mala">
+                <img src="img/foto_mal.png" alt="Foto movida y oscura">
+                <div class="foto-label">❌ Borrosa y oscura</div>
+              </div>
+              <div class="foto-item buena">
+                <img src="img/foto_ok.png" alt="Foto clara y bien iluminada">
+                <div class="foto-label">✅ Nítida y bien iluminada</div>
+              </div>
+            </div>
+            <div class="julio-cita">
+              <img class="julio-avatar" src="img/julio_perez_avatar.jpg" alt="Don Julio">
+              <p class="julio-burbuja">"¿La foto se ve bonita y bien iluminada? Una buena foto entra por los ojos y atrae clientes."</p>
+            </div>
+            <div class="respuesta" id="resp-2">¡Excelente! Esa foto ya tiene todo para llamar la atención.</div>
+            <button class="btn-paso" id="btn-2" onclick="confirmar(2)">✅ Sí, quedó clarita</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SLIDE 3 ──────────────────────────────── -->
+      <div class="slide">
+        <div class="paso-card" id="paso-3">
+          <div class="paso-header">
+            <div class="paso-num" id="num-3">3</div>
+            <div class="paso-titulo">Escribir la descripción</div>
+          </div>
+          <div class="paso-body">
+            <p class="accion-texto">Escriba lo más importante. No se complique: cuatro datos y listo.</p>
+            <div class="plantilla">
+              <div class="plantilla-titulo">Ejemplo de Don Julio</div>
+              <div class="plantilla-campo">
+                <span class="campo-label">Qué vende</span>
+                <span class="campo-valor">"Arepas recién hechas"</span>
+              </div>
+              <div class="plantilla-campo">
+                <span class="campo-label">Cuánto vale</span>
+                <span class="campo-valor">"$1.500 la unidad"</span>
+              </div>
+              <div class="plantilla-campo">
+                <span class="campo-label">Dónde está</span>
+                <span class="campo-valor">"Barrio El Recuerdo"</span>
+              </div>
+              <div class="plantilla-campo">
+                <span class="campo-label">Cómo le compran</span>
+                <span class="campo-valor">"Escríbame al WhatsApp 300 XXX XXXX"</span>
+              </div>
+            </div>
+            <div class="julio-cita">
+              <img class="julio-avatar" src="img/julio_perez_avatar.jpg" alt="Don Julio">
+              <p class="julio-burbuja">"Si la gente sabe el precio y su número, le compran más rápido. Así de sencillo."</p>
+            </div>
+            <div class="respuesta" id="resp-3">¡Muy bien! Con esos cuatro datos su publicación ya está lista para conquistar clientes.</div>
+            <button class="btn-paso" id="btn-3" onclick="confirmar(3)">✅ Ya escribí los datos</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SLIDE 4 ──────────────────────────────── -->
+      <div class="slide">
+        <div class="paso-card" id="paso-4">
+          <div class="paso-header">
+            <div class="paso-num" id="num-4">4</div>
+            <div class="paso-titulo">¡Al aire! — Publicar</div>
+          </div>
+          <div class="paso-body">
+            <p class="accion-texto">Busque el botón que dice <strong>Publicar</strong> o <strong>Compartir</strong> y tóquelo con confianza. ¡Ya revisó todo, está listo!</p>
+            <div class="julio-cita">
+              <img class="julio-avatar" src="img/julio_perez_avatar.jpg" alt="Don Julio">
+              <p class="julio-burbuja">"¿Tocó el botón sin miedo?"</p>
+            </div>
+            <div class="respuesta" id="resp-4">¡Lo logramos! Su anuncio ya está en la calle digital para que todos lo vean.</div>
+            <button class="btn-paso" id="btn-4" onclick="confirmar(4)">✅ ¡Publicado!</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── SLIDE CIERRE ─────────────────────────── -->
+      <div class="slide slide-cierre">
+        <div class="paso-card">
+          <div class="cierre-body">
+            <div class="cierre-trofeo">🏆</div>
+            <div class="cierre-titulo">¡Su negocio ya está en el mapa!</div>
+            <div class="cierre-julio">
+              <img src="img/julio_perez_avatar.jpg" alt="Don Julio">
+              <p>"¡Qué orgullo me da verlo! Recuerde: entre más publique y más amable sea con los que le escriben, mejor le irá. ¡Su celular es su mejor socio para salir adelante!"</p>
+            </div>
+            <div class="tips-titulo">¿Le pasó algo? No se preocupe</div>
+            <div class="tip" id="tip-1" onclick="toggleTip('tip-1')">
+              <div class="tip-header">
+                <span>Me equivoqué en el precio</span>
+                <span class="arrow">▼</span>
+              </div>
+              <div class="tip-body">Toque los tres puntitos en su publicación y elija <strong>Editar</strong> para corregir el dato. ¡Nada es permanente en el celular!</div>
+            </div>
+            <div class="tip" id="tip-2" onclick="toggleTip('tip-2')">
+              <div class="tip-header">
+                <span>Nadie me ha dado «Me gusta»</span>
+                <span class="arrow">▼</span>
+              </div>
+              <div class="tip-body">Tenga paciencia. A veces la gente ve el aviso pero no comenta. Lo importante es que ya dio el primer paso. ¡Siga publicando!</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Navegación -->
+  <div class="nav-bar">
+    <button class="btn-nav" id="btn-prev" onclick="irAnterior()" disabled>← Anterior</button>
+    <span class="slide-label" id="slide-label">Paso 1 de 4</span>
+    <button class="btn-nav" id="btn-next" onclick="irSiguiente()" disabled>Siguiente →</button>
+  </div>
+
+  <script>
+    var actual = 0;
+    var total = 4;
+    var confirmados = [false, false, false, false];
+    var timer = null;
+    var DELAY = 4500; // ms antes de avanzar sola
+
+    // Textos originales de los botones (para restaurar al ir Anterior)
+    var btnTextos = ['', '✅ ¡Listo, ya sé qué vender!', '✅ Sí, quedó clarita', '✅ Ya escribí los datos', '✅ ¡Publicado!'];
+
+    function irSlide(n) {
+      actual = n;
+      document.getElementById('track').style.transform = 'translateX(-' + (n * 100) + '%)';
+
+      // Botón anterior
+      document.getElementById('btn-prev').disabled = (n === 0);
+
+      // Botón siguiente: activo solo si el paso actual está confirmado y no es el cierre
+      var enPaso = (n < total);
+      var estaConfirmado = enPaso && confirmados[n];
+      var esCierre = (n === total);
+      document.getElementById('btn-next').disabled = !(estaConfirmado || esCierre);
+
+      // Label
+      var label = document.getElementById('slide-label');
+      label.textContent = enPaso ? ('Paso ' + (n + 1) + ' de ' + total) : '¡Completado!';
+
+      // Dots
+      for (var i = 1; i <= total; i++) {
+        var dot = document.getElementById('dot-' + i);
+        if (confirmados[i - 1]) {
+          dot.className = 'paso-dot hecho';
+          dot.textContent = '✓';
+        } else if (i - 1 === n) {
+          dot.className = 'paso-dot activo';
+          dot.textContent = i;
+        } else {
+          dot.className = 'paso-dot';
+          dot.textContent = i;
+        }
+      }
+    }
+
+    function confirmar(n) {
+      var idx = n - 1;
+      if (confirmados[idx]) return;
+      confirmados[idx] = true;
+
+      var btn = document.getElementById('btn-' + n);
+
+      // Fase 1: animación de relleno — duración sincronizada con DELAY
+      btn.style.setProperty('--fill-duration', DELAY + 'ms');
+      btn.textContent = 'Avanzando en un momento...';
+      btn.classList.add('contando');
+
+      // Mostrar respuesta
+      document.getElementById('resp-' + n).classList.add('visible');
+
+      // Marcar tarjeta
+      document.getElementById('paso-' + n).classList.add('completo');
+      document.getElementById('num-' + n).textContent = '✓';
+
+      // Línea de progreso
+      if (n < total) {
+        document.getElementById('linea-' + n).classList.add('hecha');
+      }
+
+      // Avanzar tras el delay
+      timer = setTimeout(function() {
+        btn.classList.remove('contando');
+        btn.classList.add('hecho');
+        btn.textContent = '✓ Hecho';
+        irSlide(n < total ? n : total);
+      }, DELAY);
+    }
+
+    function irAnterior() {
+      if (actual === 0) return;
+
+      // Si hay un timer corriendo, el paso actual estaba en medio de confirmación
+      // → cancelar y deshacer completamente ese paso
+      if (timer) {
+        clearTimeout(timer);
+        timer = null;
+
+        var idx = actual;          // 0-based
+        var n   = idx + 1;         // 1-based (nº del paso que se está deshaciendo)
+
+        confirmados[idx] = false;
+
+        // Restaurar botón
+        var btn = document.getElementById('btn-' + n);
+        btn.classList.remove('contando', 'hecho');
+        btn.textContent = btnTextos[n];
+
+        // Ocultar respuesta
+        document.getElementById('resp-' + n).classList.remove('visible');
+
+        // Restaurar tarjeta
+        document.getElementById('paso-' + n).classList.remove('completo');
+        document.getElementById('num-' + n).textContent = n;
+
+        // Deshacer línea (la que une con el paso anterior, índice n-1)
+        var linea = document.getElementById('linea-' + (n - 1));
+        if (linea) linea.classList.remove('hecha');
+      }
+
+      irSlide(actual - 1);
+    }
+
+    function irSiguiente() {
+      if (actual < total) irSlide(actual + 1);
+    }
+
+    function toggleTip(id) {
+      document.getElementById(id).classList.toggle('abierto');
+    }
+
+    irSlide(0);
+  </script>
+</body>
+</html>
