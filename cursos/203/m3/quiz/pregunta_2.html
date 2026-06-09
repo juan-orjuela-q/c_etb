@@ -49,6 +49,25 @@
     .feedback.correcto  { background: #e8f5e9; color: #2e7d32; border-left: 4px solid #4caf50; }
     .feedback.incorrecto{ background: #fdecea; color: #c62828; border-left: 4px solid #e53935; }
     .feedback.visible { display: block; animation: fadeInDown 0.35s ease forwards; }
+    .acciones { margin-top: 14px; display: flex; justify-content: flex-start; }
+    .btn-reintentar {
+      display: none;
+      border: none;
+      border-radius: 10px;
+      background: #0e2d5c;
+      color: #fff;
+      font-family: inherit;
+      font-size: 16px;
+      font-weight: 700;
+      padding: 10px 16px;
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.15s ease, background 0.2s ease;
+    }
+    .btn-reintentar:hover {
+      background: #124182;
+      box-shadow: 0 4px 12px rgba(14, 45, 92, 0.28);
+      transform: translateY(-1px);
+    }
   </style>
 </head>
 <body>
@@ -66,6 +85,9 @@
     </div>
     <div class="feedback correcto"   id="feedback-correcto">Instagram está diseñado para mostrar fotos atractivas de productos — ideal para negocios visuales.</div>
     <div class="feedback incorrecto" id="feedback-incorrecto">TikTok es principalmente para videos cortos, no para fotos de productos.</div>
+    <div class="acciones">
+      <button id="btn-reintentar" class="btn-reintentar" type="button" onclick="reintentar()">Reintentar</button>
+    </div>
   </div>
   <script>
     var respondido = false;
@@ -93,7 +115,18 @@
         el.classList.add('incorrecta');
         document.querySelectorAll('.opcion').forEach(function(o) { if (o.dataset.correcto === 'true') o.classList.add('correcta'); });
         document.getElementById('feedback-incorrecto').classList.add('visible');
+        document.getElementById('btn-reintentar').style.display = 'inline-flex';
       }
+    }
+    function reintentar() {
+      respondido = false;
+      document.querySelectorAll('.opcion').forEach(function(o) {
+        o.classList.remove('respondida', 'correcta', 'incorrecta');
+        o.style.cursor = 'pointer';
+      });
+      document.getElementById('feedback-correcto').classList.remove('visible');
+      document.getElementById('feedback-incorrecto').classList.remove('visible');
+      document.getElementById('btn-reintentar').style.display = 'none';
     }
   </script>
 </body>
