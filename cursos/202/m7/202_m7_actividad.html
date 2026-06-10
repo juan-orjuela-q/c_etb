@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1100">
+  <title>El caso de Juan — Actividad interactiva</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --navy:        #0e2d5c;   /* primario */
+      --navy-dark:   #081c3a;   /* hover primario */
+      --cyan:        #4b97fb;   /* secundario */
+      --cyan-dark:   #2e7de0;   /* hover secundario */
+      --yellow:      #ffc524;   /* atención / acento */
+      --yellow-dark: #e6ab00;   /* hover amarillo */
+      --red:         #B91C1C;
+      --red-bg:      #FEF2F2;
+      --green:       #166534;
+      --green-bg:    #F0FFF4;
+      --dark:        #1A1A1A;
+      --gray:        #555;
+      --surface:     #F4F7FB;
+      --border:      #D8E3EF;
+      --white:       #FFFFFF;
+
+      --top-h:     44px;
+      --bottom-h:  62px;
+      --content-h: calc(600px - var(--top-h) - var(--bottom-h)); /* 494px */
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* Centrado superior en la página */
+    html, body {
+      width: 100%;
+      min-height: 600px;
+      background: transparent;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      font-family: 'DM Sans', system-ui, sans-serif;
+      font-size: 18px;
+      color: var(--dark);
+    }
+
+    /* Contenedor fijo de la experiencia */
+    .app {
+      position: relative;
+      width:  1100px;
+      height: 600px;
+      overflow: hidden;
+      background: var(--white);
+      box-shadow: 0 4px 32px rgba(14,45,92,0.18);
+    }
+
+    /* ── SCREENS ──────────────────────────────────── */
+    .screen {
+      display: none;
+      position: absolute;
+      inset: 0;
+      width:  1100px;
+      height: 600px;
+      flex-direction: column;
+    }
+    .screen.active { display: flex; }
+
+    /* ── TOP BAR ──────────────────────────────────── */
+    .top-bar {
+      height: var(--top-h);
+      background: var(--navy);
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+      flex-shrink: 0;
+    }
+    .top-bar.red   { background: var(--red); }
+    .top-bar.green { background: var(--green); }
+
+    .top-label {
+      font-size: 15px;
+      font-weight: 600;
+      letter-spacing: 0.4px;
+      white-space: nowrap;
+    }
+
+    .dots { display: flex; gap: 7px; align-items: center; }
+    .dot  { width: 10px; height: 10px; border-radius: 50%; background: rgba(255,255,255,0.28); }
+    .dot.on { background: var(--yellow); }
+
+    /* ── CONTENT ──────────────────────────────────── */
+    .content {
+      flex: 1;
+      height: var(--content-h);
+      overflow: hidden;
+      display: flex;
+    }
+
+    /* ── BOTTOM BAR ───────────────────────────────── */
+    .bottom-bar {
+      height: var(--bottom-h);
+      border-top: 2px solid var(--border);
+      background: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      padding: 0 32px;
+      flex-shrink: 0;
+    }
+
+    /* ── BUTTONS (siempre pill) ─────────────────────── */
+    button {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      font-size: 18px;
+      font-weight: 600;
+      min-height: 48px;
+      border: none;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+      line-height: 1.2;
+    }
+
+    /* Botón primario — navy */
+    .btn-primary {
+      background: var(--navy);
+      color: var(--white);
+      padding: 10px 32px;
+    }
+    .btn-primary:hover { background: var(--navy-dark); }
+
+    /* Botón primario — verde */
+    .btn-primary.green { background: var(--green); }
+    .btn-primary.green:hover { background: #14532d; }
+
+    /* Botón secundario — cyan, contorno */
+    .btn-secondary {
+      background: transparent;
+      color: var(--cyan);
+      border: 2px solid var(--cyan);
+      padding: 9px 24px;
+      font-size: 17px;
+    }
+    .btn-secondary:hover { background: #dbeafe; }
+
+    /* Botón reiniciar — acento amarillo */
+    .btn-restart {
+      background: var(--yellow);
+      color: var(--navy);
+      padding: 10px 30px;
+    }
+    .btn-restart:hover { background: var(--yellow-dark); }
+
+    /* Choice buttons (Decisión) */
+    .btn-choice {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      padding: 14px 22px;
+      min-height: 60px;
+      background: var(--surface);
+      border: 2px solid var(--border);
+      border-radius: 999px;
+      font-size: 19px;
+      font-weight: 500;
+      color: var(--dark);
+      text-align: left;
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .btn-choice:hover {
+      border-color: var(--cyan);
+      background: #dbeafe;
+    }
+    .choice-letter {
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      background: var(--navy);
+      color: var(--white);
+      font-weight: 700;
+      font-size: 16px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    /* ── NARRATOR ─────────────────────────────────── */
+    .narrator { display: flex; align-items: flex-start; gap: 12px; }
+    .narrator img {
+      width: 58px; height: 58px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--cyan);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+      flex-shrink: 0;
+    }
+    .bubble {
+      background: var(--surface);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      border-top-left-radius: 3px;
+      padding: 12px 16px;
+      font-size: 18px;
+      line-height: 1.55;
+      /* sin itálicas */
+    }
+
+    /* ── RETRO layout ─────────────────────────────── */
+    .retro-wrap {
+      display: flex;
+      align-items: center;
+      gap: 36px;
+      padding: 24px 44px;
+      width: 100%;
+    }
+    .retro-img { height: 360px; width: auto; flex-shrink: 0; object-fit: contain; }
+    .retro-body { flex: 1; }
+    .retro-tag {
+      font-size: 13px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.7px;
+      margin-bottom: 10px;
+    }
+    .retro-body h2 { font-size: 24px; font-weight: 700; line-height: 1.25; margin-bottom: 14px; }
+    .retro-body p  { font-size: 18px; line-height: 1.55; }
+
+    /* ── TAG ─────────────────────────────────────── */
+    .tag {
+      font-size: 13px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.6px;
+      color: var(--cyan);
+    }
+
+
+    /* ════ ESCENA 1 ════════════════════════════════ */
+    #s1 .content { padding: 22px 36px; gap: 32px; align-items: center; }
+    .s1-phone { max-height: 450px; flex-shrink: 0; }
+    .s1-phone img {
+      height: 450px; width: auto;
+      border-radius: 22px;
+      box-shadow: 0 6px 28px rgba(0,0,0,0.22);
+      display: block;
+    }
+    .s1-right {
+      flex: 1; display: flex; flex-direction: column;
+      gap: 20px; justify-content: center;
+    }
+    .s1-intro { font-size: 18px; line-height: 1.55; color: var(--gray); }
+
+    /* ════ DECISIÓN ════════════════════════════════ */
+    #s-decision .content {
+      flex-direction: column; justify-content: center;
+      align-items: center; padding: 20px 120px; gap: 14px;
+    }
+    #s-decision h2 {
+      font-size: 23px; font-weight: 700;
+      text-align: center; margin-bottom: 6px; line-height: 1.3;
+    }
+    #s-decision .hint { font-size: 17px; color: var(--gray); text-align: center; }
+    #s-decision .choices { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+
+    /* ════ RETROS ══════════════════════════════════ */
+    #s-retro-a .content { background: var(--red-bg); }
+    #s-retro-b .content { background: var(--green-bg); }
+
+    /* ════ ESCENA 2 ════════════════════════════════ */
+    #s2 .content { padding: 18px 28px; gap: 28px; align-items: stretch; }
+    .s2-images { display: flex; gap: 18px; flex: 1.15; align-items: center; }
+    .s2-block {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 8px; flex: 1;
+    }
+    .step-badge {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: var(--cyan); color: var(--white);
+      font-weight: 700; font-size: 15px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .s2-block img {
+      max-height: 360px; width: auto; max-width: 100%;
+      border-radius: 14px; box-shadow: 0 4px 18px rgba(0,0,0,0.2);
+    }
+    .s2-block .caption { font-size: 16px; color: var(--gray); text-align: center; }
+    .s2-narrator {
+      flex: 1; display: flex; flex-direction: column;
+      justify-content: center; gap: 14px;
+    }
+
+    /* ════ ESCENA 3 ════════════════════════════════ */
+    #s3 .content {
+      align-items: center; justify-content: center;
+      gap: 60px; padding: 24px 60px;
+    }
+    .notif-wrapper { display: flex; flex-direction: column; align-items: center; gap: 14px; }
+    .notif-card {
+      background: #1C1C2E; border-radius: 20px; padding: 8px;
+      width: 296px; box-shadow: 0 10px 36px rgba(0,0,0,0.38);
+    }
+    .notif-inner { background: #26263C; border-radius: 14px; padding: 18px 20px; }
+    .notif-app {
+      font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.5);
+      text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px;
+    }
+    .notif-title { font-size: 16px; font-weight: 600; color: var(--white); margin-bottom: 4px; }
+    .notif-amount { font-size: 38px; font-weight: 700; color: #F87171; line-height: 1.1; }
+    .notif-sub { font-size: 14px; color: rgba(255,255,255,0.55); margin-top: 8px; line-height: 1.4; }
+    .notif-note {
+      font-size: 17px; color: var(--gray); text-align: center;
+      max-width: 260px; line-height: 1.45;
+    }
+    .s3-narration { max-width: 420px; }
+
+    /* ════ ESCENA 4 ════════════════════════════════ */
+    #s4 .content { flex-direction: column; padding: 18px 24px; gap: 16px; }
+    .s4-top { flex-shrink: 0; }
+    .alert-row { display: flex; gap: 12px; flex: 1; }
+    .alert-card {
+      flex: 1; background: #FFF5F5;
+      border: 2px solid #FCA5A5; border-top: 4px solid var(--red);
+      border-radius: 10px; padding: 16px 12px 14px;
+      display: flex; flex-direction: column;
+      align-items: center; text-align: center; gap: 8px;
+    }
+    .alert-icon  { font-size: 30px; line-height: 1; }
+    .alert-title { font-size: 16px; font-weight: 700; color: var(--red); line-height: 1.25; }
+    .alert-desc  { font-size: 15px; color: #7F1D1D; line-height: 1.35; }
+
+    /* ════ ESCENA 5 ════════════════════════════════ */
+    #s5 .content { padding: 22px 36px; gap: 36px; align-items: center; }
+    .s5-img { max-height: 430px; width: auto; flex-shrink: 0; object-fit: contain; }
+    .s5-right {
+      flex: 1; display: flex; flex-direction: column;
+      gap: 18px; justify-content: center;
+    }
+    .success-badge {
+      display: flex; align-items: center; gap: 14px;
+      background: #fffbe6; border: 2px solid var(--yellow);
+      border-radius: 12px; padding: 14px 16px;
+    }
+    .badge-icon { font-size: 28px; flex-shrink: 0; }
+    .badge-text { font-size: 18px; font-weight: 700; color: var(--navy); }
+    .badge-sub  { font-size: 17px; color: #7a5900; font-weight: 400; }
+  </style>
+</head>
+<body>
+<div class="app">
+
+
+<!-- ═══════════════════════════════════════════════
+     ESCENA 1 — El mensaje de Juan
+════════════════════════════════════════════════ -->
+<div class="screen active" id="s1">
+  <div class="top-bar">
+    <span class="top-label">Escena 1 — El mensaje de Juan</span>
+    <div class="dots">
+      <div class="dot on"></div><div class="dot"></div>
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="s1-phone">
+      <img src="img/screen_wp.jpg" alt="Mensaje de WhatsApp sospechoso que recibió Juan">
+    </div>
+    <div class="s1-right">
+      <div class="tag">Historia interactiva</div>
+      <div class="narrator">
+        <img src="img/don_julio_avatar_neutro.jpg" alt="Don Julio">
+        <div class="bubble">
+          "Juan recibió este mensaje un lunes en la mañana. El enlace parecía ser del banco. Parecía urgente. Tuvo que tomar una decisión rápida."
+        </div>
+      </div>
+      <p class="s1-intro">
+        Siga la historia de Juan, un ciudadano de Bogotá que casi cae en una estafa con una app falsa.
+        En dos momentos de la historia tendrá que tomar una decisión — la misma que tomó Juan.
+      </p>
+    </div>
+  </div>
+  <div class="bottom-bar">
+    <button class="btn-primary" onclick="goTo('s-decision')">Continuar →</button>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     DECISIÓN 1
+════════════════════════════════════════════════ -->
+<div class="screen" id="s-decision">
+  <div class="top-bar">
+    <span class="top-label">Decisión — ¿Qué haría usted en su lugar?</span>
+    <div class="dots">
+      <div class="dot on"></div><div class="dot"></div>
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    </div>
+  </div>
+  <div class="content">
+    <h2>Juan recibe un mensaje de "su banco" por WhatsApp.<br>Le piden abrir un enlace urgente. ¿Qué haría usted?</h2>
+    <div class="hint">Elija una opción para continuar la historia:</div>
+    <div class="choices">
+      <button class="btn-choice" onclick="goTo('s-retro-a')">
+        <span class="choice-letter">A</span>
+        Abro el enlace para actualizar la app, como dice el mensaje
+      </button>
+      <button class="btn-choice" onclick="goTo('s-retro-b')">
+        <span class="choice-letter">B</span>
+        Ignoro el mensaje y verifico primero por otro medio
+      </button>
+    </div>
+  </div>
+  <div class="bottom-bar" style="justify-content:flex-end;">
+    <span style="font-size:17px; color:var(--gray);">Seleccione una opción para continuar</span>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     RETRO A — Opción peligrosa
+════════════════════════════════════════════════ -->
+<div class="screen" id="s-retro-a">
+  <div class="top-bar red">
+    <span class="top-label">⚠ Eso era una trampa</span>
+    <div class="dots">
+      <div class="dot on"></div><div class="dot"></div>
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="retro-wrap">
+      <img src="img/don_julio_retro_mal.png" alt="Don Julio advierte sobre el peligro" class="retro-img">
+      <div class="retro-body">
+        <div class="retro-tag" style="color:var(--red);">⚠ Cuidado</div>
+        <h2>Los bancos colombianos <span style="color:var(--red);">nunca</span> envían links por WhatsApp</h2>
+        <p>
+          Abrir ese enlace es el primer paso de la estafa. Los delincuentes crean páginas falsas
+          que se ven exactamente igual al sitio del banco real. Siga la historia para ver
+          lo que le pasó a Juan al cometer ese error.
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="bottom-bar">
+    <button class="btn-primary" onclick="goTo('s2')">Continuar y ver qué le pasó a Juan →</button>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     RETRO B — Opción correcta
+════════════════════════════════════════════════ -->
+<div class="screen" id="s-retro-b">
+  <div class="top-bar green">
+    <span class="top-label">✓ ¡Muy bien!</span>
+    <div class="dots">
+      <div class="dot on"></div><div class="dot"></div>
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="retro-wrap">
+      <img src="img/don_julio_retro_bien.png" alt="Don Julio aprueba la decisión" class="retro-img">
+      <div class="retro-body">
+        <div class="retro-tag" style="color:var(--green);">✓ Decisión correcta</div>
+        <h2>Verificar antes de actuar siempre es la decisión correcta</h2>
+        <p>
+          Nunca abra links enviados por WhatsApp sin confirmar primero. Si tiene dudas,
+          llame directamente a la línea del banco o visítelo en persona.
+          Ahora vea cómo terminó la historia de Don Julio, que también recibió
+          un mensaje así.
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="bottom-bar">
+    <button class="btn-primary green" onclick="goTo('s5')">Ver el desenlace →</button>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     ESCENA 2 — Juan descargó la app falsa
+════════════════════════════════════════════════ -->
+<div class="screen" id="s2">
+  <div class="top-bar">
+    <span class="top-label">Escena 2 — Juan descargó la app falsa</span>
+    <div class="dots">
+      <div class="dot"></div><div class="dot on"></div>
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="s2-images">
+      <div class="s2-block">
+        <div class="step-badge">1</div>
+        <img src="img/screen_descargar_app.png" alt="Juan descarga la app falsa fuera de Play Store">
+        <span class="caption">Descargó la app desde fuera de Play Store</span>
+      </div>
+      <div class="s2-block">
+        <div class="step-badge">2</div>
+        <img src="img/screen_datos_app.png" alt="Juan ingresa su usuario y clave en la app falsa">
+        <span class="caption">Ingresó su usuario y clave</span>
+      </div>
+    </div>
+    <div class="s2-narrator">
+      <div class="narrator">
+        <img src="img/don_julio_avatar_neutro.jpg" alt="Don Julio">
+        <div class="bubble">
+          "Juan abrió el enlace y descargó la app. Se veía exactamente igual a la del banco. Ingresó su usuario y su clave. Y estuvo tranquilo... por unos minutos."
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="bottom-bar">
+    <button class="btn-primary" onclick="goTo('s3')">Continuar →</button>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     ESCENA 3 — La consecuencia
+════════════════════════════════════════════════ -->
+<div class="screen" id="s3">
+  <div class="top-bar">
+    <span class="top-label">Escena 3 — La consecuencia</span>
+    <div class="dots">
+      <div class="dot"></div><div class="dot"></div>
+      <div class="dot on"></div><div class="dot"></div><div class="dot"></div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="notif-wrapper">
+      <div class="notif-card">
+        <div class="notif-inner">
+          <div class="notif-app">Mi Banco &nbsp;•&nbsp; Ahora</div>
+          <div class="notif-title">Transacción realizada</div>
+          <div class="notif-amount">$850.000</div>
+          <div class="notif-sub">Transferencia a cuenta desconocida.<br>Juan no autorizó esta operación.</div>
+        </div>
+      </div>
+      <p class="notif-note">Juan <strong>no había hecho</strong> esa transferencia.<br>Alguien usó su clave para robarle.</p>
+    </div>
+    <div class="s3-narration">
+      <div class="narrator">
+        <img src="img/don_julio_avatar_serio.jpg" alt="Don Julio">
+        <div class="bubble">
+          "Esa tarde llegó una notificación: transferencia de $850.000. Juan no la había hecho. El número de cuenta era desconocido. La clave que ingresó en la app falsa había llegado a los estafadores."
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="bottom-bar">
+    <button class="btn-primary" onclick="goTo('s4')">Continuar →</button>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     ESCENA 4 — Las 5 señales de alerta
+════════════════════════════════════════════════ -->
+<div class="screen" id="s4">
+  <div class="top-bar">
+    <span class="top-label">Escena 4 — Las 5 señales de alerta</span>
+    <div class="dots">
+      <div class="dot"></div><div class="dot"></div>
+      <div class="dot"></div><div class="dot on"></div><div class="dot"></div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="s4-top">
+      <div class="narrator">
+        <img src="img/don_julio_avatar_sospechando.jpg" alt="Don Julio">
+        <div class="bubble">
+          "Después del susto, Juan miró el mensaje de nuevo. Tenía 5 señales de fraude. Todas claras. Pero él no las había visto."
+        </div>
+      </div>
+    </div>
+    <div class="alert-row">
+      <div class="alert-card">
+        <div class="alert-icon">🔗</div>
+        <div class="alert-title">Enlace sospechoso</div>
+        <div class="alert-desc">URL rara o acortada, no corresponde al sitio real del banco</div>
+      </div>
+      <div class="alert-card">
+        <div class="alert-icon">📱</div>
+        <div class="alert-title">Llegó por WhatsApp</div>
+        <div class="alert-desc">Los bancos colombianos no envían links por WhatsApp</div>
+      </div>
+      <div class="alert-card">
+        <div class="alert-icon">⏰</div>
+        <div class="alert-title">Urgencia falsa</div>
+        <div class="alert-desc">"Bloquearemos tu cuenta" es una táctica para que no piense</div>
+      </div>
+      <div class="alert-card">
+        <div class="alert-icon">📥</div>
+        <div class="alert-title">App fuera de Play Store</div>
+        <div class="alert-desc">Las apps del banco solo se descargan de la tienda oficial</div>
+      </div>
+      <div class="alert-card">
+        <div class="alert-icon">🔑</div>
+        <div class="alert-title">Pide usuario y clave</div>
+        <div class="alert-desc">Una app real del banco ya tiene guardados sus datos</div>
+      </div>
+    </div>
+  </div>
+  <div class="bottom-bar">
+    <button class="btn-secondary" onclick="goTo('s5')">¿Qué hubiera pasado si Juan no hubiera abierto el link? →</button>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════
+     ESCENA 5 — El aprendizaje de Don Julio
+════════════════════════════════════════════════ -->
+<div class="screen" id="s5">
+  <div class="top-bar">
+    <span class="top-label">Escena 5 — El aprendizaje de Don Julio</span>
+    <div class="dots">
+      <div class="dot"></div><div class="dot"></div>
+      <div class="dot"></div><div class="dot"></div><div class="dot on"></div>
+    </div>
+  </div>
+  <div class="content">
+    <img src="img/don_julio_alivio.png" alt="Don Julio aliviado después de no caer en la trampa" class="s5-img">
+    <div class="s5-right">
+      <div class="narrator">
+        <div class="bubble" style="border-radius:12px;">
+          "Don Julio casi cae en el mismo truco. Pero recordó lo que había aprendido: los bancos nunca mandan links por WhatsApp. Cerró el mensaje. Lo reportó. Y sigue siendo el dueño de su plata."
+        </div>
+      </div>
+      <div class="success-badge">
+        <span class="badge-icon">⭐</span>
+        <div>
+          <div class="badge-text">¡Bien hecho, Don Julio!</div>
+          <div class="badge-sub">Verificar antes de actuar siempre es la decisión correcta.</div>
+        </div>
+      </div>
+      <button class="btn-secondary" style="align-self:flex-start; font-size:16px; padding:8px 20px;" onclick="goTo('s2')">
+        ¿Qué hubiera pasado si hubiera dado clic en el link? →
+      </button>
+    </div>
+  </div>
+  <div class="bottom-bar">
+    <button class="btn-restart" onclick="goTo('s1')">↩ Reiniciar actividad</button>
+  </div>
+</div>
+
+
+</div><!-- /.app -->
+
+<script>
+  function goTo(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const el = document.getElementById(id);
+    if (el) el.classList.add('active');
+  }
+</script>
+</body>
+</html>
