@@ -636,6 +636,7 @@ let incomingPhase = 'ringing'; // 'ringing' | 'active'
 let nameOk = false;
 let autoTypeTimer = null;
 let autoNextTimer = null;
+let autoStartTimer = null;
 let nextTimer = null;
 
 function scheduleNext(delay) {
@@ -654,8 +655,8 @@ const STEPS = [
     dj: '¿Ves el auricular que brilla con el borde amarillo? Ese es el que necesitamos.' },
 
   { label: 'PASO 3 DE 9', pct: 33,
-    instr: 'Marca el número <strong>310 555 0001</strong> en el teclado.',
-    dj: 'Mira la mano: te muestra qué tocar. Solo toca el 3 y el resto aparece solo.' },
+    instr: 'Observa cómo se marca automáticamente el número <strong>310 555 0001</strong> en el teclado.',
+    dj: 'Mira la mano: te muestra el marcado paso a paso. No necesitas tocar nada en este paso.' },
 
   { label: 'PASO 4 DE 9', pct: 44,
     instr: 'El número ya está marcado: <strong>310 555 0001</strong>. Ahora toca el <strong>botón verde</strong> para llamar.',
@@ -842,8 +843,24 @@ function drawDialer(el) {
       </div>
     </div>`;
 
-  /* guide: light up first digit after 600 ms */
-  setTimeout(() => lightDigit(0), 600);
+  /* guide: start dial animation automatically */
+  autoStartTimer = setTimeout(startAutoDial, 600);
+}
+
+function startAutoDial() {
+  autoStartTimer = null;
+  lightDigit(0);
+  autoNextTimer = setTimeout(() => {
+    const firstDigit = FULL_NUM[0];
+    dialDigits.push(firstDigit);
+    flashKey(firstDigit);
+    updateDialDisp();
+    clearFb();
+    guideIdx = 1;
+    hideHand();
+    document.querySelectorAll('.key.lit').forEach(k => k.classList.remove('lit'));
+    autoFillRest();
+  }, 550);
 }
 
 let guideIdx = 0;
@@ -1285,6 +1302,7 @@ function clearTimer() {
   if (timerID) { clearInterval(timerID); timerID = null; }
 }
 function clearAuto() {
+  if (autoStartTimer) { clearTimeout(autoStartTimer); autoStartTimer = null; }
   if (autoTypeTimer) { clearInterval(autoTypeTimer); autoTypeTimer = null; }
   if (autoNextTimer) { clearTimeout(autoNextTimer); autoNextTimer = null; }
 }
