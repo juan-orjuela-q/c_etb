@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi rutina con el celular</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body { height: 100%; overflow: hidden; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: transparent;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+    }
+
+    .wrapper {
+      width: 100%;
+      max-width: 1200px;
+      height: 100vh;
+      max-height: 600px;
+      display: flex;
+      flex-direction: column;
+      padding: 16px 28px 12px;
+    }
+
+    /* ── Barra de progreso ─────────────────────────── */
+    .progress {
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+      flex-shrink: 0;
+    }
+    .prog-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .prog-dot {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #e4eaf2;
+      color: #8fa3b8;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      transition: all 0.3s;
+      flex-shrink: 0;
+    }
+    .prog-label {
+      font-size: 14px;
+      color: #8fa3b8;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .prog-line {
+      flex: 1;
+      height: 2px;
+      background: #e4eaf2;
+      margin: 0 10px;
+      transition: background 0.4s;
+    }
+
+    /* Estados de progreso */
+    .prog-item.is-active .prog-dot { background: #0e2d5c; color: #fff; }
+    .prog-item.is-active .prog-label { color: #0e2d5c; font-weight: 700; }
+    .prog-item.is-done .prog-dot { background: #4caf50; color: #fff; }
+    .prog-item.is-done .prog-label { color: #4caf50; }
+    .prog-line.is-done { background: #4caf50; }
+
+    /* ── Contenedor de pasos ──────────────────────── */
+    .steps-outer {
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+      min-height: 0;
+    }
+
+    .step {
+      display: none;
+      height: 100%;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .step.is-active {
+      display: flex;
+      animation: stepIn 0.25s ease forwards;
+    }
+    @keyframes stepIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ── Encabezado del paso ──────────────────────── */
+    .step-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: #0e2d5c;
+      flex-shrink: 0;
+      line-height: 1.2;
+    }
+    .step-sub {
+      font-size: 18px;
+      color: #5a6a80;
+      line-height: 1.4;
+      flex-shrink: 0;
+    }
+
+    /* ── Área de scroll ───────────────────────────── */
+    .step-scroll {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      min-height: 0;
+    }
+    .step-scroll::-webkit-scrollbar { width: 5px; }
+    .step-scroll::-webkit-scrollbar-track { background: transparent; }
+    .step-scroll::-webkit-scrollbar-thumb { background: #c5d3e0; border-radius: 3px; }
+
+    /* ── Paso 1: grilla de bloques ────────────────── */
+    .blocks-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      padding-bottom: 4px;
+    }
+
+    .block-card {
+      background: #fff;
+      border: 2.5px solid #e4eaf2;
+      border-radius: 14px;
+      padding: 14px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+      text-align: center;
+      position: relative;
+    }
+    .block-card:hover {
+      border-color: #9ab0cb;
+      box-shadow: 0 3px 10px rgba(14,45,92,0.1);
+      transform: translateY(-2px);
+    }
+    .block-card.is-selected {
+      background: #eef4ff;
+      border-color: #0e2d5c;
+      box-shadow: 0 3px 14px rgba(14,45,92,0.15);
+    }
+    .block-icon { font-size: 28px; line-height: 1; }
+    .block-name {
+      font-size: 16px;
+      font-weight: 500;
+      color: #0e2d5c;
+      line-height: 1.3;
+    }
+    .block-card.is-selected .block-name { font-weight: 700; }
+
+    .block-check {
+      position: absolute;
+      top: 9px;
+      right: 9px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid #c5d3e0;
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    .block-card.is-selected .block-check { background: #0e2d5c; border-color: #0e2d5c; }
+    .check-icon { display: none; }
+    .block-card.is-selected .check-icon { display: block; }
+
+    .error-hint {
+      font-size: 16px;
+      color: #c62828;
+      font-weight: 500;
+      padding: 8px 14px;
+      background: #fdecea;
+      border-radius: 8px;
+      display: none;
+      flex-shrink: 0;
+    }
+    .error-hint.is-visible { display: block; }
+
+    /* ── Paso 2: intensidad ───────────────────────── */
+    .live-counter {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #eef4ff;
+      border-radius: 10px;
+      padding: 10px 16px;
+      flex-shrink: 0;
+    }
+    .lc-label { font-size: 16px; color: #5a6a80; }
+    .lc-value { font-size: 20px; font-weight: 700; color: #0e2d5c; }
+
+    .intensity-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      padding-bottom: 4px;
+    }
+
+    .i-row {
+      background: #fff;
+      border: 1.5px solid #e4eaf2;
+      border-radius: 12px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .i-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .i-icon { font-size: 22px; flex-shrink: 0; }
+    .i-name { font-size: 17px; font-weight: 700; color: #0e2d5c; }
+
+    .i-btns { display: flex; gap: 6px; }
+
+    .ibtn {
+      flex: 1;
+      padding: 9px 6px;
+      border-radius: 8px;
+      border: 2px solid #e4eaf2;
+      background: #fff;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.18s;
+      font-family: 'DM Sans', sans-serif;
+    }
+    .ibtn:hover { border-color: #9ab0cb; background: #f8f9fb; }
+    .ibtn-name {
+      display: block;
+      font-size: 15px;
+      font-weight: 700;
+      color: #0e2d5c;
+      line-height: 1.2;
+    }
+    .ibtn-note {
+      display: block;
+      font-size: 12px;
+      color: #8fa3b8;
+      margin-top: 2px;
+      line-height: 1.2;
+    }
+
+    /* Estados de intensidad */
+    .ibtn.s-activo  { background: #fdecea; border-color: #e53935; }
+    .ibtn.s-activo  .ibtn-name { color: #c62828; }
+    .ibtn.s-urgente { background: #fff8e1; border-color: #f57c00; }
+    .ibtn.s-urgente .ibtn-name { color: #e65100; }
+    .ibtn.s-ninguno { background: #e8f5e9; border-color: #4caf50; }
+    .ibtn.s-ninguno .ibtn-name { color: #2e7d32; }
+
+    /* ── Paso 3: resultados ───────────────────────── */
+    .results-grid {
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 14px;
+    }
+
+    .summary-card {
+      background: #fff;
+      border: 1.5px solid #e4eaf2;
+      border-radius: 14px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      max-height: 380px;
+    }
+    .summary-head {
+      background: #f0f4f8;
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #5a6a80;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      flex-shrink: 0;
+    }
+    .summary-rows { overflow-y: auto; }
+    .s-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 16px;
+    }
+    .s-row:nth-child(even) { background: #f8f9fb; }
+    .s-row-icon { font-size: 18px; flex-shrink: 0; }
+    .s-row-name { font-size: 16px; color: #0e2d5c; flex: 1; font-weight: 500; }
+    .s-badge {
+      font-size: 13px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+    .s-badge.b-activo  { background: #fdecea; color: #c62828; }
+    .s-badge.b-urgente { background: #fff8e1; color: #e65100; }
+    .s-badge.b-ninguno { background: #e8f5e9; color: #2e7d32; }
+
+    .results-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .total-box {
+      background: #0e2d5c;
+      border-radius: 14px;
+      padding: 18px 20px;
+      text-align: center;
+      flex-shrink: 0;
+    }
+    .total-label { font-size: 14px; color: rgba(255,255,255,0.7); margin-bottom: 4px; }
+    .total-time  { font-size: 38px; font-weight: 700; color: #fff; line-height: 1; }
+    .total-sub   { font-size: 13px; color: rgba(255,255,255,0.55); margin-top: 4px; }
+
+    .msg-box {
+      background: #e8f5e9;
+      border-radius: 14px;
+      padding: 16px;
+      flex: 1;
+    }
+    .msg-box.is-warning { background: #fff8e1; }
+    .msg-box-icon { font-size: 26px; margin-bottom: 6px; }
+    .msg-box-text { font-size: 17px; line-height: 1.5; color: #0e2d5c; }
+    .msg-box-tip {
+      font-size: 16px;
+      color: #e65100;
+      font-weight: 600;
+      margin-top: 10px;
+      line-height: 1.5;
+    }
+
+    /* ── Pie de navegación ────────────────────────── */
+    .nav-footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 10px;
+      margin-top: 8px;
+      border-top: 1.5px solid #f0f4f8;
+      flex-shrink: 0;
+      gap: 10px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 26px;
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: all 0.18s;
+      line-height: 1;
+      flex-shrink: 0;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary { background: #0e2d5c; color: #fff; }
+    .btn-primary:hover { background: #163e75; }
+    .btn-ghost   { background: #f0f4f8; color: #0e2d5c; }
+    .btn-ghost:hover { background: #e4eaf2; }
+    .btn-green   { background: #4caf50; color: #fff; }
+    .btn-green:hover { background: #43a047; }
+    .btn-outline { background: transparent; color: #0e2d5c; border: 2px solid #0e2d5c; }
+    .btn-outline:hover { background: #eef4ff; }
+  </style>
+</head>
+<body>
+
+<div class="wrapper">
+
+  <!-- ── Barra de progreso ── -->
+  <div class="progress">
+    <div class="prog-item is-active" id="prog-1">
+      <div class="prog-dot" id="pdot-1">1</div>
+      <span class="prog-label">Mis momentos</span>
+    </div>
+    <div class="prog-line" id="pline-1"></div>
+    <div class="prog-item" id="prog-2">
+      <div class="prog-dot" id="pdot-2">2</div>
+      <span class="prog-label">Cómo los uso</span>
+    </div>
+    <div class="prog-line" id="pline-2"></div>
+    <div class="prog-item" id="prog-3">
+      <div class="prog-dot" id="pdot-3">3</div>
+      <span class="prog-label">Mi resultado</span>
+    </div>
+  </div>
+
+  <!-- ── Pasos ── -->
+  <div class="steps-outer">
+
+    <!-- Paso 1: elegir bloques -->
+    <div class="step is-active" id="step-1">
+      <div class="step-title">¿Cuándo usas el celular?</div>
+      <div class="step-sub">Toca los momentos del día en que sueles usar tu celular.</div>
+      <div class="step-scroll">
+        <div class="blocks-grid" id="blocks-grid"></div>
+      </div>
+      <div class="error-hint" id="err-1">Elige al menos un momento del día para continuar.</div>
+    </div>
+
+    <!-- Paso 2: elegir intensidad -->
+    <div class="step" id="step-2">
+      <div class="step-title">¿Cómo usas el celular?</div>
+      <div class="step-sub">Para cada momento, toca cómo sueles usarlo.</div>
+      <div class="live-counter">
+        <span class="lc-label">Tiempo de uso activo estimado:</span>
+        <span class="lc-value" id="live-time">0 min</span>
+      </div>
+      <div class="step-scroll">
+        <div class="intensity-grid" id="intensity-grid"></div>
+      </div>
+    </div>
+
+    <!-- Paso 3: resultados -->
+    <div class="step" id="step-3">
+      <div class="step-title">Tu rutina del día</div>
+      <div class="step-sub">Así queda registrado tu uso del celular.</div>
+      <div class="step-scroll">
+        <div class="results-grid" id="results-grid"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Botones de navegación ── -->
+  <div class="nav-footer" id="nav-footer"></div>
+
+</div>
+
+<script>
+// ── Datos ──────────────────────────────────────────────────────────
+const BLOCKS = [
+  { id: 'despertar', name: 'Mañana al despertar', icon: '🌅', min: 30 },
+  { id: 'desayuno',  name: 'Desayuno',            icon: '☕', min: 20 },
+  { id: 'trabajo',   name: 'Trabajo o estudio',   icon: '💼', min: 90 },
+  { id: 'mediodia',  name: 'Pausa del mediodía',  icon: '🍽️', min: 30 },
+  { id: 'tarde',     name: 'Tarde',               icon: '🌤️', min: 60 },
+  { id: 'llegada',   name: 'Llegada a casa',       icon: '🏠', min: 30 },
+  { id: 'noche',     name: 'Noche',               icon: '🌙', min: 90 },
+  { id: 'dormir',    name: 'Antes de dormir',     icon: '😴', min: 30 },
+];
+
+const INTENSITIES = [
+  { id: 'activo',  name: 'Uso activo',   note: 'Redes, videos' },
+  { id: 'urgente', name: 'Solo urgente', note: 'Llamadas, mensajes' },
+  { id: 'ninguno', name: 'Sin celular',  note: '' },
+];
+
+// ── Estado ─────────────────────────────────────────────────────────
+let selected = new Set();   // ids de bloques seleccionados en paso 1
+let usage    = {};           // { blockId: 'activo' | 'urgente' | 'ninguno' }
+let step     = 1;
+
+// ── Utilidades ─────────────────────────────────────────────────────
+function fmtTime(min) {
+  if (!min) return '0 min';
+  if (min < 60) return min + ' min';
+  const h = Math.floor(min / 60), m = min % 60;
+  return m ? h + ' h ' + m + ' min' : h + ' h';
+}
+
+function calcActive() {
+  return BLOCKS.reduce((acc, b) => {
+    if (selected.has(b.id) && (usage[b.id] || 'activo') === 'activo') acc += b.min;
+    return acc;
+  }, 0);
+}
+
+function getMsg(min) {
+  if (min === 0)  return { icon: '🌟', text: '¡Muy bien! Parece que tienes un uso muy consciente del celular en este día.', tip: null };
+  if (min <= 120) return { icon: '👍', text: 'Con ' + fmtTime(min) + ' de uso activo, tienes un ritmo saludable. ¡Sigue así!', tip: null };
+  if (min <= 180) return { icon: '😊', text: fmtTime(min) + ' de uso activo es razonable. Considera si en algún momento podrías descansar un poco del celular.', tip: null };
+  if (min <= 240) return { icon: '🤔', text: 'Con ' + fmtTime(min) + ' de uso activo estás cerca de las 4 horas recomendadas. Pequeños ajustes pueden hacer la diferencia.', tip: null };
+  return {
+    icon: '💡',
+    text: 'Tu uso activo suma ' + fmtTime(min) + ', lo que supera las 4 horas recomendadas.',
+    tip:  'Te sugerimos revisar cuáles momentos podrías cambiar a "Solo urgente". Pequeñas pausas mejoran el descanso y la conexión con quienes te rodean.'
+  };
+}
+
+// ── Paso 1 ─────────────────────────────────────────────────────────
+function renderStep1() {
+  document.getElementById('blocks-grid').innerHTML = BLOCKS.map(function(b) {
+    var sel = selected.has(b.id);
+    return '<div class="block-card' + (sel ? ' is-selected' : '') + '" onclick="toggleBlock(\'' + b.id + '\')">'
+      + '<div class="block-check">'
+      +   '<svg class="check-icon" width="11" height="11" viewBox="0 0 11 11">'
+      +     '<polyline points="1,5.5 4,8.5 10,2" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>'
+      +   '</svg>'
+      + '</div>'
+      + '<div class="block-icon">' + b.icon + '</div>'
+      + '<div class="block-name">' + b.name + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+function toggleBlock(id) {
+  selected.has(id) ? selected.delete(id) : selected.add(id);
+  document.getElementById('err-1').classList.remove('is-visible');
+  renderStep1();
+}
+
+// ── Paso 2 ─────────────────────────────────────────────────────────
+function renderStep2() {
+  var blocksInOrder = BLOCKS.filter(function(b) { return selected.has(b.id); });
+  document.getElementById('intensity-grid').innerHTML = blocksInOrder.map(function(b) {
+    var cur = usage[b.id] || 'activo';
+    var btns = INTENSITIES.map(function(it) {
+      return '<button class="ibtn' + (cur === it.id ? ' s-' + it.id : '') + '" onclick="setUsage(\'' + b.id + '\',\'' + it.id + '\')">'
+        + '<span class="ibtn-name">' + it.name + '</span>'
+        + (it.note ? '<span class="ibtn-note">' + it.note + '</span>' : '')
+        + '</button>';
+    }).join('');
+    return '<div class="i-row">'
+      + '<div class="i-info"><span class="i-icon">' + b.icon + '</span><span class="i-name">' + b.name + '</span></div>'
+      + '<div class="i-btns">' + btns + '</div>'
+      + '</div>';
+  }).join('');
+  document.getElementById('live-time').textContent = fmtTime(calcActive());
+}
+
+function setUsage(blockId, intId) {
+  usage[blockId] = intId;
+  renderStep2();
+}
+
+// ── Paso 3 ─────────────────────────────────────────────────────────
+function renderStep3() {
+  var total = calcActive();
+  var msg   = getMsg(total);
+  var rows  = BLOCKS.filter(function(b) { return selected.has(b.id); }).map(function(b) {
+    var u     = usage[b.id] || 'activo';
+    var label = INTENSITIES.find(function(i) { return i.id === u; }).name;
+    return '<div class="s-row">'
+      + '<span class="s-row-icon">' + b.icon + '</span>'
+      + '<span class="s-row-name">' + b.name + '</span>'
+      + '<span class="s-badge b-' + u + '">' + label + '</span>'
+      + '</div>';
+  }).join('');
+
+  document.getElementById('results-grid').innerHTML =
+    '<div class="summary-card">'
+    +   '<div class="summary-head">Mis momentos del día</div>'
+    +   '<div class="summary-rows">' + rows + '</div>'
+    + '</div>'
+    + '<div class="results-panel">'
+    +   '<div class="total-box">'
+    +     '<div class="total-label">Tiempo de uso activo</div>'
+    +     '<div class="total-time">' + fmtTime(total) + '</div>'
+    +     '<div class="total-sub">al día</div>'
+    +   '</div>'
+    +   '<div class="msg-box' + (msg.tip ? ' is-warning' : '') + '">'
+    +     '<div class="msg-box-icon">' + msg.icon + '</div>'
+    +     '<div class="msg-box-text">' + msg.text + '</div>'
+    +     (msg.tip ? '<div class="msg-box-tip">💡 ' + msg.tip + '</div>' : '')
+    +   '</div>'
+    + '</div>';
+}
+
+// ── Navegación ─────────────────────────────────────────────────────
+function goStep(n) {
+  document.getElementById('step-' + step).classList.remove('is-active');
+
+  for (var i = 1; i <= 3; i++) {
+    var pItem = document.getElementById('prog-' + i);
+    var pDot  = document.getElementById('pdot-' + i);
+    pItem.classList.remove('is-active', 'is-done');
+    if (i < n) {
+      pItem.classList.add('is-done');
+      pDot.textContent = '✓';
+    } else if (i === n) {
+      pItem.classList.add('is-active');
+      pDot.textContent = i;
+    } else {
+      pDot.textContent = i;
+    }
+    if (i < 3) {
+      document.getElementById('pline-' + i).classList.toggle('is-done', i < n);
+    }
+  }
+
+  step = n;
+  document.getElementById('step-' + n).classList.add('is-active');
+  renderNav();
+}
+
+function next() {
+  if (step === 1) {
+    if (!selected.size) { document.getElementById('err-1').classList.add('is-visible'); return; }
+    selected.forEach(function(id) { if (!usage[id]) usage[id] = 'activo'; });
+    renderStep2();
+    goStep(2);
+  } else if (step === 2) {
+    renderStep3();
+    goStep(3);
+  }
+}
+
+function back() {
+  if (step > 1) goStep(step - 1);
+}
+
+function restart() {
+  selected = new Set();
+  usage    = {};
+  step     = 1;
+  renderStep1();
+  goStep(1);
+}
+
+function renderNav() {
+  var nav = document.getElementById('nav-footer');
+  if (step === 1) {
+    nav.innerHTML = '<span></span>'
+      + '<button class="btn btn-primary" onclick="next()">Siguiente →</button>';
+  } else if (step === 2) {
+    nav.innerHTML = '<button class="btn btn-ghost" onclick="back()">← Volver</button>'
+      + '<button class="btn btn-primary" onclick="next()">Ver mi resultado →</button>';
+  } else {
+    nav.innerHTML = '<button class="btn btn-outline" onclick="restart()">Empezar de nuevo</button>'
+      + '<button class="btn btn-green" onclick="downloadPDF()">⬇ Descargar mi rutina en PDF</button>';
+  }
+}
+
+// ── Descarga PDF ───────────────────────────────────────────────────
+function downloadPDF() {
+  if (!window.jspdf) {
+    alert('El PDF no está disponible. Por favor recarga la página e intenta de nuevo.');
+    return;
+  }
+  var jsPDF = window.jspdf.jsPDF;
+  var doc = new jsPDF({ unit: 'mm', format: 'a4' });
+
+  var L = 18, R = 192, W = 174;
+  var y = 0;
+
+  /* Encabezado */
+  doc.setFillColor(14, 45, 92);
+  doc.rect(0, 0, 210, 34, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(18);
+  doc.text('Mi Rutina con el Celular', L, 14);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(11);
+  var fecha = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+  doc.text(fecha, L, 26);
+  doc.text('ETB - Alfabetizacion Digital', R, 26, { align: 'right' });
+
+  y = 44;
+
+  /* Título sección */
+  doc.setTextColor(14, 45, 92);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(12);
+  doc.text('Mis momentos del dia y como los uso', L, y);
+  y += 3;
+
+  /* Cabecera de tabla */
+  doc.setFillColor(240, 244, 248);
+  doc.rect(L, y, W, 8, 'F');
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(9);
+  doc.setTextColor(90, 106, 128);
+  doc.text('MOMENTO', L + 4, y + 5.5);
+  doc.text('USO', R - 4, y + 5.5, { align: 'right' });
+  y += 8;
+
+  /* Filas de tabla */
+  var row = 0;
+  BLOCKS.forEach(function(b) {
+    if (!selected.has(b.id)) return;
+    var u     = usage[b.id] || 'activo';
+    var label = INTENSITIES.find(function(i) { return i.id === u; }).name;
+
+    doc.setFillColor.apply(doc, row % 2 ? [248, 249, 251] : [255, 255, 255]);
+    doc.rect(L, y, W, 9, 'F');
+
+    doc.setTextColor(14, 45, 92);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(11);
+    doc.text(b.name, L + 4, y + 6.2);
+
+    if (u === 'activo')       doc.setTextColor(198, 40, 40);
+    else if (u === 'urgente') doc.setTextColor(230, 81, 0);
+    else                      doc.setTextColor(46, 125, 50);
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(10);
+    doc.text(label, R - 4, y + 6.2, { align: 'right' });
+
+    y += 9;
+    row++;
+  });
+
+  y += 10;
+
+  /* Caja de tiempo total */
+  var total = calcActive();
+  doc.setFillColor(14, 45, 92);
+  doc.roundedRect(L, y, W, 20, 3, 3, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(11);
+  doc.text('Tiempo total de uso activo:', L + 6, y + 8);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(15);
+  doc.text(fmtTime(total), L + 6, y + 17);
+  y += 28;
+
+  /* Mensaje */
+  var msg    = getMsg(total);
+  var isWarn = !!msg.tip;
+  doc.setFillColor.apply(doc, isWarn ? [255, 248, 225] : [232, 245, 233]);
+  var msgH = isWarn ? 34 : 20;
+  doc.roundedRect(L, y, W, msgH, 3, 3, 'F');
+  if (isWarn) { doc.setDrawColor(245, 124, 0); doc.roundedRect(L, y, W, msgH, 3, 3, 'S'); }
+
+  doc.setTextColor.apply(doc, isWarn ? [198, 80, 0] : [46, 125, 50]);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(11);
+  var mLines = doc.splitTextToSize(msg.text, W - 8);
+  doc.text(mLines, L + 5, y + 8);
+
+  if (msg.tip) {
+    doc.setFont('helvetica', 'bold');
+    var tLines = doc.splitTextToSize('Sugerencia: ' + msg.tip, W - 8);
+    doc.text(tLines, L + 5, y + 8 + mLines.length * 5 + 2);
+  }
+
+  y += msgH + 10;
+
+  /* Sección de compromiso */
+  doc.setTextColor(14, 45, 92);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(12);
+  doc.text('Mi compromiso', L, y);
+  y += 5;
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
+  doc.setTextColor(90, 106, 128);
+  doc.text('Escribe aqui el cambio que vas a hacer esta semana:', L, y);
+  y += 4;
+  doc.setDrawColor(200, 210, 220);
+  for (var k = 0; k < 3; k++) {
+    doc.line(L, y + 8 + k * 11, R, y + 8 + k * 11);
+  }
+
+  /* Pie */
+  doc.setFontSize(9);
+  doc.setTextColor(160, 170, 180);
+  doc.line(L, 282, R, 282);
+  doc.text('ETB - Alfabetizacion Digital para Adultos Mayores', L, 287);
+  doc.text('Mi Rutina con el Celular', R, 287, { align: 'right' });
+
+  doc.save('mi-rutina-celular.pdf');
+}
+
+// ── Inicializar ─────────────────────────────────────────────────────
+renderStep1();
+renderNav();
+</script>
+
+</body>
+</html>
