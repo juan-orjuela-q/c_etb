@@ -416,7 +416,7 @@
       var esCierre = (n === total);
       var esPasoFinal = (n === total - 1);
       btnNext.disabled = !(estaConfirmado || esCierre);
-      btnNext.classList.toggle('oculto', esPasoFinal || esCierre);
+      btnNext.classList.toggle('oculto',  esCierre);
 
       // Label
       var label = document.getElementById('slide-label');
